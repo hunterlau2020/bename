@@ -130,6 +130,54 @@ class DataLoader:
             )
             ''')
             
+            # 万年历数据表
+            cursor.execute('''
+            CREATE TABLE IF NOT EXISTS wannianli (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                gregorian_date DATE NOT NULL UNIQUE,
+                lunar_date DATE,
+                lunar_show TEXT,
+                is_holiday BOOLEAN,
+                lunar_festival TEXT,
+                gregorian_festival TEXT,
+                yi TEXT,
+                ji TEXT,
+                shen_wei TEXT,
+                tai_shen TEXT,
+                chong TEXT,
+                sui_sha TEXT,
+                wuxing_jiazi TEXT,
+                wuxing_year TEXT,
+                wuxing_month TEXT,
+                wuxing_day TEXT,
+                moon_phase TEXT,
+                star_east TEXT,
+                star_west TEXT,
+                peng_zu TEXT,
+                jian_shen TEXT,
+                year_ganzhi TEXT NOT NULL,
+                month_ganzhi TEXT NOT NULL,
+                day_ganzhi TEXT NOT NULL,
+                lunar_month_name TEXT,
+                zodiac TEXT,
+                lunar_month TEXT,
+                lunar_day TEXT,
+                solar_term TEXT,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            )
+            ''')
+            
+            # 为万年历表创建索引以提高查询性能
+            cursor.execute('''
+            CREATE INDEX IF NOT EXISTS idx_wannianli_date 
+            ON wannianli(gregorian_date)
+            ''')
+            
+            cursor.execute('''
+            CREATE INDEX IF NOT EXISTS idx_wannianli_ganzhi 
+            ON wannianli(year_ganzhi, month_ganzhi, day_ganzhi)
+            ''')
+            
             # 数据加载记录表
             cursor.execute('''
             CREATE TABLE IF NOT EXISTS data_load_records (
@@ -171,7 +219,8 @@ class DataLoader:
             ('shuli', 'shuli_wuxing.json'),
             ('sancai', 'sancai.json'),
             ('shengxiao', 'shengxiao.json'),
-            ('chenggu', 'chenggu.json')
+            ('chenggu', 'chenggu.json'),
+            ('wannianli', 'wannianli.json')
         ]
         
         for resource_name, filename in resources:
@@ -277,6 +326,8 @@ class DataLoader:
                     self._validate_kangxi(item)
                 elif resource_name == 'ziyi':
                     self._validate_ziyi(item)
+                elif resource_name == 'wannianli':
+                    self._validate_wannianli(item)
                 # 添加其他资源的验证...
                 
                 result['passed'] += 1
@@ -308,6 +359,17 @@ class DataLoader:
             raise ValueError("拼音不能为空")
         if 'meaning' not in item or not item['meaning']:
             raise ValueError("字义不能为空")
+    
+    def _validate_wannianli(self, item: Dict):
+        """验证万年历数据"""
+        if 'gregorian_date' not in item or not item['gregorian_date']:
+            raise ValueError("公历日期不能为空")
+        if 'year_ganzhi' not in item or not item['year_ganzhi']:
+            raise ValueError("年干支不能为空")
+        if 'month_ganzhi' not in item or not item['month_ganzhi']:
+            raise ValueError("月干支不能为空")
+        if 'day_ganzhi' not in item or not item['day_ganzhi']:
+            raise ValueError("日干支不能为空")
     
     def _import_data(self, resource_name: str, data: List) -> Dict:
         """导入数据到数据库"""
@@ -444,6 +506,81 @@ class DataLoader:
                         ))
                     count += 1
             
+            elif resource_name == 'wannianli':
+                # 批量导入万年历数据以提高性能
+                batch_size = 1000
+                batch_data = []
+                
+                for item in data:
+                    # 提取日期（去掉时间部分）
+                    gregorian_date = item['gregorian_date'].split(' ')[0] if ' ' in item['gregorian_date'] else item['gregorian_date']
+                    lunar_date = item.get('lunar_date', '').split(' ')[0] if item.get('lunar_date') and ' ' in item.get('lunar_date', '') else item.get('lunar_date', '')
+                    
+                    batch_data.append((
+                        gregorian_date,
+                        lunar_date,
+                        item.get('lunar_show', ''),
+                        item.get('is_holiday', False),
+                        item.get('lunar_festival', ''),
+                        item.get('gregorian_festival', ''),
+                        item.get('yi', ''),
+                        item.get('ji', ''),
+                        item.get('shen_wei', ''),
+                        item.get('tai_shen', ''),
+                        item.get('chong', ''),
+                        item.get('sui_sha', ''),
+                        item.get('wuxing_jiazi', ''),
+                        item.get('wuxing_year', ''),
+                        item.get('wuxing_month', ''),
+                        item.get('wuxing_day', ''),
+                        item.get('moon_phase', ''),
+                        item.get('star_east', ''),
+                        item.get('star_west', ''),
+                        item.get('peng_zu', ''),
+                        item.get('jian_shen', ''),
+                        item['year_ganzhi'],
+                        item['month_ganzhi'],
+                        item['day_ganzhi'],
+                        item.get('lunar_month_name', ''),
+                        item.get('zodiac', ''),
+                        item.get('lunar_month', ''),
+                        item.get('lunar_day', ''),
+                        item.get('solar_term', '')
+                    ))
+                    
+                    count += 1
+                    
+                    # 每批次提交一次
+                    if len(batch_data) >= batch_size:
+                        cursor.executemany('''
+                        INSERT OR REPLACE INTO wannianli (
+                            gregorian_date, lunar_date, lunar_show, is_holiday,
+                            lunar_festival, gregorian_festival, yi, ji,
+                            shen_wei, tai_shen, chong, sui_sha,
+                            wuxing_jiazi, wuxing_year, wuxing_month, wuxing_day,
+                            moon_phase, star_east, star_west, peng_zu, jian_shen,
+                            year_ganzhi, month_ganzhi, day_ganzhi,
+                            lunar_month_name, zodiac, lunar_month, lunar_day, solar_term
+                        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                        ''', batch_data)
+                        conn.commit()
+                        logger.info(f"已导入 {count} 条万年历记录...")
+                        batch_data = []
+                
+                # 提交剩余数据
+                if batch_data:
+                    cursor.executemany('''
+                    INSERT OR REPLACE INTO wannianli (
+                        gregorian_date, lunar_date, lunar_show, is_holiday,
+                        lunar_festival, gregorian_festival, yi, ji,
+                        shen_wei, tai_shen, chong, sui_sha,
+                        wuxing_jiazi, wuxing_year, wuxing_month, wuxing_day,
+                        moon_phase, star_east, star_west, peng_zu, jian_shen,
+                        year_ganzhi, month_ganzhi, day_ganzhi,
+                        lunar_month_name, zodiac, lunar_month, lunar_day, solar_term
+                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                    ''', batch_data)
+            
             conn.commit()
             logger.info(f"成功导入 {count} 条记录到 {resource_name}")
             return {'success': True, 'count': count}
@@ -474,7 +611,8 @@ class DataLoader:
             'sancai_jixiong',
             'shengxiao_xiji',
             'chenggu_fortune',
-            'chenggu_weights'
+            'chenggu_weights',
+            'wannianli'
         ]
         
         try:

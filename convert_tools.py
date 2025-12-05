@@ -574,6 +574,230 @@ def convert_xls_to_txt():
         return 1
 
 
+class LunarConverter:
+    """万年历数据转换器"""
+    
+    def convert_lunar_sql_to_json(self, sql_path: str, output_json: str):
+        """
+        将 lunar.sql 转换为 wannianli.json
+        :param sql_path: lunar.sql 文件路径
+        :param output_json: 输出的 JSON 文件路径
+        """
+        print("=" * 60)
+        print("万年历数据转换工具")
+        print("=" * 60)
+        print(f"输入: {sql_path}")
+        print(f"输出: {output_json}")
+        
+        if not Path(sql_path).exists():
+            print(f"\n✗ 错误: 文件不存在 - {sql_path}")
+            return False
+        
+        print("\n正在解析 SQL 文件...")
+        
+        records = []
+        
+        try:
+            with open(sql_path, 'r', encoding='utf-8') as f:
+                line_count = 0
+                for line in f:
+                    line_count += 1
+                    
+                    # 跳过注释和空行
+                    line_stripped = line.strip()
+                    if not line_stripped or line_stripped.startswith('--') or line_stripped.startswith('/*') or line_stripped.startswith('SET') or line_stripped.startswith('DROP') or line_stripped.startswith('CREATE'):
+                        continue
+                    
+                    # 检查是否是 INSERT 语句
+                    if not line_stripped.upper().startswith('INSERT INTO'):
+                        continue
+                    
+                    # 找到 VALUES 后的括号
+                    values_start = line.find('VALUES (')
+                    if values_start == -1:
+                        values_start = line.find('VALUES(')
+                        if values_start == -1:
+                            continue
+                        values_start += 7  # len('VALUES(')
+                    else:
+                        values_start += 8  # len('VALUES (')
+                    
+                    # 找到最后的分号前的右括号
+                    values_end = line.rfind(');')
+                    if values_end == -1:
+                        continue
+                    
+                    # 提取值部分
+                    values_str = line[values_start:values_end]
+                    
+                    # 解析值（处理引号和逗号）
+                    values = self._parse_sql_values(values_str)
+                    
+                    if len(values) >= 29:  # 确保有足够的字段
+                            record = {
+                                'gregorian_date': values[0],  # 公历时间
+                                'lunar_date': values[1],      # 农历时间（YYYY-MM-DD格式）
+                                'lunar_show': values[2],       # 显示农历的日名称
+                                'is_holiday': values[3] == '1',  # 是否节假日
+                                'lunar_festival': values[4],   # 农历节日
+                                'gregorian_festival': values[5],  # 公历节日
+                                'yi': values[6],              # 宜
+                                'ji': values[7],              # 忌
+                                'shen_wei': values[8],        # 诸神位置
+                                'tai_shen': values[9],        # 胎神位置
+                                'chong': values[10],          # 冲煞
+                                'sui_sha': values[11],        # 岁煞
+                                'wuxing_jiazi': values[12],   # 甲子五行
+                                'wuxing_year': values[13],    # 纳音五行年
+                                'wuxing_month': values[14],   # 纳音五行月
+                                'wuxing_day': values[15],     # 纳音五行日
+                                'moon_phase': values[16],     # 月相
+                                'star_east': values[17],      # 二十八星宿
+                                'star_west': values[18],      # 星座
+                                'peng_zu': values[19],        # 彭祖百忌
+                                'jian_shen': values[20],      # 十二神-执位
+                                'year_ganzhi': values[21],    # 天干地支年
+                                'month_ganzhi': values[22],   # 天干地支月
+                                'day_ganzhi': values[23],     # 天干地支日
+                                'lunar_month_name': values[24],  # 农历月代名词
+                                'zodiac': values[25],         # 生肖
+                                'lunar_month': values[26],    # 农历月
+                                'lunar_day': values[27],      # 农历日
+                                'solar_term': values[28] if len(values) > 28 else '',  # 节气
+                            }
+                            records.append(record)
+                    
+                    # 每10000行显示进度
+                    if line_count % 10000 == 0:
+                        print(f"  已处理: {line_count} 行，解析出: {len(records)} 条记录")
+            
+            print(f"\n✓ 解析完成")
+            print(f"  总行数: {line_count}")
+            print(f"  有效记录数: {len(records)}")
+            
+            if records:
+                # 显示日期范围
+                first_date = records[0]['gregorian_date']
+                last_date = records[-1]['gregorian_date']
+                print(f"  日期范围: {first_date} 至 {last_date}")
+                
+                # 显示示例记录
+                print(f"\n示例记录（第1条）:")
+                sample = records[0]
+                print(f"  公历: {sample['gregorian_date']}")
+                print(f"  农历: {sample['lunar_date']} ({sample['lunar_month']}{sample['lunar_day']})")
+                print(f"  干支: {sample['year_ganzhi']}年 {sample['month_ganzhi']}月 {sample['day_ganzhi']}日")
+                print(f"  生肖: {sample['zodiac']}")
+                if sample['solar_term']:
+                    print(f"  节气: {sample['solar_term']}")
+                if sample['gregorian_festival']:
+                    print(f"  节日: {sample['gregorian_festival']}")
+            
+            # 保存为 JSON
+            print(f"\n正在保存到 {output_json}...")
+            output_data = {
+                "version": "1.0",
+                "description": "万年历数据（1970-2100）",
+                "source": "lunar.sql",
+                "date_range": {
+                    "start": records[0]['gregorian_date'] if records else "",
+                    "end": records[-1]['gregorian_date'] if records else ""
+                },
+                "total_records": len(records),
+                "data": records
+            }
+            
+            # 创建输出目录
+            Path(output_json).parent.mkdir(parents=True, exist_ok=True)
+            
+            with open(output_json, 'w', encoding='utf-8') as f:
+                json.dump(output_data, f, ensure_ascii=False, indent=2)
+            
+            print(f"✓ 成功保存 {len(records)} 条记录")
+            
+            return True
+            
+        except Exception as e:
+            print(f"\n✗ 转换失败: {e}")
+            import traceback
+            traceback.print_exc()
+            return False
+    
+    def _parse_sql_values(self, values_str: str) -> List[str]:
+        """
+        解析 SQL VALUES 子句中的值
+        :param values_str: VALUES 中的字符串（不含括号）
+        :return: 值列表
+        """
+        values = []
+        current_value = ""
+        in_quotes = False
+        quote_char = None
+        i = 0
+        
+        while i < len(values_str):
+            char = values_str[i]
+            
+            if not in_quotes:
+                if char in ("'", '"'):
+                    # 开始引号
+                    in_quotes = True
+                    quote_char = char
+                    i += 1
+                elif char == ',' and current_value.strip():
+                    # 字段分隔符（确保有内容才分隔）
+                    values.append(current_value.strip())
+                    current_value = ""
+                    i += 1
+                elif char == ',' and not current_value.strip():
+                    # 空字段
+                    values.append("")
+                    i += 1
+                elif char == ' ' and not current_value:
+                    # 跳过前导空格
+                    i += 1
+                else:
+                    # 普通字符（NULL等）
+                    current_value += char
+                    i += 1
+            else:
+                if char == quote_char:
+                    # 检查是否是转义的引号
+                    if i + 1 < len(values_str) and values_str[i + 1] == quote_char:
+                        # 转义的引号，添加一个引号
+                        current_value += quote_char
+                        i += 2
+                    else:
+                        # 结束引号
+                        in_quotes = False
+                        quote_char = None
+                        i += 1
+                elif char == '\\' and i + 1 < len(values_str):
+                    # 转义字符
+                    next_char = values_str[i + 1]
+                    if next_char == 'n':
+                        current_value += '\n'
+                    elif next_char == 't':
+                        current_value += '\t'
+                    elif next_char == 'r':
+                        current_value += '\r'
+                    elif next_char == '\\':
+                        current_value += '\\'
+                    elif next_char in ("'", '"'):
+                        current_value += next_char
+                    else:
+                        current_value += next_char
+                    i += 2
+                else:
+                    current_value += char
+                    i += 1
+        
+        # 添加最后一个值
+        values.append(current_value.strip())
+        
+        return values
+
+
 def test_single_character():
     """测试单个汉字转换（用于调试）"""
     base_dir = Path(__file__).parent
@@ -611,16 +835,70 @@ def test_single_character():
             print(f"  Unicode: {unicode_str}")
 
 
+def convert_lunar_sql():
+    """转换万年历 SQL 文件为 JSON"""
+    base_dir = Path(__file__).parent
+    
+    sql_path = base_dir / "predata" / "lunar.sql"
+    output_json = base_dir / "data" / "wannianli.json"
+    
+    if not sql_path.exists():
+        print(f"✗ 错误: 文件不存在 - {sql_path}")
+        return 1
+    
+    converter = LunarConverter()
+    success = converter.convert_lunar_sql_to_json(str(sql_path), str(output_json))
+    
+    return 0 if success else 1
+
+
+def show_help():
+    """显示帮助信息"""
+    print("=" * 60)
+    print("数据转换工具")
+    print("=" * 60)
+    print("\n用法:")
+    print("  python convert_tools.py [选项]")
+    print("\n选项:")
+    print("  --help, -h            显示此帮助信息")
+    print("  --test                测试单个汉字转换")
+    print("  --convert-xls         转换康熙字典 Excel 文件")
+    print("  --convert-with-com    使用 COM 转换 Excel（仅Windows）")
+    print("  --convert-lunar       转换万年历 SQL 文件为 JSON")
+    print("  （无参数）            转换康熙字典（默认）")
+    print("\n示例:")
+    print("  python convert_tools.py --convert-lunar")
+    print("  python convert_tools.py --test")
+    print("\n文件说明:")
+    print("  输入文件:")
+    print("    - predata/康熙字典.xls         康熙字典数据")
+    print("    - predata/Unihan/*.txt         Unicode 汉字数据库")
+    print("    - predata/lunar.sql            万年历数据（1970-2099）")
+    print("\n  输出文件:")
+    print("    - data/kangxi_converted.json   康熙字典 JSON")
+    print("    - data/wannianli.json          万年历 JSON")
+    print("=" * 60)
+
+
 def main():
     """主函数"""
     # 检查命令行参数
     if len(sys.argv) > 1:
-        if sys.argv[1] == '--test':
+        if sys.argv[1] in ('--help', '-h'):
+            show_help()
+            return 0
+        elif sys.argv[1] == '--test':
             return test_single_character()
         elif sys.argv[1] == '--convert-xls' or sys.argv[1] == '--convert':
             return convert_xls_to_txt()
         elif sys.argv[1] == '--convert-with-com':
             return convert_xls_with_com()
+        elif sys.argv[1] == '--convert-lunar' or sys.argv[1] == '--lunar':
+            return convert_lunar_sql()
+        else:
+            print(f"未知选项: {sys.argv[1]}")
+            print("使用 --help 查看帮助")
+            return 1
     
     # 定义文件路径
     base_dir = Path(__file__).parent

@@ -470,25 +470,29 @@ class Calculator:
         """计算生辰八字"""
         logger.info(f"计算生辰八字: {birth_dt}")
         
-        # 0. 转换为农历（用于显示）
-        lunar_date = self._solar_to_lunar(birth_dt)
-        
-        # 0.1 获取农历完整信息（用于八字计算）
-        lunar_obj, lunar_year, lunar_month, lunar_day, is_leap = self._solar_to_lunar_full(birth_dt)
-        
         # 1. 计算真太阳时
         true_solar_time = self._calculate_true_solar_time(birth_dt, longitude)
         
-        # 2. 计算年柱（需要判断立春节气）
-        year_gz = self._get_year_ganzhi_by_lichun(birth_dt, lunar_year)
+        # 2. 优先从万年历获取完整信息
+        wannianli_data = self._get_ganzhi_from_wannianli(birth_dt)
         
-        # 3. 计算月柱（根据节气，不是农历月份）
-        month_gz = self._get_month_ganzhi_by_jieqi(birth_dt, year_gz)
+        if wannianli_data:
+            # 使用万年历数据
+            year_gz = wannianli_data['year_ganzhi']
+            month_gz = wannianli_data['month_ganzhi']
+            day_gz = wannianli_data['day_ganzhi']
+            lunar_date = self._solar_to_lunar(birth_dt)  # 用于显示
+            logger.info(f"使用万年历数据计算八字: {year_gz} {month_gz} {day_gz}")
+        else:
+            # 降级：使用传统算法
+            logger.warning("万年历数据不可用，使用传统算法")
+            lunar_obj, lunar_year, lunar_month, lunar_day, is_leap = self._solar_to_lunar_full(birth_dt)
+            year_gz = self._get_year_ganzhi_by_lichun(birth_dt, lunar_year)
+            month_gz = self._get_month_ganzhi_by_jieqi(birth_dt, year_gz)
+            day_gz = self._get_day_ganzhi(birth_dt)
+            lunar_date = self._solar_to_lunar(birth_dt)
         
-        # 4. 计算日柱（使用阳历日期计算，但需要用更精确的算法）
-        day_gz = self._get_day_ganzhi(birth_dt)
-        
-        # 5. 计算时柱
+        # 5. 计算时柱（根据真太阳时）
         hour_gz = self._get_hour_ganzhi(true_solar_time, day_gz)
         
         bazi_str = f"{year_gz} {month_gz} {day_gz} {hour_gz}"
@@ -526,7 +530,23 @@ class Calculator:
         return result
     
     def _solar_to_lunar(self, solar_dt: datetime) -> str:
-        """将阳历转换为农历（返回字符串）"""
+        """将阳历转换为农历（返回字符串）
+        
+        优先从万年历数据库查询，如果查询失败则使用lunarcalendar库
+        """
+        # 尝试从万年历查询
+        wannianli_data = self._get_ganzhi_from_wannianli(solar_dt)
+        if wannianli_data and wannianli_data.get('lunar_show'):
+            # 时辰
+            hour = solar_dt.hour
+            shichen_names = ['子时', '丑时', '寅时', '卯时', '辰时', '巳时',
+                           '午时', '未时', '申时', '酉时', '戌时', '亥时']
+            shichen = shichen_names[(hour + 1) // 2 % 12]
+            
+            # 万年历中的 lunar_show 格式类似 "己酉年 腊月初四"
+            return f"{wannianli_data['lunar_show']} {shichen}"
+        
+        # 降级到 lunarcalendar 库
         if not LUNAR_AVAILABLE:
             return "农历功能不可用（请安装lunarcalendar库）"
         
@@ -576,12 +596,65 @@ class Calculator:
         di_idx = (year - 4) % 12
         return self.TIANGAN[tian_idx] + self.DIZHI[di_idx]
     
+    def _get_ganzhi_from_wannianli(self, birth_dt: datetime) -> Dict:
+        """从万年历数据库查询干支信息
+        
+        Args:
+            birth_dt: 出生日期时间
+            
+        Returns:
+            包含年月日干支的字典，如果查询失败返回None
+        """
+        conn = sqlite3.connect(self.db_path)
+        cursor = conn.cursor()
+        
+        try:
+            # 格式化日期为 YYYY-MM-DD
+            date_str = birth_dt.strftime('%Y-%m-%d')
+            
+            cursor.execute('''
+            SELECT year_ganzhi, month_ganzhi, day_ganzhi, solar_term, zodiac,
+                   lunar_date, lunar_show, gregorian_festival, lunar_festival
+            FROM wannianli
+            WHERE gregorian_date = ?
+            ''', (date_str,))
+            
+            row = cursor.fetchone()
+            
+            if row:
+                return {
+                    'year_ganzhi': row[0],
+                    'month_ganzhi': row[1],
+                    'day_ganzhi': row[2],
+                    'solar_term': row[3] or '',
+                    'zodiac': row[4] or '',
+                    'lunar_date': row[5] or '',
+                    'lunar_show': row[6] or '',
+                    'gregorian_festival': row[7] or '',
+                    'lunar_festival': row[8] or ''
+                }
+            else:
+                logger.warning(f"万年历中未找到日期: {date_str}")
+                return None
+                
+        except Exception as e:
+            logger.error(f"查询万年历失败: {e}")
+            return None
+        finally:
+            conn.close()
+    
     def _get_year_ganzhi_by_lichun(self, birth_dt: datetime, lunar_year: int) -> str:
         """根据立春节气获取年柱干支
         
-        立春是年的分界，立春前算上一年，立春后算当年
-        这里使用简化算法：2月4日或5日作为立春日
+        优先从万年历数据库查询，如果查询失败则使用简化算法
         """
+        # 尝试从万年历查询
+        wannianli_data = self._get_ganzhi_from_wannianli(birth_dt)
+        if wannianli_data:
+            return wannianli_data['year_ganzhi']
+        
+        # 降级到简化算法
+        logger.warning("万年历查询失败，使用简化算法计算年柱")
         year = birth_dt.year
         month = birth_dt.month
         day = birth_dt.day
@@ -629,20 +702,15 @@ class Calculator:
     def _get_month_ganzhi_by_jieqi(self, birth_dt: datetime, year_gz: str) -> str:
         """根据节气获取月柱干支
         
-        月份以节气为界，不是农历初一：
-        立春-惊蛰：寅月(正月)  2月4-5日至3月5-6日
-        惊蛰-清明：卯月(二月)  3月5-6日至4月4-5日
-        清明-立夏：辰月(三月)  4月4-5日至5月5-6日
-        立夏-芒种：巳月(四月)  5月5-6日至6月5-6日
-        芒种-小暑：午月(五月)  6月5-6日至7月7-8日
-        小暑-立秋：未月(六月)  7月7-8日至8月7-8日
-        立秋-白露：申月(七月)  8月7-8日至9月7-8日
-        白露-寒露：酉月(八月)  9月7-8日至10月8-9日
-        寒露-立冬：戌月(九月)  10月8-9日至11月7-8日
-        立冬-大雪：亥月(十月)  11月7-8日至12月7-8日
-        大雪-小寒：子月(十一月) 12月7-8日至1月5-6日
-        小寒-立春：丑月(十二月) 1月5-6日至2月4-5日
+        优先从万年历数据库查询，如果查询失败则使用简化算法
         """
+        # 尝试从万年历查询
+        wannianli_data = self._get_ganzhi_from_wannianli(birth_dt)
+        if wannianli_data:
+            return wannianli_data['month_ganzhi']
+        
+        # 降级到简化算法
+        logger.warning("万年历查询失败，使用简化算法计算月柱")
         month = birth_dt.month
         day = birth_dt.day
         
@@ -692,8 +760,17 @@ class Calculator:
         return self.TIANGAN[tiangan_idx] + self.DIZHI[dizhi_idx]
     
     def _get_day_ganzhi(self, birth_dt: datetime) -> str:
-        """获取日柱干支（简化）"""
-        # 这里需要万年历数据，暂用简化算法
+        """获取日柱干支
+        
+        优先从万年历数据库查询，如果查询失败则使用简化算法
+        """
+        # 尝试从万年历查询
+        wannianli_data = self._get_ganzhi_from_wannianli(birth_dt)
+        if wannianli_data:
+            return wannianli_data['day_ganzhi']
+        
+        # 降级到简化算法
+        logger.warning("万年历查询失败，使用简化算法计算日柱")
         base_date = datetime(2000, 1, 1)
         days = (birth_dt - base_date).days
         gz_idx = days % 60
