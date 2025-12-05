@@ -852,6 +852,342 @@ def convert_lunar_sql():
     return 0 if success else 1
 
 
+class CalendarMerger:
+    """万年历数据合并器"""
+    
+    def __init__(self):
+        """初始化转换映射表"""
+        # 中文数字映射
+        self.cn_num_map = {
+            '〇': '0', '一': '1', '二': '2', '三': '3', '四': '4',
+            '五': '5', '六': '6', '七': '7', '八': '8', '九': '9',
+            '零': '0', '十': '10', '廿': '20', '卅': '30'
+        }
+        
+        # 月份映射（包括特殊月份）
+        self.month_map = {
+            '正月': '01', '一月': '01', '二月': '02', '三月': '03',
+            '四月': '04', '五月': '05', '六月': '06', '七月': '07',
+            '八月': '08', '九月': '09', '十月': '10', '冬月': '11',
+            '十一月': '11', '腊月': '12', '十二月': '12'
+        }
+        
+        # 日期前缀映射
+        self.day_prefix_map = {
+            '初': '', '十': '1', '廿': '2', '卅': '3'
+        }
+    
+    def _convert_chinese_number(self, cn_str: str) -> str:
+        """
+        转换中文数字为阿拉伯数字
+        :param cn_str: 中文数字字符串，如 "二〇二四"
+        :return: 阿拉伯数字字符串，如 "2024"
+        """
+        result = []
+        for char in cn_str:
+            if char in self.cn_num_map:
+                result.append(self.cn_num_map[char])
+            else:
+                result.append(char)
+        return ''.join(result)
+    
+    def _parse_lunar_day(self, day_str: str) -> str:
+        """
+        解析农历日期
+        :param day_str: 如 "初一", "十五", "廿三", "三十"
+        :return: 两位数字，如 "01", "15", "23", "30"
+        """
+        day_str = day_str.strip()
+        
+        # 特殊处理：三十
+        if day_str == '三十':
+            return '30'
+        
+        # 处理 初X（初一到初十）
+        if day_str.startswith('初'):
+            day_num = day_str[1:]
+            if day_num == '十':
+                return '10'
+            elif day_num in self.cn_num_map:
+                return '0' + self.cn_num_map[day_num]
+        
+        # 处理 十X（十一到十九）
+        if day_str.startswith('十') and len(day_str) == 2:
+            if day_str == '十':
+                return '10'
+            second_char = day_str[1]
+            if second_char in self.cn_num_map:
+                return '1' + self.cn_num_map[second_char]
+        
+        # 处理 廿X（二十到二十九）
+        if day_str.startswith('廿'):
+            if day_str == '廿':
+                return '20'
+            second_char = day_str[1]
+            if second_char in self.cn_num_map:
+                return '2' + self.cn_num_map[second_char]
+        
+        # 处理 二十、三十等
+        if '十' in day_str:
+            if day_str == '二十':
+                return '20'
+            elif day_str == '三十':
+                return '30'
+        
+        return '01'  # 默认值
+    
+    def convert_lunar_date_to_numeric(self, lunar_str: str, gregorian_date: str) -> str:
+        """
+        将中文农历日期转换为数字格式
+        :param lunar_str: 中文农历，如 "二〇二四年正月初一"
+        :param gregorian_date: 公历日期（用于推算农历年），如 "2024-02-10"
+        :return: 数字格式农历，如 "2024-01-01"
+        """
+        import re
+        
+        if not lunar_str or not isinstance(lunar_str, str):
+            return ''
+        
+        try:
+            # 提取年份、月份、日期
+            # 格式：二〇二四年正月初一 或 一九〇〇年冬月十一
+            
+            # 1. 提取年份部分（年字前的所有字符）
+            year_match = re.search(r'^([\u4e00-\u9fff〇]+)年', lunar_str)
+            if not year_match:
+                return ''
+            
+            year_cn = year_match.group(1)
+            year_num = self._convert_chinese_number(year_cn)
+            
+            # 2. 提取月份
+            month_num = '01'
+            for month_cn, month_digit in self.month_map.items():
+                if month_cn in lunar_str:
+                    month_num = month_digit
+                    break
+            
+            # 3. 提取日期（月份之后的部分）
+            day_match = re.search(r'月(.+)$', lunar_str)
+            if day_match:
+                day_cn = day_match.group(1).strip()
+                day_num = self._parse_lunar_day(day_cn)
+            else:
+                day_num = '01'
+            
+            # 组合结果
+            result = f"{year_num}-{month_num}-{day_num}"
+            return result
+            
+        except Exception as e:
+            print(f"  警告: 转换农历日期失败 '{lunar_str}': {e}")
+            return ''
+    
+    def merge_calendar_data(self, excel_path: str, json_path: str, output_path: str = None):
+        """
+        合并 ch_calendar.xls 和 wannianli.json 数据
+        :param excel_path: ch_calendar.xls 文件路径
+        :param json_path: wannianli.json 文件路径
+        :param output_path: 输出文件路径，默认覆盖原 json 文件
+        """
+        print("=" * 60)
+        print("万年历数据合并工具")
+        print("=" * 60)
+        print(f"Excel: {excel_path}")
+        print(f"JSON:  {json_path}")
+        
+        if not Path(excel_path).exists():
+            print(f"\n✗ 错误: Excel 文件不存在 - {excel_path}")
+            return False
+        
+        if not Path(json_path).exists():
+            print(f"\n✗ 错误: JSON 文件不存在 - {json_path}")
+            return False
+        
+        try:
+            # 1. 读取现有 JSON 数据
+            print("\n步骤 1: 读取现有 JSON 数据...")
+            with open(json_path, 'r', encoding='utf-8') as f:
+                json_data = json.load(f)
+            
+            existing_records = json_data.get('data', [])
+            print(f"  已有记录数: {len(existing_records)}")
+            
+            if existing_records:
+                existing_dates = {record['gregorian_date'] for record in existing_records}
+                first_date = min(existing_dates)
+                last_date = max(existing_dates)
+                print(f"  日期范围: {first_date} 至 {last_date}")
+            
+            # 2. 读取 Excel 数据
+            print("\n步骤 2: 读取 Excel 数据...")
+            df = pd.read_excel(excel_path, engine='xlrd')
+            print(f"  Excel 总行数: {len(df)}")
+            
+            # 3. 筛选 1900-1969 年的数据
+            print("\n步骤 3: 筛选 1900-1969 年的数据...")
+            df['year'] = df['id'].astype(str).str[:4].astype(int)
+            df_filtered = df[df['year'] < 1970].copy()
+            print(f"  筛选后行数: {len(df_filtered)}")
+            
+            if len(df_filtered) > 0:
+                print(f"  日期范围: {df_filtered['id'].min()} 至 {df_filtered['id'].max()}")
+            
+            # 4. 转换 Excel 数据为 JSON 格式
+            print("\n步骤 4: 转换数据格式...")
+            new_records = []
+            
+            for idx, row in df_filtered.iterrows():
+                # 格式化日期 YYYYMMDD -> YYYY-MM-DD
+                date_str = str(row['id'])
+                gregorian_date = f"{date_str[:4]}-{date_str[4:6]}-{date_str[6:8]}"
+                
+                # 转换农历日期为数字格式
+                lunar_date_numeric = ''
+                if pd.notna(row.get('time_str')):
+                    lunar_date_numeric = self.convert_lunar_date_to_numeric(
+                        str(row['time_str']), 
+                        gregorian_date
+                    )
+                
+                # 构建 shen_wei 字段
+                shen_wei_parts = []
+                if pd.notna(row.get('xi_desc')):
+                    shen_wei_parts.append(f"喜神：{row['xi_desc']}")
+                if pd.notna(row.get('fu_desc')):
+                    shen_wei_parts.append(f"福神：{row['fu_desc']}")
+                if pd.notna(row.get('cai_desc')):
+                    shen_wei_parts.append(f"财神：{row['cai_desc']}")
+                if pd.notna(row.get('yanggui_desc')):
+                    shen_wei_parts.append(f"阳贵：{row['yanggui_desc']}")
+                if pd.notna(row.get('yingui_desc')):
+                    shen_wei_parts.append(f"阴贵：{row['yingui_desc']}")
+                
+                shen_wei = " ".join(shen_wei_parts)
+                
+                # 构建记录
+                record = {
+                    'gregorian_date': gregorian_date,
+                    'lunar_date': lunar_date_numeric,  # 转换后的数字格式
+                    'lunar_show': str(row.get('time_str', '')) if pd.notna(row.get('time_str')) else '',
+                    'is_holiday': False,  # Excel 中没有此字段
+                    'lunar_festival': str(row.get('festival', '')) if pd.notna(row.get('festival')) else '',
+                    'gregorian_festival': str(row.get('o_festival', '')) if pd.notna(row.get('o_festival')) else '',
+                    'yi': '',  # Excel 中没有此字段
+                    'ji': '',  # Excel 中没有此字段
+                    'shen_wei': shen_wei,
+                    'tai_shen': '',  # Excel 中没有此字段
+                    'chong': str(row.get('chong', '')) if pd.notna(row.get('chong')) else '',
+                    'sui_sha': str(row.get('sha', '')) if pd.notna(row.get('sha')) else '',
+                    'wuxing_jiazi': '',  # Excel 中没有此字段
+                    'wuxing_year': str(row.get('year_ny', '')) if pd.notna(row.get('year_ny')) else '',
+                    'wuxing_month': str(row.get('month_ny', '')) if pd.notna(row.get('month_ny')) else '',
+                    'wuxing_day': str(row.get('day_ny', '')) if pd.notna(row.get('day_ny')) else '',
+                    'moon_phase': '',  # Excel 中没有此字段
+                    'star_east': str(row.get('xingxiu', '')) if pd.notna(row.get('xingxiu')) else '',
+                    'star_west': '',  # Excel 中没有此字段
+                    'peng_zu': str(row.get('pengzu', '')) if pd.notna(row.get('pengzu')) else '',
+                    'jian_shen': '',  # Excel 中没有此字段
+                    'year_ganzhi': str(row.get('year_gz', '')) if pd.notna(row.get('year_gz')) else '',
+                    'month_ganzhi': str(row.get('month_gz', '')) if pd.notna(row.get('month_gz')) else '',
+                    'day_ganzhi': str(row.get('day_gz', '')) if pd.notna(row.get('day_gz')) else '',
+                    'lunar_month_name': '',  # Excel 中没有此字段
+                    'zodiac': str(row.get('year_sx', '')) if pd.notna(row.get('year_sx')) else '',
+                    'lunar_month': '',  # Excel 中没有此字段
+                    'lunar_day': '',  # Excel 中没有此字段
+                    'solar_term': str(row.get('jieqi', '')) if pd.notna(row.get('jieqi')) else '',
+                }
+                
+                new_records.append(record)
+                
+                # 每1000条显示进度
+                if (idx + 1) % 1000 == 0:
+                    print(f"  已转换: {idx + 1}/{len(df_filtered)}")
+            
+            print(f"  转换完成: {len(new_records)} 条新记录")
+            
+            # 5. 合并数据（去重）
+            print("\n步骤 5: 合并数据...")
+            
+            # 构建现有记录的日期集合
+            existing_dates_set = {record['gregorian_date'] for record in existing_records}
+            
+            # 只添加不存在的新记录，已存在的用新记录替换
+            records_dict = {record['gregorian_date']: record for record in existing_records}
+            for new_record in new_records:
+                records_dict[new_record['gregorian_date']] = new_record  # 新记录覆盖旧记录
+            
+            all_records = list(records_dict.values())
+            
+            # 按日期排序
+            all_records.sort(key=lambda x: x['gregorian_date'])
+            
+            print(f"  合并后总记录数: {len(all_records)}")
+            
+            if all_records:
+                first_date = all_records[0]['gregorian_date']
+                last_date = all_records[-1]['gregorian_date']
+                print(f"  最终日期范围: {first_date} 至 {last_date}")
+            
+            # 6. 保存合并后的数据
+            output_file = output_path if output_path else json_path
+            print(f"\n步骤 6: 保存到 {output_file}...")
+            
+            output_data = {
+                "version": "2.0",
+                "description": "万年历数据（1900-2099）",
+                "source": "ch_calendar.xls + lunar.sql",
+                "date_range": {
+                    "start": all_records[0]['gregorian_date'] if all_records else "",
+                    "end": all_records[-1]['gregorian_date'] if all_records else ""
+                },
+                "total_records": len(all_records),
+                "data": all_records
+            }
+            
+            # 创建输出目录
+            Path(output_file).parent.mkdir(parents=True, exist_ok=True)
+            
+            with open(output_file, 'w', encoding='utf-8') as f:
+                json.dump(output_data, f, ensure_ascii=False, indent=2)
+            
+            print(f"✓ 成功保存 {len(all_records)} 条记录")
+            
+            # 显示示例记录
+            if new_records:
+                print(f"\n示例记录（新增的第1条）:")
+                sample = new_records[0]
+                print(f"  公历: {sample['gregorian_date']}")
+                print(f"  农历显示: {sample['lunar_show']}")
+                print(f"  干支: {sample['year_ganzhi']}年 {sample['month_ganzhi']}月 {sample['day_ganzhi']}日")
+                print(f"  生肖: {sample['zodiac']}")
+                if sample['solar_term']:
+                    print(f"  节气: {sample['solar_term']}")
+                if sample['shen_wei']:
+                    print(f"  神位: {sample['shen_wei']}")
+            
+            return True
+            
+        except Exception as e:
+            print(f"\n✗ 合并失败: {e}")
+            import traceback
+            traceback.print_exc()
+            return False
+
+
+def merge_calendar():
+    """合并万年历数据"""
+    base_dir = Path(__file__).parent
+    
+    excel_path = base_dir / "predata" / "ch_calendar.xls"
+    json_path = base_dir / "data" / "wannianli.json"
+    
+    merger = CalendarMerger()
+    success = merger.merge_calendar_data(str(excel_path), str(json_path))
+    
+    return 0 if success else 1
+
+
 def show_help():
     """显示帮助信息"""
     print("=" * 60)
@@ -865,15 +1201,18 @@ def show_help():
     print("  --convert-xls         转换康熙字典 Excel 文件")
     print("  --convert-with-com    使用 COM 转换 Excel（仅Windows）")
     print("  --convert-lunar       转换万年历 SQL 文件为 JSON")
+    print("  --merge-calendar      合并万年历数据（1900-1969 + 1970-2099）")
     print("  （无参数）            转换康熙字典（默认）")
     print("\n示例:")
     print("  python convert_tools.py --convert-lunar")
+    print("  python convert_tools.py --merge-calendar")
     print("  python convert_tools.py --test")
     print("\n文件说明:")
     print("  输入文件:")
     print("    - predata/康熙字典.xls         康熙字典数据")
     print("    - predata/Unihan/*.txt         Unicode 汉字数据库")
     print("    - predata/lunar.sql            万年历数据（1970-2099）")
+    print("    - predata/ch_calendar.xls      万年历数据（1900-2100）")
     print("\n  输出文件:")
     print("    - data/kangxi_converted.json   康熙字典 JSON")
     print("    - data/wannianli.json          万年历 JSON")
@@ -895,6 +1234,8 @@ def main():
             return convert_xls_with_com()
         elif sys.argv[1] == '--convert-lunar' or sys.argv[1] == '--lunar':
             return convert_lunar_sql()
+        elif sys.argv[1] == '--merge-calendar' or sys.argv[1] == '--merge':
+            return merge_calendar()
         else:
             print(f"未知选项: {sys.argv[1]}")
             print("使用 --help 查看帮助")
