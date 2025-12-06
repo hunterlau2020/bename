@@ -43,6 +43,9 @@
 - `example_input.json` - JSON格式批量输入示例
 - `example_input_result_*.json` - 批量处理结果示例
 
+### 结果查看工具
+- `view_batch_result.py` - 批量处理结果美化查看工具
+
 ### 文档
 - `万年历集成测试报告.md` - 万年历功能集成测试报告
 
@@ -75,6 +78,12 @@ python tests/check_lunar_date.py
 
 # 验证合并数据
 python tests/verify_merged_data.py
+```
+
+### 查看批量处理结果
+```bash
+# 美化显示批量处理结果
+python tests/view_batch_result.py tests/example_input_result_20251206_213416.json
 ```
 
 ## 注意事项

@@ -57,6 +57,73 @@ class Calculator:
         
         # 生肖
         self.SHENGXIAO = ['鼠', '牛', '虎', '兔', '龙', '蛇', '马', '羊', '猴', '鸡', '狗', '猪']
+        
+        # 天干索引
+        self.TIANGAN_INDEX = {tg: i for i, tg in enumerate(self.TIANGAN)}
+        # 地支索引
+        self.DIZHI_INDEX = {dz: i for i, dz in enumerate(self.DIZHI)}
+        
+        # 天干强度表 (12个月x10个天干)
+        # 每行代表一个地支月份（子丑寅卯辰巳午未申酉戌亥）
+        # 每列代表一个天干（甲乙丙丁戊己庚辛壬癸）
+        self.TIANGAN_STRENGTH = [
+            [1200, 1200, 1000, 1000, 1000, 1000, 1000, 1000, 1200, 1200],  # 子月
+            [1060, 1060, 1000, 1000, 1100, 1100, 1140, 1140, 1100, 1100],  # 丑月
+            [1140, 1140, 1200, 1200, 1060, 1060, 1000, 1000, 1000, 1000],  # 寅月
+            [1200, 1200, 1200, 1200, 1000, 1000, 1000, 1000, 1000, 1000],  # 卯月
+            [1100, 1100, 1060, 1060, 1100, 1100, 1100, 1100, 1040, 1040],  # 辰月
+            [1000, 1000, 1140, 1140, 1140, 1140, 1060, 1060, 1060, 1060],  # 巳月
+            [1000, 1000, 1200, 1200, 1200, 1200, 1000, 1000, 1000, 1000],  # 午月
+            [1040, 1040, 1100, 1100, 1160, 1160, 1100, 1100, 1000, 1000],  # 未月
+            [1060, 1060, 1000, 1000, 1000, 1000, 1140, 1140, 1200, 1200],  # 申月
+            [1000, 1000, 1000, 1000, 1000, 1000, 1200, 1200, 1200, 1200],  # 酉月
+            [1000, 1000, 1040, 1040, 1140, 1140, 1160, 1160, 1060, 1060],  # 戌月
+            [1200, 1200, 1000, 1000, 1000, 1000, 1000, 1000, 1140, 1140],  # 亥月
+        ]
+        
+        # 地支藏干强度表
+        # 每个地支包含的天干及其强度（按12个月变化）
+        self.DIZHI_CANGGAN = [
+            # 子 - 癸
+            {'癸': [1200, 1100, 1000, 1000, 1040, 1060, 1000, 1000, 1200, 1200, 1060, 1140]},
+            # 丑 - 癸辛己
+            {'癸': [360, 330, 300, 300, 312, 318, 300, 300, 360, 360, 318, 342],
+             '辛': [200, 228, 200, 200, 230, 212, 200, 220, 228, 248, 232, 200],
+             '己': [500, 550, 530, 500, 550, 570, 600, 580, 500, 500, 570, 500]},
+            # 寅 - 丙甲戊（原文写的是丙甲，但标准应该是甲丙戊）
+            {'丙': [300, 300, 360, 360, 318, 342, 360, 330, 300, 300, 342, 318],
+             '甲': [840, 742, 798, 840, 770, 700, 700, 728, 742, 700, 700, 840]},
+            # 卯 - 乙
+            {'乙': [1200, 1060, 1140, 1200, 1100, 1000, 1000, 1040, 1060, 1000, 1000, 1200]},
+            # 辰 - 乙癸戊
+            {'乙': [360, 318, 342, 360, 330, 300, 300, 312, 318, 300, 300, 360],
+             '癸': [240, 220, 200, 200, 208, 200, 200, 200, 240, 240, 212, 228],
+             '戊': [500, 550, 530, 500, 550, 600, 600, 580, 500, 500, 570, 500]},
+            # 巳 - 庚丙戊
+            {'庚': [300, 342, 300, 300, 330, 300, 300, 330, 342, 360, 348, 300],
+             '丙': [700, 700, 840, 840, 742, 840, 840, 798, 700, 700, 728, 742]},
+            # 午 - 丁己
+            {'丁': [1000, 1000, 1200, 1200, 1060, 1140, 1200, 1100, 1000, 1000, 1040, 1060]},
+            # 未 - 丁乙己
+            {'丁': [300, 300, 360, 360, 318, 342, 360, 330, 300, 300, 312, 318],
+             '乙': [240, 212, 228, 240, 220, 200, 200, 208, 212, 200, 200, 240],
+             '己': [500, 550, 530, 500, 550, 570, 600, 580, 500, 500, 570, 500]},
+            # 申 - 壬庚戊
+            {'壬': [360, 330, 300, 300, 312, 318, 300, 300, 360, 360, 318, 342],
+             '庚': [700, 798, 700, 700, 770, 742, 700, 770, 798, 840, 812, 700]},
+            # 酉 - 辛
+            {'辛': [1000, 1140, 1000, 1000, 1100, 1060, 1000, 1100, 1140, 1200, 1160, 1000]},
+            # 戌 - 辛丁戊
+            {'辛': [300, 342, 300, 300, 330, 318, 300, 330, 342, 360, 348, 300],
+             '丁': [200, 200, 240, 240, 212, 228, 240, 220, 200, 200, 208, 212],
+             '戊': [500, 550, 530, 500, 550, 570, 600, 580, 500, 500, 570, 500]},
+            # 亥 - 甲壬
+            {'甲': [360, 318, 342, 360, 330, 300, 300, 312, 318, 300, 300, 360],
+             '壬': [840, 770, 700, 700, 728, 742, 700, 700, 840, 840, 724, 798]},
+        ]
+        
+        # 五行生序（用于判断同类异类）
+        self.WUXING_SHENG_SEQUENCE = ['木', '火', '土', '金', '水']
     
     def calculate_name(self, surname: str, given_name: str, gender: str, birth_time: str,
                       longitude: float, latitude: float) -> Dict:
@@ -503,9 +570,9 @@ class Calculator:
         # 7. 查询纳音
         nayin_str = self._get_nayin(year_gz, month_gz, day_gz, hour_gz)
         
-        # 8. 确定喜用神
+        # 8. 确定喜用神（传入 bazi_str 使用强度表方法）
         rizhu = day_gz[0]
-        xiyong_shen, ji_shen = self._determine_xiyongshen(rizhu, wuxing_count, birth_dt.month)
+        xiyong_shen, ji_shen = self._determine_xiyongshen(rizhu, wuxing_count, birth_dt.month, bazi_str)
         
         # 9. 四季用神参考
         siji_yongshen = self._get_siji_yongshen(rizhu, birth_dt.month)
@@ -816,15 +883,189 @@ class Calculator:
         return ' '.join(result)
     
     def _get_nayin(self, year_gz: str, month_gz: str, day_gz: str, hour_gz: str) -> str:
-        """获取纳音（简化）"""
-        # 实际应从数据库查询
-        return "城墙土 涧下水 城墙土 沙中土"
+        """获取纳音（从数据库查询）
+        
+        Args:
+            year_gz: 年柱干支
+            month_gz: 月柱干支
+            day_gz: 日柱干支
+            hour_gz: 时柱干支
+            
+        Returns:
+            四柱纳音字符串，格式：年纳音 月纳音 日纳音 时纳音
+        """
+        conn = sqlite3.connect(self.db_path)
+        cursor = conn.cursor()
+        
+        try:
+            nayin_list = []
+            for gz in [year_gz, month_gz, day_gz, hour_gz]:
+                cursor.execute(
+                    'SELECT nayin FROM wuxing_nayin WHERE ganzhi = ?',
+                    (gz,)
+                )
+                row = cursor.fetchone()
+                if row:
+                    nayin_list.append(row[0])
+                else:
+                    logger.warning(f"未找到干支 '{gz}' 的纳音，使用未知")
+                    nayin_list.append('未知')
+            
+            return ' '.join(nayin_list)
+            
+        except Exception as e:
+            logger.error(f"查询纳音失败: {e}")
+            return "纳音查询失败"
+        finally:
+            conn.close()
     
-    def _determine_xiyongshen(self, rizhu: str, wuxing_count: Dict, month: int) -> Tuple[List, List]:
-        """确定喜用神和忌神"""
+    def _calculate_wuxing_strength(self, bazi_str: str) -> Dict[str, int]:
+        """计算五行强度（基于天干地支强度表）
+        
+        Args:
+            bazi_str: 八字字符串，格式：年柱 月柱 日柱 时柱
+            
+        Returns:
+            五行强度字典 {'木': xxx, '火': xxx, '土': xxx, '金': xxx, '水': xxx}
+        """
+        strength = {'木': 0, '火': 0, '土': 0, '金': 0, '水': 0}
+        
+        # 分解八字
+        bazi_parts = bazi_str.split()
+        if len(bazi_parts) != 4:
+            logger.warning(f"八字格式错误: {bazi_str}")
+            return strength
+        
+        # 获取月支索引（用于查询强度表）
+        month_dizhi = bazi_parts[1][1]  # 月柱的地支
+        month_idx = self.DIZHI_INDEX.get(month_dizhi, 0)
+        
+        try:
+            # 遍历四柱
+            for i, pillar in enumerate(bazi_parts):
+                if len(pillar) != 2:
+                    continue
+                
+                tiangan = pillar[0]  # 天干
+                dizhi = pillar[1]    # 地支
+                
+                # 1. 计算天干强度
+                if tiangan in self.TIANGAN_INDEX:
+                    tg_idx = self.TIANGAN_INDEX[tiangan]
+                    tg_strength = self.TIANGAN_STRENGTH[month_idx][tg_idx]
+                    tg_wuxing = self.TIANGAN_WUXING[tiangan]
+                    strength[tg_wuxing] += tg_strength
+                    logger.debug(f"{tiangan}({tg_wuxing}): +{tg_strength}")
+                
+                # 2. 计算地支藏干强度
+                if dizhi in self.DIZHI_INDEX:
+                    dz_idx = self.DIZHI_INDEX[dizhi]
+                    canggan_dict = self.DIZHI_CANGGAN[dz_idx]
+                    
+                    for canggan_tg, strength_list in canggan_dict.items():
+                        cg_strength = strength_list[month_idx]
+                        cg_wuxing = self.TIANGAN_WUXING[canggan_tg]
+                        strength[cg_wuxing] += cg_strength
+                        logger.debug(f"{dizhi}藏{canggan_tg}({cg_wuxing}): +{cg_strength}")
+            
+            logger.info(f"五行强度: {strength}")
+            
+        except Exception as e:
+            logger.error(f"计算五行强度失败: {e}")
+        
+        return strength
+    
+    def _calculate_tongyi_yilei(self, rizhu: str, strength: Dict[str, int]) -> Tuple[List[str], int, List[str], int]:
+        """计算同类和异类
+        
+        同类: 日主五行 + 生日主的五行
+        异类: 其他三个五行
+        
+        Args:
+            rizhu: 日主天干
+            strength: 五行强度字典
+            
+        Returns:
+            (同类五行列表, 同类强度, 异类五行列表, 异类强度)
+        """
+        rizhu_wx = self.TIANGAN_WUXING[rizhu]
+        
+        # 找到生日主的五行
+        sheng_rizhu_wx = None
+        for wx, sheng_wx in self.WUXING_SHENG.items():
+            if sheng_wx == rizhu_wx:
+                sheng_rizhu_wx = wx
+                break
+        
+        # 同类：日主五行 + 生日主的五行
+        tongyi = [rizhu_wx]
+        tongyi_strength = strength[rizhu_wx]
+        
+        if sheng_rizhu_wx:
+            tongyi.append(sheng_rizhu_wx)
+            tongyi_strength += strength[sheng_rizhu_wx]
+        
+        # 异类：其他五行
+        yilei = []
+        yilei_strength = 0
+        for wx in self.WUXING_SHENG_SEQUENCE:
+            if wx not in tongyi:
+                yilei.append(wx)
+                yilei_strength += strength[wx]
+        
+        logger.info(f"同类: {tongyi} 强度: {tongyi_strength}")
+        logger.info(f"异类: {yilei} 强度: {yilei_strength}")
+        
+        return tongyi, tongyi_strength, yilei, yilei_strength
+    
+    def _determine_xiyongshen(self, rizhu: str, wuxing_count: Dict, month: int, 
+                             bazi_str: str = None) -> Tuple[List, List]:
+        """确定喜用神和忌神
+        
+        Args:
+            rizhu: 日主天干
+            wuxing_count: 五行个数统计（旧方法，保留兼容）
+            month: 出生月份
+            bazi_str: 八字字符串（用于新方法计算）
+            
+        Returns:
+            (喜用神列表, 忌神列表)
+        """
         rizhu_wx = self.TIANGAN_WUXING.get(rizhu, '土')
         
-        # 简化判断：缺什么补什么
+        # 如果有八字字符串，使用强度表方法
+        if bazi_str:
+            try:
+                # 计算五行强度
+                strength = self._calculate_wuxing_strength(bazi_str)
+                
+                # 计算同类异类
+                tongyi, tongyi_strength, yilei, yilei_strength = \
+                    self._calculate_tongyi_yilei(rizhu, strength)
+                
+                xiyong = []
+                ji = []
+                
+                # 判断日主强弱
+                # 同类强度 > 异类强度：日主偏强，取异类为喜用神
+                # 同类强度 < 异类强度：日主偏弱，取同类为喜用神
+                if tongyi_strength > yilei_strength:
+                    # 日主强，喜克泄耗（异类）
+                    xiyong = yilei.copy()
+                    ji = tongyi.copy()
+                    logger.info("日主偏强，喜用神为异类（克泄耗）")
+                else:
+                    # 日主弱，喜生扶（同类）
+                    xiyong = tongyi.copy()
+                    ji = yilei.copy()
+                    logger.info("日主偏弱，喜用神为同类（生扶）")
+                
+                return xiyong, ji
+                
+            except Exception as e:
+                logger.warning(f"强度表方法计算失败，使用简化方法: {e}")
+        
+        # 降级到简化判断：缺什么补什么
         xiyong = []
         ji = []
         

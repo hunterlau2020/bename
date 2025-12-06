@@ -387,14 +387,25 @@ class BatchProcessor:
         
         for item in results:
             if item['success']:
-                # 提取关键信息
+                # 提取完整信息
                 result = item['result']
                 output_data['results'].append({
                     'name': item['name'],
                     'success': True,
+                    'basic_info': {
+                        'surname': result.get('surname', ''),
+                        'given_name': result.get('given_name', ''),
+                        'gender': result.get('gender', ''),
+                        'birth_time': result.get('birth_time', ''),
+                        'longitude': result.get('longitude'),
+                        'latitude': result.get('latitude')
+                    },
+                    'comprehensive_score': result.get('comprehensive_score', 0),
+                    'wuge': result.get('wuge', {}),
                     'bazi': result.get('bazi', {}),
-                    'name_analysis': result.get('name_analysis', {}),
-                    'summary': result.get('summary', {})
+                    'ziyi': result.get('ziyi', {}),
+                    'shengxiao': result.get('shengxiao', {}),
+                    'chenggu': result.get('chenggu', {})
                 })
             else:
                 output_data['results'].append({

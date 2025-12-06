@@ -42,9 +42,11 @@ def main():
   python bazi.py -t           # 启动姓名测试
   python bazi.py -b names.txt # 批量处理模式
   python bazi.py -v           # 显示版本信息
-  python bazi.py --reload-data  # 重新加载数据
-  python bazi.py --clear-history # 清空历史记录
-  python bazi.py --geo-help   # 显示经纬度查询帮助
+  python bazi.py --reload-data     # 重新加载数据
+  python bazi.py --clear-history   # 清空历史记录
+  python bazi.py --clear-all-data  # 清空所有数据表
+  python bazi.py --show-tables     # 显示数据表统计
+  python bazi.py --geo-help        # 显示经纬度查询帮助
         """
     )
     parser.add_argument('-t', '--test', action='store_true', help='开始姓名测试')
@@ -52,6 +54,8 @@ def main():
     parser.add_argument('-b', '--batch', type=str, metavar='FILE', help='批量处理模式，从文件读取姓名信息')
     parser.add_argument('--reload-data', action='store_true', help='重新加载资源数据')
     parser.add_argument('--clear-history', action='store_true', help='清空所有历史计算结果')
+    parser.add_argument('--clear-all-data', action='store_true', help='清空所有数据表（包括资源数据）')
+    parser.add_argument('--show-tables', action='store_true', help='显示所有数据表统计信息')
     parser.add_argument('--geo-help', action='store_true', help='显示经纬度查询帮助')
     
     args = parser.parse_args()
@@ -69,6 +73,46 @@ def main():
             Helper.show_help()
             return 0
         
+        # 显示数据表统计信息
+        if args.show_tables:
+            from modules.storage import Storage
+            storage = Storage()
+            tables_info = storage.get_all_tables_info()
+            
+            if not tables_info:
+                print("\n数据库中没有数据表")
+                return 0
+            
+            print("\n数据表统计信息:")
+            print("=" * 60)
+            
+            # 分类显示
+            resource_tables = ['kangxi', 'ziyi', 'nayin', 'shuli', 'sancai', 
+                             'shengxiao', 'chenggu', 'wannianli']
+            result_tables = ['test_records', 'wuge_results', 'bazi_results', 
+                           'ziyi_results', 'shengxiao_results', 'chenggu_results']
+            
+            print("\n资源数据表:")
+            total_resource = 0
+            for table in resource_tables:
+                if table in tables_info:
+                    count = tables_info[table]
+                    total_resource += count
+                    print(f"  {table:20s}: {count:>8,} 条")
+            
+            print(f"\n历史记录表:")
+            total_result = 0
+            for table in result_tables:
+                if table in tables_info:
+                    count = tables_info[table]
+                    total_result += count
+                    print(f"  {table:20s}: {count:>8,} 条")
+            
+            print("\n" + "=" * 60)
+            print(f"资源数据总计: {total_resource:>8,} 条")
+            print(f"历史记录总计: {total_result:>8,} 条")
+            return 0
+        
         # 清空历史记录
         if args.clear_history:
             from modules.storage import Storage
@@ -84,6 +128,40 @@ def main():
                 if storage.clear_all_records():
                     print("✓ 历史记录已清空")
                     logger.info("用户清空了历史记录")
+                else:
+                    print("✗ 清空失败，请查看日志")
+                    return 1
+            else:
+                print("操作已取消")
+            return 0
+        
+        # 清空所有数据表
+        if args.clear_all_data:
+            from modules.storage import Storage
+            storage = Storage()
+            tables_info = storage.get_all_tables_info()
+            
+            if not tables_info:
+                print("\n数据库中没有数据")
+                return 0
+            
+            print("\n⚠️  警告：此操作将清空所有数据表！")
+            print("=" * 60)
+            for table, count in sorted(tables_info.items()):
+                print(f"  {table:20s}: {count:>8,} 条")
+            print("=" * 60)
+            
+            total = sum(tables_info.values())
+            print(f"\n总计将删除 {total:,} 条记录")
+            print("此操作不可恢复，请谨慎操作！\n")
+            
+            confirm = input("确认清空所有数据表？请输入 'DELETE ALL' 确认: ").strip()
+            if confirm == 'DELETE ALL':
+                print("\n正在清空数据表...")
+                if storage.clear_all_data():
+                    print("✓ 所有数据表已清空")
+                    print("提示: 使用 --reload-data 重新加载资源数据")
+                    logger.warning("用户清空了所有数据表")
                 else:
                     print("✗ 清空失败，请查看日志")
                     return 1

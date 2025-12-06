@@ -456,3 +456,57 @@ class Storage:
             return 0
         finally:
             conn.close()
+    
+    def clear_all_data(self) -> bool:
+        """清空所有数据表（包括资源数据和历史记录）"""
+        conn = sqlite3.connect(self.db_path)
+        cursor = conn.cursor()
+        
+        try:
+            # 获取所有表名
+            cursor.execute("SELECT name FROM sqlite_master WHERE type='table'")
+            tables = cursor.fetchall()
+            
+            # 清空所有表
+            for table in tables:
+                table_name = table[0]
+                if table_name != 'sqlite_sequence':  # 跳过系统表
+                    cursor.execute(f'DELETE FROM {table_name}')
+                    logger.info(f"已清空表: {table_name}")
+            
+            # 重置自增ID
+            cursor.execute("DELETE FROM sqlite_sequence")
+            
+            conn.commit()
+            logger.info("所有数据表已清空")
+            return True
+        except Exception as e:
+            conn.rollback()
+            logger.error(f"清空所有数据表失败: {e}")
+            return False
+        finally:
+            conn.close()
+    
+    def get_all_tables_info(self) -> Dict[str, int]:
+        """获取所有表的记录数统计"""
+        conn = sqlite3.connect(self.db_path)
+        cursor = conn.cursor()
+        
+        try:
+            # 获取所有表名
+            cursor.execute("SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%'")
+            tables = cursor.fetchall()
+            
+            info = {}
+            for table in tables:
+                table_name = table[0]
+                cursor.execute(f'SELECT COUNT(*) FROM {table_name}')
+                count = cursor.fetchone()[0]
+                info[table_name] = count
+            
+            return info
+        except Exception as e:
+            logger.error(f"获取表信息失败: {e}")
+            return {}
+        finally:
+            conn.close()
