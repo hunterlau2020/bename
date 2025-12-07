@@ -77,6 +77,13 @@ class Storage:
                 wuxing TEXT,
                 nayin TEXT,
                 wuxing_geshu TEXT,
+                wuxing_strength TEXT,
+                tongyi_elements TEXT,
+                tongyi_strength INTEGER,
+                tongyi_percent REAL,
+                yilei_elements TEXT,
+                yilei_strength INTEGER,
+                yilei_percent REAL,
                 rizhu_qiangruo TEXT,
                 siji_yongshen TEXT,
                 xiyong_shen TEXT,
@@ -124,6 +131,11 @@ class Storage:
             ''')
             
             conn.commit()
+            
+            # 检查并迁移表结构
+            self._migrate_database(cursor)
+            conn.commit()
+            
             logger.info("数据库初始化完成")
             
         except Exception as e:
@@ -132,6 +144,32 @@ class Storage:
             raise
         finally:
             conn.close()
+    
+    def _migrate_database(self, cursor):
+        """迁移数据库表结构（添加新字段）"""
+        try:
+            # 检查 bazi_results 表是否有新字段
+            cursor.execute("PRAGMA table_info(bazi_results)")
+            columns = [row[1] for row in cursor.fetchall()]
+            
+            # 添加缺失的字段
+            new_columns = [
+                ('wuxing_strength', 'TEXT'),
+                ('tongyi_elements', 'TEXT'),
+                ('tongyi_strength', 'INTEGER'),
+                ('tongyi_percent', 'REAL'),
+                ('yilei_elements', 'TEXT'),
+                ('yilei_strength', 'INTEGER'),
+                ('yilei_percent', 'REAL')
+            ]
+            
+            for col_name, col_type in new_columns:
+                if col_name not in columns:
+                    logger.info(f"添加字段: bazi_results.{col_name}")
+                    cursor.execute(f"ALTER TABLE bazi_results ADD COLUMN {col_name} {col_type}")
+            
+        except Exception as e:
+            logger.warning(f"数据库迁移失败: {e}")
     
     def save_test_result(self, result_dict: Dict) -> Optional[int]:
         """
@@ -186,15 +224,24 @@ class Storage:
                 bazi = result_dict['bazi']
                 cursor.execute('''
                 INSERT INTO bazi_results 
-                (record_id, bazi_str, wuxing, nayin, wuxing_geshu, rizhu_qiangruo,
-                 siji_yongshen, xiyong_shen, ji_shen, jixiang_color, score)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                (record_id, bazi_str, wuxing, nayin, wuxing_geshu, wuxing_strength,
+                 tongyi_elements, tongyi_strength, tongyi_percent,
+                 yilei_elements, yilei_strength, yilei_percent,
+                 rizhu_qiangruo, siji_yongshen, xiyong_shen, ji_shen, jixiang_color, score)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                 ''', (
                     record_id,
                     bazi['bazi_str'],
                     bazi['wuxing'],
                     bazi['nayin'],
                     json.dumps(bazi.get('geshu', {}), ensure_ascii=False),
+                    json.dumps(bazi.get('wuxing_strength', {}), ensure_ascii=False),
+                    json.dumps(bazi.get('tongyi', {}).get('elements', []), ensure_ascii=False),
+                    bazi.get('tongyi', {}).get('strength', 0),
+                    bazi.get('tongyi', {}).get('percent', 0),
+                    json.dumps(bazi.get('yilei', {}).get('elements', []), ensure_ascii=False),
+                    bazi.get('yilei', {}).get('strength', 0),
+                    bazi.get('yilei', {}).get('percent', 0),
                     bazi.get('rizhu', ''),
                     bazi.get('siji', ''),
                     json.dumps(bazi.get('xiyong_shen', []), ensure_ascii=False),

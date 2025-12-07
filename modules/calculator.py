@@ -63,9 +63,17 @@ class Calculator:
         # 地支索引
         self.DIZHI_INDEX = {dz: i for i, dz in enumerate(self.DIZHI)}
         
+        '''
+        旺: 1.2 (1200)
+        相: 1.0 (1000)
+        休: 0.8 (800)
+        囚: 0.7 (700)
+        死: 0.6 (600)
+        '''
         # 天干强度表 (12个月x10个天干)
         # 每行代表一个地支月份（子丑寅卯辰巳午未申酉戌亥）
         # 每列代表一个天干（甲乙丙丁戊己庚辛壬癸）
+        # https://github.com/allanpk716/BaziEval
         self.TIANGAN_STRENGTH = [
             [1200, 1200, 1000, 1000, 1000, 1000, 1000, 1000, 1200, 1200],  # 子月
             [1060, 1060, 1000, 1000, 1100, 1100, 1140, 1140, 1100, 1100],  # 丑月
@@ -550,6 +558,24 @@ class Calculator:
             day_gz = wannianli_data['day_ganzhi']
             lunar_date = self._solar_to_lunar(birth_dt)  # 用于显示
             logger.info(f"使用万年历数据计算八字: {year_gz} {month_gz} {day_gz}")
+            
+            # 解析万年历中的农历日期字符串（格式：YYYY-MM-DD）
+            lunar_date_str = wannianli_data.get('lunar_date', '')
+            if lunar_date_str:
+                try:
+                    lunar_date_parts = lunar_date_str.split('-')
+                    lunar_year = int(lunar_date_parts[0])
+                    lunar_month = int(lunar_date_parts[1])
+                    lunar_day = int(lunar_date_parts[2])
+                except (ValueError, IndexError) as e:
+                    logger.warning(f"解析农历日期失败: {lunar_date_str}, {e}")
+                    # 降级使用阳历年月日
+                    lunar_year = birth_dt.year
+                    lunar_month = birth_dt.month
+                    lunar_day = birth_dt.day
+            else:
+                # 没有农历数据，使用阳历
+                raise ValueError("万年历数据缺少农历日期")
         else:
             # 降级：使用传统算法
             logger.warning("万年历数据不可用，使用传统算法")
@@ -570,14 +596,25 @@ class Calculator:
         # 7. 查询纳音
         nayin_str = self._get_nayin(year_gz, month_gz, day_gz, hour_gz)
         
-        # 8. 确定喜用神（传入 bazi_str 使用强度表方法）
+        # 8. 计算五行强度和同类异类
         rizhu = day_gz[0]
-        xiyong_shen, ji_shen = self._determine_xiyongshen(rizhu, wuxing_count, birth_dt.month, bazi_str)
+        wuxing_strength = self._calculate_wuxing_strength(bazi_str)
+        tongyi_list, tongyi_strength, yilei_list, yilei_strength = \
+            self._calculate_tongyi_yilei(rizhu, wuxing_strength)
         
-        # 9. 四季用神参考
-        siji_yongshen = self._get_siji_yongshen(rizhu, birth_dt.month)
+        # 计算总强度和百分比
+        total_strength = tongyi_strength + yilei_strength
+        tongyi_percent = (tongyi_strength / total_strength * 100) if total_strength > 0 else 0
+        yilei_percent = (yilei_strength / total_strength * 100) if total_strength > 0 else 0
         
-        # 10. 吉祥颜色
+        # 9. 确定喜用神（传入 bazi_str 使用强度表方法）
+        xiyong_shen, ji_shen = self._determine_xiyongshen(rizhu, wuxing_count, lunar_month, bazi_str)
+        
+        # 10. 四季用神参考（使用节气判断）
+        solar_term = wannianli_data.get('solar_term', '') if wannianli_data else ''
+        siji_yongshen = self._get_siji_yongshen(rizhu, birth_dt, solar_term)
+        
+        # 11. 吉祥颜色
         colors = [self.WUXING_COLOR.get(wx, '') for wx in xiyong_shen]
         
         result = {
@@ -585,6 +622,17 @@ class Calculator:
             'wuxing': self._get_wuxing_str(bazi_str),
             'nayin': nayin_str,
             'geshu': wuxing_count,
+            'wuxing_strength': wuxing_strength,
+            'tongyi': {
+                'elements': tongyi_list,
+                'strength': tongyi_strength,
+                'percent': tongyi_percent
+            },
+            'yilei': {
+                'elements': yilei_list,
+                'strength': yilei_strength,
+                'percent': yilei_percent
+            },
             'rizhu': rizhu,
             'siji': siji_yongshen,
             'xiyong_shen': xiyong_shen,
@@ -1081,20 +1129,107 @@ class Calculator:
         
         return xiyong, ji
     
-    def _get_siji_yongshen(self, rizhu: str, month: int) -> str:
-        """获取四季用神参考"""
+    def _get_siji_yongshen(self, rizhu: str, birth_dt: datetime, solar_term: str = '') -> str:
+        """获取四季用神参考
+        
+        根据节气判断季节：
+        春季：立春 ~ 立夏前
+        夏季：立夏 ~ 立秋前
+        秋季：立秋 ~ 立冬前
+        冬季：立冬 ~ 立春前
+        
+        Args:
+            rizhu: 日主天干
+            birth_dt: 出生日期
+            solar_term: 当天的节气（如果有）
+        """
         rizhu_wx = self.TIANGAN_WUXING.get(rizhu, '土')
         
-        if 2 <= month <= 4:  # 春季
-            season = "春季"
-        elif 5 <= month <= 7:  # 夏季
-            season = "夏季"
-        elif 8 <= month <= 10:  # 秋季
-            season = "秋季"
-        else:  # 冬季
-            season = "冬季"
+        # 节气到季节的映射
+        # 春季节气：立春、雨水、惊蛰、春分、清明、谷雨
+        # 夏季节气：立夏、小满、芒种、夏至、小暑、大暑
+        # 秋季节气：立秋、处暑、白露、秋分、寒露、霜降
+        # 冬季节气：立冬、小雪、大雪、冬至、小寒、大寒
+        
+        spring_terms = ['立春', '雨水', '惊蛰', '春分', '清明', '谷雨']
+        summer_terms = ['立夏', '小满', '芒种', '夏至', '小暑', '大暑']
+        autumn_terms = ['立秋', '处暑', '白露', '秋分', '寒露', '霜降']
+        winter_terms = ['立冬', '小雪', '大雪', '冬至', '小寒', '大寒']
+        
+        # 如果提供了节气，直接根据节气判断
+        if solar_term:
+            if solar_term in spring_terms:
+                season = "春季"
+            elif solar_term in summer_terms:
+                season = "夏季"
+            elif solar_term in autumn_terms:
+                season = "秋季"
+            elif solar_term in winter_terms:
+                season = "冬季"
+            else:
+                # 节气为空或非标准节气，降级到按月份判断
+                season = self._get_season_by_month(birth_dt.month)
+        else:
+            # 没有节气信息，查询数据库获取最近的节气
+            season = self._get_season_by_solar_term_query(birth_dt)
         
         return f"日主天干{rizhu_wx}生于{season}"
+    
+    def _get_season_by_month(self, month: int) -> str:
+        """根据月份简单判断季节（降级方案）"""
+        if 2 <= month <= 4:
+            return "春季"
+        elif 5 <= month <= 7:
+            return "夏季"
+        elif 8 <= month <= 10:
+            return "秋季"
+        else:
+            return "冬季"
+    
+    def _get_season_by_solar_term_query(self, birth_dt: datetime) -> str:
+        """通过查询数据库获取最近的节气来判断季节"""
+        conn = sqlite3.connect(self.db_path)
+        cursor = conn.cursor()
+        
+        try:
+            date_str = birth_dt.strftime('%Y-%m-%d')
+            
+            # 查询当前日期之前最近的一个节气
+            cursor.execute('''
+            SELECT solar_term FROM wannianli
+            WHERE gregorian_date <= ? AND solar_term IS NOT NULL AND solar_term != ''
+            ORDER BY gregorian_date DESC
+            LIMIT 1
+            ''', (date_str,))
+            
+            row = cursor.fetchone()
+            
+            if row and row[0]:
+                solar_term = row[0]
+                
+                spring_terms = ['立春', '雨水', '惊蛰', '春分', '清明', '谷雨']
+                summer_terms = ['立夏', '小满', '芒种', '夏至', '小暑', '大暑']
+                autumn_terms = ['立秋', '处暑', '白露', '秋分', '寒露', '霜降']
+                winter_terms = ['立冬', '小雪', '大雪', '冬至', '小寒', '大寒']
+                
+                if solar_term in spring_terms:
+                    return "春季"
+                elif solar_term in summer_terms:
+                    return "夏季"
+                elif solar_term in autumn_terms:
+                    return "秋季"
+                elif solar_term in winter_terms:
+                    return "冬季"
+            
+            # 如果查询失败，降级到按月份判断
+            logger.warning(f"未找到节气信息，使用月份判断季节")
+            return self._get_season_by_month(birth_dt.month)
+            
+        except Exception as e:
+            logger.error(f"查询节气失败: {e}")
+            return self._get_season_by_month(birth_dt.month)
+        finally:
+            conn.close()
     
     def _calculate_bazi_score(self, wuxing_count: Dict, xiyong_shen: List) -> int:
         """计算八字评分"""

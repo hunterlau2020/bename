@@ -262,6 +262,30 @@ class UserInterface:
         print(f"纳音: {bazi['nayin']}")
         print(f"五行个数: 金{bazi['geshu']['金']} 木{bazi['geshu']['木']} "
               f"水{bazi['geshu']['水']} 火{bazi['geshu']['火']} 土{bazi['geshu']['土']}")
+        
+        # 显示五行强度
+        if 'wuxing_strength' in bazi:
+            strength = bazi['wuxing_strength']
+            total = sum(strength.values())
+            print(f"五行强度: ", end='')
+            strength_parts = []
+            for wx in ['木', '火', '土', '金', '水']:
+                s = strength.get(wx, 0)
+                percent = (s / total * 100) if total > 0 else 0
+                strength_parts.append(f"{wx}{s}({percent:.1f}%)")
+            print(' '.join(strength_parts))
+        
+        # 显示同类异类
+        if 'tongyi' in bazi and 'yilei' in bazi:
+            tongyi = bazi['tongyi']
+            yilei = bazi['yilei']
+            print(f"同类({''.join(tongyi['elements'])}): {tongyi['strength']} ({tongyi['percent']:.1f}%)")
+            print(f"异类({''.join(yilei['elements'])}): {yilei['strength']} ({yilei['percent']:.1f}%)")
+            if tongyi['strength'] > yilei['strength']:
+                print(f"日主偏强，喜克泄耗")
+            else:
+                print(f"日主偏弱，喜生扶")
+        
         print(f"日主: {bazi['rizhu']}")
         print(f"喜用神: {' '.join(bazi['xiyong_shen'])}")
         print(f"忌神: {' '.join(bazi['ji_shen'])}")

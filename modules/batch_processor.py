@@ -340,7 +340,36 @@ class BatchProcessor:
                     'name': name,
                     'result': result
                 })
-                print("✓")
+                
+                # 显示八字信息
+                bazi = result.get('bazi', {})
+                if bazi:
+                    print("✓")
+                    print(f"    八字: {bazi.get('bazi_str', '')}")
+                    
+                    # 显示五行强度
+                    if 'wuxing_strength' in bazi:
+                        strength = bazi['wuxing_strength']
+                        total = sum(strength.values())
+                        strength_parts = []
+                        for wx in ['木', '火', '土', '金', '水']:
+                            s = strength.get(wx, 0)
+                            percent = (s / total * 100) if total > 0 else 0
+                            strength_parts.append(f"{wx}{s}({percent:.1f}%)")
+                        print(f"    五行强度: {' '.join(strength_parts)}")
+                    
+                    # 显示同类异类
+                    if 'tongyi' in bazi and 'yilei' in bazi:
+                        tongyi = bazi['tongyi']
+                        yilei = bazi['yilei']
+                        print(f"    同类({''.join(tongyi['elements'])}): {tongyi['strength']} ({tongyi['percent']:.1f}%)")
+                        print(f"    异类({''.join(yilei['elements'])}): {yilei['strength']} ({yilei['percent']:.1f}%)")
+                        if tongyi['strength'] > yilei['strength']:
+                            print(f"    日主偏强，喜用神: {' '.join(bazi.get('xiyong_shen', []))}")
+                        else:
+                            print(f"    日主偏弱，喜用神: {' '.join(bazi.get('xiyong_shen', []))}")
+                else:
+                    print("✓")
                 
             except ValueError as ve:
                 error_msg = str(ve)
@@ -373,7 +402,7 @@ class BatchProcessor:
         """
         # 生成输出文件名
         timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
-        output_file = input_file.parent / f"{input_file.stem}_result_{timestamp}.json"
+        output_file = input_file.parent / f"{input_file.stem}_result.json"
         
         # 准备输出数据
         output_data = {
