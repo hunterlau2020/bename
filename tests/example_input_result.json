@@ -1,0 +1,579 @@
+{
+  "input_file": "tests\\example_input.json",
+  "process_time": "20251207_214437",
+  "total": 5,
+  "success": 5,
+  "failed": 0,
+  "results": [
+    {
+      "name": "张伟",
+      "success": true,
+      "basic_info": {
+        "surname": "张",
+        "given_name": "伟",
+        "gender": "男",
+        "birth_time": "1990-01-15 10:30",
+        "longitude": 116.4074,
+        "latitude": 39.9042
+      },
+      "comprehensive_score": 72,
+      "wuge": {
+        "tiange": {
+          "num": 12,
+          "element": "木",
+          "fortune": "凶"
+        },
+        "renge": {
+          "num": 22,
+          "element": "木",
+          "fortune": "凶"
+        },
+        "dige": {
+          "num": 12,
+          "element": "木",
+          "fortune": "凶"
+        },
+        "waige": {
+          "num": 2,
+          "element": "木",
+          "fortune": "凶"
+        },
+        "zongge": {
+          "num": 22,
+          "element": "木",
+          "fortune": "凶"
+        },
+        "sancai": "木木木 - 大吉",
+        "score": 50
+      },
+      "bazi": {
+        "bazi_str": "己巳 丁丑 庚辰 辛巳",
+        "wuxing": "土火 火土 金土 金火",
+        "nayin": "大林木 涧下水 白蜡金 白蜡金",
+        "geshu": {
+          "金": 2,
+          "木": 0,
+          "水": 0,
+          "火": 3,
+          "土": 3
+        },
+        "wuxing_strength": {
+          "木": 318,
+          "火": 2400,
+          "土": 2200,
+          "金": 3192,
+          "水": 550
+        },
+        "tongyi": {
+          "elements": [
+            "金",
+            "土"
+          ],
+          "strength": 5392,
+          "percent": 62.263279445727484
+        },
+        "yilei": {
+          "elements": [
+            "木",
+            "火",
+            "水"
+          ],
+          "strength": 3268,
+          "percent": 37.736720554272516
+        },
+        "rizhu": "庚",
+        "siji": "日主天干金生于冬季",
+        "xiyong_shen": [
+          "木",
+          "火",
+          "水"
+        ],
+        "ji_shen": [
+          "金",
+          "土"
+        ],
+        "color": "绿色、青色、翠色、红色、紫色、粉色、黑色、蓝色、灰色",
+        "score": 85,
+        "lunar_date": "1989年12月19日巳时"
+      },
+      "ziyi": {
+        "analysis": "姓名'张伟'字义音形分析结果",
+        "score": 75
+      },
+      "shengxiao": {
+        "shengxiao": "马",
+        "xi_zigen": [
+          "艹",
+          "木",
+          "禾"
+        ],
+        "ji_zigen": [
+          "火",
+          "日"
+        ],
+        "score": 80
+      },
+      "chenggu": {
+        "weight": 3.9,
+        "fortune_text": "为利为名终日劳，中年福禄也多遭；老来自有财星照，不比前番目下高。",
+        "comment": "命运中等偏上"
+      }
+    },
+    {
+      "name": "李娜",
+      "success": true,
+      "basic_info": {
+        "surname": "李",
+        "given_name": "娜",
+        "gender": "女",
+        "birth_time": "1992-05-20 14:00",
+        "longitude": 121.4737,
+        "latitude": 31.2304
+      },
+      "comprehensive_score": 84,
+      "wuge": {
+        "tiange": {
+          "num": 8,
+          "element": "金",
+          "fortune": "吉"
+        },
+        "renge": {
+          "num": 16,
+          "element": "土",
+          "fortune": "大吉"
+        },
+        "dige": {
+          "num": 10,
+          "element": "水",
+          "fortune": "凶"
+        },
+        "waige": {
+          "num": 2,
+          "element": "木",
+          "fortune": "凶"
+        },
+        "zongge": {
+          "num": 16,
+          "element": "土",
+          "fortune": "大吉"
+        },
+        "sancai": "金土水 - 凶",
+        "score": 77
+      },
+      "bazi": {
+        "bazi_str": "壬申 乙巳 丙申 乙未",
+        "wuxing": "水金 木火 火金 木土",
+        "nayin": "剑锋金 覆灯火 山下火 沙中金",
+        "geshu": {
+          "金": 2,
+          "木": 2,
+          "水": 1,
+          "火": 2,
+          "土": 1
+        },
+        "wuxing_strength": {
+          "木": 2200,
+          "火": 2322,
+          "土": 570,
+          "金": 1784,
+          "水": 1696
+        },
+        "tongyi": {
+          "elements": [
+            "火",
+            "木"
+          ],
+          "strength": 4522,
+          "percent": 52.753149790014
+        },
+        "yilei": {
+          "elements": [
+            "土",
+            "金",
+            "水"
+          ],
+          "strength": 4050,
+          "percent": 47.246850209986
+        },
+        "rizhu": "丙",
+        "siji": "日主天干火生于夏季",
+        "xiyong_shen": [
+          "土",
+          "金",
+          "水"
+        ],
+        "ji_shen": [
+          "火",
+          "木"
+        ],
+        "color": "黄色、棕色、咖啡色、白色、金色、银色、黑色、蓝色、灰色",
+        "score": 95,
+        "lunar_date": "1992年4月18日未时"
+      },
+      "ziyi": {
+        "analysis": "姓名'李娜'字义音形分析结果",
+        "score": 75
+      },
+      "shengxiao": {
+        "shengxiao": "猴",
+        "xi_zigen": [
+          "艹",
+          "木",
+          "禾"
+        ],
+        "ji_zigen": [
+          "火",
+          "日"
+        ],
+        "score": 80
+      },
+      "chenggu": {
+        "weight": 3.9,
+        "fortune_text": "为利为名终日劳，中年福禄也多遭；老来自有财星照，不比前番目下高。",
+        "comment": "命运中等偏上"
+      }
+    },
+    {
+      "name": "王强",
+      "success": true,
+      "basic_info": {
+        "surname": "王",
+        "given_name": "强",
+        "gender": "男",
+        "birth_time": "1985-03-08 08:15",
+        "longitude": 113.2644,
+        "latitude": 23.1291
+      },
+      "comprehensive_score": 81,
+      "wuge": {
+        "tiange": {
+          "num": 5,
+          "element": "土",
+          "fortune": "大吉"
+        },
+        "renge": {
+          "num": 15,
+          "element": "土",
+          "fortune": "大吉"
+        },
+        "dige": {
+          "num": 12,
+          "element": "木",
+          "fortune": "凶"
+        },
+        "waige": {
+          "num": 2,
+          "element": "木",
+          "fortune": "凶"
+        },
+        "zongge": {
+          "num": 15,
+          "element": "土",
+          "fortune": "大吉"
+        },
+        "sancai": "土土木 - 平",
+        "score": 80
+      },
+      "bazi": {
+        "bazi_str": "乙丑 己卯 丙午 壬辰",
+        "wuxing": "木土 土木 火火 水土",
+        "nayin": "海中金 城墙土 天河水 长流水",
+        "geshu": {
+          "金": 0,
+          "木": 2,
+          "水": 1,
+          "火": 2,
+          "土": 3
+        },
+        "wuxing_strength": {
+          "木": 2760,
+          "火": 2400,
+          "土": 2000,
+          "金": 200,
+          "水": 1500
+        },
+        "tongyi": {
+          "elements": [
+            "火",
+            "木"
+          ],
+          "strength": 5160,
+          "percent": 58.239277652370205
+        },
+        "yilei": {
+          "elements": [
+            "土",
+            "金",
+            "水"
+          ],
+          "strength": 3700,
+          "percent": 41.760722347629795
+        },
+        "rizhu": "丙",
+        "siji": "日主天干火生于春季",
+        "xiyong_shen": [
+          "土",
+          "金",
+          "水"
+        ],
+        "ji_shen": [
+          "火",
+          "木"
+        ],
+        "color": "黄色、棕色、咖啡色、白色、金色、银色、黑色、蓝色、灰色",
+        "score": 85,
+        "lunar_date": "1985年1月17日辰时"
+      },
+      "ziyi": {
+        "analysis": "姓名'王强'字义音形分析结果",
+        "score": 75
+      },
+      "shengxiao": {
+        "shengxiao": "牛",
+        "xi_zigen": [
+          "艹",
+          "木",
+          "禾"
+        ],
+        "ji_zigen": [
+          "火",
+          "日"
+        ],
+        "score": 80
+      },
+      "chenggu": {
+        "weight": 3.9,
+        "fortune_text": "为利为名终日劳，中年福禄也多遭；老来自有财星照，不比前番目下高。",
+        "comment": "命运中等偏上"
+      }
+    },
+    {
+      "name": "刘芳",
+      "success": true,
+      "basic_info": {
+        "surname": "刘",
+        "given_name": "芳",
+        "gender": "女",
+        "birth_time": "1988-11-30 16:45",
+        "longitude": 114.0579,
+        "latitude": 22.5431
+      },
+      "comprehensive_score": 75,
+      "wuge": {
+        "tiange": {
+          "num": 16,
+          "element": "土",
+          "fortune": "大吉"
+        },
+        "renge": {
+          "num": 22,
+          "element": "木",
+          "fortune": "凶"
+        },
+        "dige": {
+          "num": 8,
+          "element": "金",
+          "fortune": "吉"
+        },
+        "waige": {
+          "num": 2,
+          "element": "木",
+          "fortune": "凶"
+        },
+        "zongge": {
+          "num": 22,
+          "element": "木",
+          "fortune": "凶"
+        },
+        "sancai": "土木金 - 平",
+        "score": 67
+      },
+      "bazi": {
+        "bazi_str": "戊辰 癸亥 己丑 壬申",
+        "wuxing": "土土 水水 土土 水金",
+        "nayin": "大林木 大海水 霹雳火 剑锋金",
+        "geshu": {
+          "金": 1,
+          "木": 0,
+          "水": 3,
+          "火": 0,
+          "土": 4
+        },
+        "wuxing_strength": {
+          "木": 720,
+          "火": 0,
+          "土": 3000,
+          "金": 900,
+          "水": 3990
+        },
+        "tongyi": {
+          "elements": [
+            "土",
+            "火"
+          ],
+          "strength": 3000,
+          "percent": 34.84320557491289
+        },
+        "yilei": {
+          "elements": [
+            "木",
+            "金",
+            "水"
+          ],
+          "strength": 5610,
+          "percent": 65.1567944250871
+        },
+        "rizhu": "己",
+        "siji": "日主天干土生于冬季",
+        "xiyong_shen": [
+          "土",
+          "火"
+        ],
+        "ji_shen": [
+          "木",
+          "金",
+          "水"
+        ],
+        "color": "黄色、棕色、咖啡色、红色、紫色、粉色",
+        "score": 80,
+        "lunar_date": "1988年10月22日申时"
+      },
+      "ziyi": {
+        "analysis": "姓名'刘芳'字义音形分析结果",
+        "score": 75
+      },
+      "shengxiao": {
+        "shengxiao": "龙",
+        "xi_zigen": [
+          "艹",
+          "木",
+          "禾"
+        ],
+        "ji_zigen": [
+          "火",
+          "日"
+        ],
+        "score": 80
+      },
+      "chenggu": {
+        "weight": 3.9,
+        "fortune_text": "为利为名终日劳，中年福禄也多遭；老来自有财星照，不比前番目下高。",
+        "comment": "命运中等偏上"
+      }
+    },
+    {
+      "name": "陈明",
+      "success": true,
+      "basic_info": {
+        "surname": "陈",
+        "given_name": "明",
+        "gender": "男",
+        "birth_time": "1995-07-12 12:00",
+        "longitude": 116.4074,
+        "latitude": 39.9042
+      },
+      "comprehensive_score": 83,
+      "wuge": {
+        "tiange": {
+          "num": 11,
+          "element": "木",
+          "fortune": "大吉"
+        },
+        "renge": {
+          "num": 18,
+          "element": "金",
+          "fortune": "吉"
+        },
+        "dige": {
+          "num": 9,
+          "element": "水",
+          "fortune": "凶"
+        },
+        "waige": {
+          "num": 2,
+          "element": "木",
+          "fortune": "凶"
+        },
+        "zongge": {
+          "num": 18,
+          "element": "金",
+          "fortune": "吉"
+        },
+        "sancai": "木金水 - 半吉",
+        "score": 74
+      },
+      "bazi": {
+        "bazi_str": "乙亥 癸未 甲辰 庚午",
+        "wuxing": "木水 水土 木土 金火",
+        "nayin": "山头火 杨柳木 覆灯火 路旁土",
+        "geshu": {
+          "金": 1,
+          "木": 2,
+          "水": 2,
+          "火": 1,
+          "土": 2
+        },
+        "wuxing_strength": {
+          "木": 2912,
+          "火": 1430,
+          "土": 1160,
+          "金": 1100,
+          "水": 1900
+        },
+        "tongyi": {
+          "elements": [
+            "木",
+            "水"
+          ],
+          "strength": 4812,
+          "percent": 56.5984474241355
+        },
+        "yilei": {
+          "elements": [
+            "火",
+            "土",
+            "金"
+          ],
+          "strength": 3690,
+          "percent": 43.40155257586451
+        },
+        "rizhu": "甲",
+        "siji": "日主天干木生于夏季",
+        "xiyong_shen": [
+          "火",
+          "土",
+          "金"
+        ],
+        "ji_shen": [
+          "木",
+          "水"
+        ],
+        "color": "红色、紫色、粉色、黄色、棕色、咖啡色、白色、金色、银色",
+        "score": 95,
+        "lunar_date": "1995年6月15日午时"
+      },
+      "ziyi": {
+        "analysis": "姓名'陈明'字义音形分析结果",
+        "score": 75
+      },
+      "shengxiao": {
+        "shengxiao": "猪",
+        "xi_zigen": [
+          "艹",
+          "木",
+          "禾"
+        ],
+        "ji_zigen": [
+          "火",
+          "日"
+        ],
+        "score": 80
+      },
+      "chenggu": {
+        "weight": 3.9,
+        "fortune_text": "为利为名终日劳，中年福禄也多遭；老来自有财星照，不比前番目下高。",
+        "comment": "命运中等偏上"
+      }
+    }
+  ]
+}
