@@ -152,7 +152,9 @@ class Calculator:
             
             # 解析出生时间
             birth_dt = datetime.strptime(birth_time, '%Y-%m-%d %H:%M')
-            
+
+            # 2. 优先从万年历获取完整信息
+            wannianli_data = self._get_ganzhi_from_wannianli(birth_dt)            
             # 1. 数据验证
             self._validate_input(full_name, gender, birth_dt, longitude, latitude)
             
@@ -160,7 +162,7 @@ class Calculator:
             wuge_result = self.calculate_wuge(surname, given_name)
             
             # 3. 生辰八字计算
-            bazi_result = self.calculate_bazi(birth_dt, longitude, latitude)
+            bazi_result = self.calculate_bazi(birth_dt, wannianli_data, longitude, latitude)
             
             # 4. 字义音形分析
             ziyi_result = self.analyze_ziyi(full_name)
@@ -540,16 +542,13 @@ class Calculator:
         
         return min(100, score)
     
-    def calculate_bazi(self, birth_dt: datetime, longitude: float,
+    def calculate_bazi(self, birth_dt: datetime, wannianli_data: dict, longitude: float,
                       latitude: float) -> Dict:
         """计算生辰八字"""
         logger.info(f"计算生辰八字: {birth_dt}")
         
         # 1. 计算真太阳时
         true_solar_time = self._calculate_true_solar_time(birth_dt, longitude)
-        
-        # 2. 优先从万年历获取完整信息
-        wannianli_data = self._get_ganzhi_from_wannianli(birth_dt)
         
         if wannianli_data:
             # 使用万年历数据
@@ -563,19 +562,14 @@ class Calculator:
             lunar_date_str = wannianli_data.get('lunar_date', '')
             if lunar_date_str:
                 try:
-                    lunar_date_parts = lunar_date_str.split('-')
-                    lunar_year = int(lunar_date_parts[0])
-                    lunar_month = int(lunar_date_parts[1])
-                    lunar_day = int(lunar_date_parts[2])
+                    lunar_year, lunar_month, lunar_day = self.change_date_str2date(lunar_date_str)
                 except (ValueError, IndexError) as e:
                     logger.warning(f"解析农历日期失败: {lunar_date_str}, {e}")
                     # 降级使用阳历年月日
-                    lunar_year = birth_dt.year
-                    lunar_month = birth_dt.month
-                    lunar_day = birth_dt.day
+                    raise ValueError("万年历数据格式错误，无法解析农历日期:" + lunar_date_str)
             else:
                 # 没有农历数据，使用阳历
-                raise ValueError("万年历数据缺少农历日期")
+                raise ValueError("万年历数据缺少农历日期:" + birth_dt.strftime("%Y-%m-%d"))
         else:
             # 降级：使用传统算法
             logger.warning("万年历数据不可用，使用传统算法")
@@ -643,6 +637,13 @@ class Calculator:
         }
         
         return result
+
+    def change_date_str2date(self, lunar_date_str):
+        lunar_date_parts = lunar_date_str.split('-')
+        lunar_year = int(lunar_date_parts[0])
+        lunar_month = int(lunar_date_parts[1])
+        lunar_day = int(lunar_date_parts[2])
+        return lunar_year, lunar_month, lunar_day
     
     def _solar_to_lunar(self, solar_dt: datetime) -> str:
         """将阳历转换为农历（返回字符串）
@@ -1282,18 +1283,120 @@ class Calculator:
         }
     
     def calculate_chenggu(self, birth_dt: datetime) -> Dict:
-        """称骨算命计算"""
+        """称骨算命计算
+        
+        Args:
+            birth_dt: 出生日期时间
+            
+        Returns:
+            包含骨重、命书和评价的字典
+        """
         logger.info(f"计算称骨: {birth_dt}")
         
-        # 简化计算
-        weight = 3.9
-        fortune_text = "为利为名终日劳，中年福禄也多遭；老来自有财星照，不比前番目下高。"
+        # 获取农历信息
+        wannianli_data = self._get_ganzhi_from_wannianli(birth_dt)
+        if wannianli_data and wannianli_data.get('lunar_date'):
+            try:
+                lunar_date_parts = wannianli_data['lunar_date'].split('-')
+                lunar_year = int(lunar_date_parts[0])
+                lunar_month = int(lunar_date_parts[1])
+                lunar_day = int(lunar_date_parts[2])
+            except:
+                lunar_year = birth_dt.year
+                lunar_month = birth_dt.month
+                lunar_day = birth_dt.day
+        else:
+            # 降级到使用阳历
+            lunar_year = birth_dt.year
+            lunar_month = birth_dt.month
+            lunar_day = birth_dt.day
         
-        return {
-            'weight': weight,
-            'fortune_text': fortune_text,
-            'comment': '命运中等偏上'
-        }
+        # 计算时辰序号(0-11)
+        hour = birth_dt.hour
+        shichen_idx = (hour + 1) // 2 % 12
+        
+        conn = sqlite3.connect(self.db_path)
+        cursor = conn.cursor()
+        
+        try:
+            # 1. 查询年骨重
+            cursor.execute('''
+            SELECT weight FROM chenggu_weights 
+            WHERE type='year' AND value=?
+            ''', (lunar_year,))
+            row = cursor.fetchone()
+            year_weight = row[0] if row else 0
+            
+            # 2. 查询月骨重
+            cursor.execute('''
+            SELECT weight FROM chenggu_weights 
+            WHERE type='month' AND value=?
+            ''', (lunar_month,))
+            row = cursor.fetchone()
+            month_weight = row[0] if row else 0
+            
+            # 3. 查询日骨重
+            cursor.execute('''
+            SELECT weight FROM chenggu_weights 
+            WHERE type='day' AND value=?
+            ''', (lunar_day,))
+            row = cursor.fetchone()
+            day_weight = row[0] if row else 0
+            
+            # 4. 查询时骨重
+            cursor.execute('''
+            SELECT weight FROM chenggu_weights 
+            WHERE type='hour' AND value=?
+            ''', (shichen_idx,))
+            row = cursor.fetchone()
+            hour_weight = row[0] if row else 0
+            
+            # 5. 计算总骨重
+            total_weight = year_weight + month_weight + day_weight + hour_weight
+            total_weight = round(total_weight, 1)
+            
+            logger.info(f"称骨详情: 年{year_weight} + 月{month_weight} + 日{day_weight} + 时{hour_weight} = {total_weight}两")
+            
+            # 6. 查询命书(查找最接近的骨重)
+            cursor.execute('''
+            SELECT weight, fortune_text FROM chenggu_fortune
+            ORDER BY ABS(weight - ?) ASC
+            LIMIT 1
+            ''', (total_weight,))
+            row = cursor.fetchone()
+            
+            if row:
+                fortune_text = row[1]
+            else:
+                fortune_text = "未找到对应命书"
+            
+            # 7. 根据骨重给出评价
+            if total_weight < 3.0:
+                comment = "命运较苦，需自强不息"
+            elif total_weight < 4.0:
+                comment = "命运一般，中等偏下"
+            elif total_weight < 5.0:
+                comment = "命运中等，衣食无忧"
+            elif total_weight < 6.0:
+                comment = "命运较好，富贵安康"
+            else:
+                comment = "命运极佳，大富大贵"
+            
+            return {
+                'weight': total_weight,
+                'fortune_text': fortune_text,
+                'comment': comment
+            }
+            
+        except Exception as e:
+            logger.error(f"称骨算命计算失败: {e}")
+            return {
+                'weight': 0,
+                'fortune_text': "计算失败",
+                'comment': "数据不完整"
+            }
+        finally:
+            conn.close()
     
     def _calculate_comprehensive_score(self, wuge_score: int, bazi_score: int,
                                       ziyi_score: int, shengxiao_score: int) -> int:

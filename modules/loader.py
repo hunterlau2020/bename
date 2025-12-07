@@ -277,18 +277,29 @@ class DataLoader:
                     'failed_count': 0
                 }
             
-            # 验证数据
-            validation = self.validate_resource_data(resource_name, data.get('data', []))
-            
-            if not validation['valid']:
-                logger.error(f"资源 {resource_name} 验证失败")
-                return {
-                    'success': False,
-                    'errors': validation['errors']
+            # 称骨数据特殊处理
+            if resource_name == 'chenggu':
+                # 称骨数据直接传递整个对象
+                import_result = self._import_data(resource_name, data)
+                validation = {
+                    'valid': True,
+                    'total': import_result.get('count', 0),
+                    'passed': import_result.get('count', 0),
+                    'failed': 0
                 }
-            
-            # 导入数据
-            import_result = self._import_data(resource_name, data.get('data', []))
+            else:
+                # 验证数据
+                validation = self.validate_resource_data(resource_name, data.get('data', []))
+                
+                if not validation['valid']:
+                    logger.error(f"资源 {resource_name} 验证失败")
+                    return {
+                        'success': False,
+                        'errors': validation['errors']
+                    }
+                
+                # 导入数据
+                import_result = self._import_data(resource_name, data.get('data', []))
             
             # 记录加载历史
             self._record_load_history(
@@ -371,7 +382,7 @@ class DataLoader:
         if 'day_ganzhi' not in item or not item['day_ganzhi']:
             raise ValueError("日干支不能为空")
     
-    def _import_data(self, resource_name: str, data: List) -> Dict:
+    def _import_data(self, resource_name: str, data) -> Dict:
         """导入数据到数据库"""
         conn = sqlite3.connect(self.db_path)
         cursor = conn.cursor()
@@ -484,27 +495,66 @@ class DataLoader:
                     count += 1
             
             elif resource_name == 'chenggu':
-                for item in data:
-                    if 'type' in item:  # 骨重表
-                        cursor.execute('''
-                        INSERT OR REPLACE INTO chenggu_weights
-                        (type, value, weight)
-                        VALUES (?, ?, ?)
-                        ''', (
-                            item['type'],
-                            item['value'],
-                            item['weight']
-                        ))
-                    else:  # 命格表
+                # 处理骨重数据
+                if 'weights' in data:
+                    weights = data['weights']
+                    # 处理年份骨重
+                    if 'year' in weights:
+                        for year_str, weight in weights['year'].items():
+                            cursor.execute('''
+                            INSERT OR REPLACE INTO chenggu_weights
+                            (type, value, weight)
+                            VALUES (?, ?, ?)
+                            ''', ('year', int(year_str), float(weight)))
+                            count += 1
+                    
+                    # 处理月份骨重
+                    if 'month' in weights:
+                        for month_str, weight in weights['month'].items():
+                            cursor.execute('''
+                            INSERT OR REPLACE INTO chenggu_weights
+                            (type, value, weight)
+                            VALUES (?, ?, ?)
+                            ''', ('month', int(month_str), float(weight)))
+                            count += 1
+                    
+                    # 处理日期骨重
+                    if 'day' in weights:
+                        for day_str, weight in weights['day'].items():
+                            cursor.execute('''
+                            INSERT OR REPLACE INTO chenggu_weights
+                            (type, value, weight)
+                            VALUES (?, ?, ?)
+                            ''', ('day', int(day_str), float(weight)))
+                            count += 1
+                    
+                    # 处理时辰骨重（需要转换时辰名称为序号）
+                    if 'hour' in weights:
+                        shichen_map = {
+                            '子': 0, '丑': 1, '寅': 2, '卯': 3,
+                            '辰': 4, '巳': 5, '午': 6, '未': 7,
+                            '申': 8, '酉': 9, '戌': 10, '亥': 11
+                        }
+                        for shichen_name, weight in weights['hour'].items():
+                            if shichen_name in shichen_map:
+                                cursor.execute('''
+                                INSERT OR REPLACE INTO chenggu_weights
+                                (type, value, weight)
+                                VALUES (?, ?, ?)
+                                ''', ('hour', shichen_map[shichen_name], float(weight)))
+                                count += 1
+                
+                # 处理命格数据
+                if 'fortunes' in data:
+                    for fortune in data['fortunes']:
+                        # 使用平均值作为骨重
+                        avg_weight = (fortune['min_weight'] + fortune['max_weight']) / 2
                         cursor.execute('''
                         INSERT OR REPLACE INTO chenggu_fortune
                         (weight, fortune_text)
                         VALUES (?, ?)
-                        ''', (
-                            item['weight'],
-                            item['fortune']
-                        ))
-                    count += 1
+                        ''', (avg_weight, fortune['text']))
+                        count += 1
             
             elif resource_name == 'wannianli':
                 # 批量导入万年历数据以提高性能

@@ -1,6 +1,6 @@
 {
   "input_file": "tests\\example_input.json",
-  "process_time": "20251207_214437",
+  "process_time": "20251208_002624",
   "total": 5,
   "success": 5,
   "failed": 0,
@@ -114,9 +114,9 @@
         "score": 80
       },
       "chenggu": {
-        "weight": 3.9,
-        "fortune_text": "为利为名终日劳，中年福禄也多遭；老来自有财星照，不比前番目下高。",
-        "comment": "命运中等偏上"
+        "weight": 3.1,
+        "fortune_text": "忙忙碌碌苦中求，何日云开见日头；难得祖基家可立，中年衣食渐无忧。",
+        "comment": "命运一般，中等偏下"
       }
     },
     {
@@ -228,9 +228,9 @@
         "score": 80
       },
       "chenggu": {
-        "weight": 3.9,
-        "fortune_text": "为利为名终日劳，中年福禄也多遭；老来自有财星照，不比前番目下高。",
-        "comment": "命运中等偏上"
+        "weight": 4.2,
+        "fortune_text": "平生衣禄是绵长，件件心中自主张；前面风霜多受过，后来必定享安康。",
+        "comment": "命运中等，衣食无忧"
       }
     },
     {
@@ -342,9 +342,9 @@
         "score": 80
       },
       "chenggu": {
-        "weight": 3.9,
-        "fortune_text": "为利为名终日劳，中年福禄也多遭；老来自有财星照，不比前番目下高。",
-        "comment": "命运中等偏上"
+        "weight": 3.3,
+        "fortune_text": "早年做事事难成，百年勤劳枉费心；半世自如流水去，后来运到始得金。",
+        "comment": "命运一般，中等偏下"
       }
     },
     {
@@ -456,9 +456,9 @@
         "score": 80
       },
       "chenggu": {
-        "weight": 3.9,
-        "fortune_text": "为利为名终日劳，中年福禄也多遭；老来自有财星照，不比前番目下高。",
-        "comment": "命运中等偏上"
+        "weight": 3.7,
+        "fortune_text": "此命般般事不成，弟兄少力自孤成；虽然祖业须微有，来得明时去不明。",
+        "comment": "命运一般，中等偏下"
       }
     },
     {
@@ -570,9 +570,9 @@
         "score": 80
       },
       "chenggu": {
-        "weight": 3.9,
-        "fortune_text": "为利为名终日劳，中年福禄也多遭；老来自有财星照，不比前番目下高。",
-        "comment": "命运中等偏上"
+        "weight": 4.5,
+        "fortune_text": "福中取贵格求真，明敏才华志自伸；福禄寿全家道吉，桂兰毓秀晚荣臻。",
+        "comment": "命运中等，衣食无忧"
       }
     }
   ]
