@@ -1,0 +1,334 @@
+# -*- coding: utf-8 -*-
+"""
+三才五格计算模块 - 姓名五格、三才配置计算
+"""
+
+import sqlite3
+import logging
+from typing import Dict, List
+
+logger = logging.getLogger(__name__)
+
+
+class WugeCalculator:
+    """三才五格计算器"""
+    
+    def __init__(self, db_path: str = 'local.db'):
+        """初始化三才五格计算器"""
+        self.db_path = db_path
+        
+        # 五行生克
+        self.WUXING_SHENG = {'木': '火', '火': '土', '土': '金', '金': '水', '水': '木'}
+        self.WUXING_KE = {'木': '土', '土': '水', '水': '火', '火': '金', '金': '木'}
+        
+        # 三才配置吉凶表
+        self.SANCAI_LUCK_MAP = {
+            # 大吉配置
+            "木木木": "大吉", "木木火": "大吉", "木木土": "大吉", "木火木": "大吉",
+            "木火火": "大吉", "木火土": "大吉", "木土火": "大吉", "木土土": "大吉",
+            "火木木": "大吉", "火木火": "大吉", "火木土": "大吉", "火火木": "大吉",
+            "火火土": "大吉", "火土土": "大吉", "土火火": "大吉", "土火土": "大吉",
+            "土土火": "大吉", "土土土": "大吉", "土金土": "大吉", "金土土": "大吉",
+            
+            # 吉配置
+            "木木金": "吉", "木木水": "吉", "木火金": "吉", "木土金": "吉",
+            "火火火": "吉", "火土金": "吉", "土土金": "吉", "土金金": "吉",
+            "金土金": "吉", "金金土": "吉",
+            
+            # 凶配置
+            "木金木": "凶", "木金金": "凶", "木金土": "凶", "木水木": "凶",
+            "木水土": "凶", "火金木": "凶", "火金火": "凶", "火金土": "凶",
+            "火水木": "凶", "火水土": "凶", "土木木": "凶", "土木火": "凶",
+            "土木土": "凶", "土金木": "凶", "土水木": "凶", "土水土": "凶",
+            "金木木": "凶", "金木火": "凶", "金木土": "凶", "金火木": "凶",
+            "金火火": "凶", "金火土": "凶", "金土木": "凶", "金土水": "凶",
+            "金金木": "凶", "金金火": "凶", "金金金": "凶", "金水木": "凶",
+            "金水火": "凶", "金水土": "凶", "水木木": "凶", "水木火": "凶",
+            "水木土": "凶", "水火木": "凶", "水火火": "凶", "水火土": "凶",
+            "水土木": "凶", "水土火": "凶", "水土土": "凶", "水金木": "凶",
+            "水金火": "凶", "水金土": "凶", "水水木": "凶", "水水火": "凶",
+            "水水土": "凶",
+        }
+        
+        # 数理吉凶表（81数理）
+        self.JIXIONG_MAP = {
+            # 大吉数
+            1: {"吉凶": "大吉", "含义": "天地开泰，繁荣发达，根基稳固", "类别": "首领运"},
+            3: {"吉凶": "大吉", "含义": "进取如意，阴阳合和，名利双收", "类别": "首领运"},
+            5: {"吉凶": "大吉", "含义": "五行之数，循环相生，福祉无穷", "类别": "福禄运"},
+            6: {"吉凶": "吉", "含义": "六爻之数，发展变化，吉祥安泰", "类别": "安泰运"},
+            7: {"吉凶": "吉", "含义": "刚毅果断，独立权威，天赋之力", "类别": "刚强运"},
+            8: {"吉凶": "吉", "含义": "意志刚健，勤勉发展，贯彻志望", "类别": "坚刚运"},
+            11: {"吉凶": "大吉", "含义": "草木逢春，稳健着实，富贵荣达", "类别": "稳健运"},
+            13: {"吉凶": "大吉", "含义": "智略超群，奇略纵横，成就大业", "类别": "艺能运"},
+            15: {"吉凶": "大吉", "含义": "福寿圆满，涵养雅量，德高望重", "类别": "财富运"},
+            16: {"吉凶": "大吉", "含义": "贵人得助，能获众望，成就大业", "类别": "首领运"},
+            21: {"吉凶": "大吉", "含义": "天官赐福，明月光照，独立权威", "类别": "首领运"},
+            23: {"吉凶": "大吉", "含义": "旭日东升，名显四方，渐次进展", "类别": "首领运"},
+            24: {"吉凶": "吉", "含义": "家门余庆，钱财丰盈，白手成家", "类别": "财富运"},
+            31: {"吉凶": "大吉", "含义": "春日花开，智勇得志，博得名利", "类别": "首领运"},
+            32: {"吉凶": "大吉", "含义": "宝马金鞍，侥幸多望，前途无限", "类别": "财富运"},
+            33: {"吉凶": "大吉", "含义": "旭日升天，鸾凤相会，名闻天下", "类别": "财富运"},
+            35: {"吉凶": "吉", "含义": "温和平静，理智兼具，文艺技术", "类别": "温和运"},
+            37: {"吉凶": "大吉", "含义": "权威显达，猛虎出林，德望成功", "类别": "权威运"},
+            39: {"吉凶": "吉", "含义": "富贵荣华，财帛丰盈，暗藏险象", "类别": "首领运"},
+            41: {"吉凶": "大吉", "含义": "天赋吉运，德望兼备，前途无限", "类别": "首领运"},
+            45: {"吉凶": "吉", "含义": "顺风扬帆，新生泰和，富贵繁荣", "类别": "温和运"},
+            47: {"吉凶": "大吉", "含义": "花开之象，万事如意，祯祥吉庆", "类别": "首领运"},
+            48: {"吉凶": "大吉", "含义": "智谋兼备，德量荣达，威望成师", "类别": "德智运"},
+            52: {"吉凶": "大吉", "含义": "卓识达眼，先见之明，智谋超群", "类别": "智慧运"},
+            57: {"吉凶": "吉", "含义": "日照春松，名利双收", "类别": "刚强运"},
+            61: {"吉凶": "大吉", "含义": "牡丹芙蓉，花开富贵，名利双收", "类别": "名利运"},
+            63: {"吉凶": "大吉", "含义": "舟归平海，富甲天下，德高望重", "类别": "财富运"},
+            65: {"吉凶": "大吉", "含义": "巨流归海，富贵长寿，平安自在", "类别": "寿运"},
+            67: {"吉凶": "大吉", "含义": "顺风通达，天赋幸运，四通八达", "类别": "通达运"},
+            68: {"吉凶": "大吉", "含义": "智虑周密，志向坚定，勤勉力行", "类别": "智慧运"},
+            73: {"吉凶": "半吉", "含义": "盛衰交加，先苦后甜", "类别": "奋斗运"},
+            81: {"吉凶": "大吉", "含义": "最极之数，还本归元，繁荣富贵", "类别": "首领运"},
+            
+            # 半吉数
+            17: {"吉凶": "半吉", "含义": "排除万难，权威刚强，如能容忍", "类别": "刚强运"},
+            18: {"吉凶": "吉", "含义": "铁镜重磨，权威显达，博得名利", "类别": "艺能运"},
+            25: {"吉凶": "吉", "含义": "资性英敏，才能奇特，克服傲慢", "类别": "温和运"},
+            29: {"吉凶": "半吉", "含义": "智谋优秀，财力归集", "类别": "首领运"},
+            38: {"吉凶": "半吉", "含义": "意志薄弱，刻意经营，才识不凡", "类别": "艺能运"},
+            51: {"吉凶": "半吉", "含义": "盛衰交加，一盛一衰", "类别": "盛衰运"},
+            58: {"吉凶": "半吉", "含义": "晚行遇月，先苦后甜", "类别": "晚运"},
+            71: {"吉凶": "半吉", "含义": "石上金花，晚年幸福", "类别": "劳苦运"},
+            75: {"吉凶": "半吉", "含义": "虽有吉相，退守保吉", "类别": "温和运"},
+            77: {"吉凶": "半吉", "含义": "先苦后甜，晚年幸福", "类别": "晚运"},
+            78: {"吉凶": "半吉", "含义": "祸福参半，先天智能", "类别": "晚运"},
+            
+            # 凶数
+            2: {"吉凶": "凶", "含义": "根基不牢，混沌未定", "类别": "破坏运"},
+            4: {"吉凶": "凶", "含义": "坎坷苦难，身遭劫难", "类别": "凶变运"},
+            9: {"吉凶": "凶", "含义": "舟破浪急，兴尽凶始", "类别": "破舟进海"},
+            10: {"吉凶": "凶", "含义": "万事终局，暗藏险恶", "类别": "零暗运"},
+            12: {"吉凶": "凶", "含义": "意志薄弱，家庭缘薄", "类别": "不足运"},
+            14: {"吉凶": "凶", "含义": "忍得苦难，时来运转", "类别": "破兆运"},
+            19: {"吉凶": "凶", "含义": "风云蔽日，成功虽早", "类别": "多难运"},
+            20: {"吉凶": "凶", "含义": "非业破运，灾难重重", "类别": "破运"},
+            22: {"吉凶": "凶", "含义": "秋草逢霜，怀才不遇", "类别": "逆境运"},
+            26: {"吉凶": "凶带吉", "含义": "变怪之谜，英雄豪杰", "类别": "变怪运"},
+            27: {"吉凶": "凶", "含义": "欲望无止，自我心强", "类别": "刚情运"},
+            28: {"吉凶": "凶", "含义": "阔水浮萍，遭难之数", "类别": "遭难运"},
+            30: {"吉凶": "半凶半吉", "含义": "浮沉不定，大起大落", "类别": "浮沉运"},
+            34: {"吉凶": "凶", "含义": "破家之数，才识不凡", "类别": "破家运"},
+            36: {"吉凶": "凶", "含义": "风浪不静，枉费心力", "类别": "波澜运"},
+            40: {"吉凶": "凶", "含义": "谨慎保安，退保平安", "类别": "退安运"},
+            42: {"吉凶": "凶", "含义": "博识多能，精通世情", "类别": "多能运"},
+            43: {"吉凶": "凶", "含义": "散财破产，外祥内苦", "类别": "散财运"},
+            44: {"吉凶": "凶", "含义": "愁眉难展，悲惨不测", "类别": "烦闷运"},
+            46: {"吉凶": "凶", "含义": "罗网系身，离祖成家", "类别": "离祖运"},
+            49: {"吉凶": "半吉半凶", "含义": "吉凶难分，沉浮不定", "类别": "忧闷运"},
+            50: {"吉凶": "凶", "含义": "一成一败，吉凶参半", "类别": "吉凶运"},
+            53: {"吉凶": "凶", "含义": "忧心劳神，前景暗淡", "类别": "内忧运"},
+            54: {"吉凶": "凶", "含义": "石上栽花，难得活运", "类别": "石上栽花"},
+            55: {"吉凶": "凶", "含义": "善恶相伴，外美内苦", "类别": "外祥内苦"},
+            56: {"吉凶": "凶", "含义": "浪里行舟，历尽艰辛", "类别": "浪里行舟"},
+            59: {"吉凶": "凶", "含义": "寒蝉悲风，时运不济", "类别": "寒蝉悲风"},
+            60: {"吉凶": "凶", "含义": "无谋无勇，心迷意乱", "类别": "无谋运"},
+            62: {"吉凶": "凶", "含义": "衰败之象，志望难达", "类别": "衰败运"},
+            64: {"吉凶": "凶", "含义": "骨肉分离，孤独悲愁", "类别": "骨肉分离"},
+            66: {"吉凶": "凶", "含义": "进退维谷，艰难不堪", "类别": "进退运"},
+            69: {"吉凶": "凶", "含义": "动摇不安，常陷逆境", "类别": "不安运"},
+            70: {"吉凶": "凶", "含义": "残菊逢霜，空虚寂寞", "类别": "残菊逢霜"},
+            72: {"吉凶": "凶", "含义": "荣苦相伴，阴云覆月", "类别": "劳苦运"},
+            74: {"吉凶": "凶", "含义": "残花经霜，智能无用", "类别": "残花经霜"},
+            76: {"吉凶": "凶", "含义": "离散之数，倾覆之险", "类别": "离散运"},
+            79: {"吉凶": "凶", "含义": "云头望月，身疲力尽", "类别": "不遇运"},
+            80: {"吉凶": "凶", "含义": "辛苦不绝，早入隐遁", "类别": "隐遁运"},
+        }
+    
+    def calculate_wuge(self, surname: str, given_name: str) -> Dict:
+        """计算三才五格
+        
+        Args:
+            surname: 姓氏
+            given_name: 名字
+            
+        Returns:
+            五格计算结果字典
+        """
+        full_name = surname + given_name
+        logger.info(f"计算三才五格: {surname}(姓) + {given_name}(名) = {full_name}")
+        
+        # 获取姓氏和名字的笔画数
+        surname_strokes = self._get_strokes(surname)
+        given_strokes = self._get_strokes(given_name)
+        
+        # 根据姓名格式计算五格
+        if len(surname) == 1 and len(given_name) == 1:
+            # 单姓单名
+            tiange, renge, dige, waige, zongge = self._calc_single_surname_single_given(
+                surname_strokes[0], given_strokes[0]
+            )
+        elif len(surname) == 1 and len(given_name) == 2:
+            # 单姓双名
+            tiange, renge, dige, waige, zongge = self._calc_single_surname_double_given(
+                surname_strokes[0], given_strokes[0], given_strokes[1]
+            )
+        elif len(surname) == 2 and len(given_name) == 1:
+            # 复姓单名
+            tiange, renge, dige, waige, zongge = self._calc_double_surname_single_given(
+                surname_strokes[0], surname_strokes[1], given_strokes[0]
+            )
+        elif len(surname) == 2 and len(given_name) == 2:
+            # 复姓双名
+            tiange, renge, dige, waige, zongge = self._calc_double_surname_double_given(
+                surname_strokes[0], surname_strokes[1], given_strokes[0], given_strokes[1]
+            )
+        else:
+            raise ValueError(f"不支持的姓名格式: 姓氏{len(surname)}字 + 名字{len(given_name)}字")
+        
+        # 分析各格
+        result = {
+            'tiange': self._analyze_ge(tiange, '天格'),
+            'renge': self._analyze_ge(renge, '人格'),
+            'dige': self._analyze_ge(dige, '地格'),
+            'waige': self._analyze_ge(waige, '外格'),
+            'zongge': self._analyze_ge(zongge, '总格'),
+            'sancai': '',
+            'score': 0
+        }
+        
+        # 三才配置
+        tian_wx = result['tiange']['element']
+        ren_wx = result['renge']['element']
+        di_wx = result['dige']['element']
+        result['sancai'] = f"{tian_wx}{ren_wx}{di_wx}"
+        
+        # 三才吉凶
+        sancai_config = result['sancai']
+        if sancai_config in self.SANCAI_LUCK_MAP:
+            result['sancai'] = f"{sancai_config} - {self.SANCAI_LUCK_MAP[sancai_config]}"
+        else:
+            judge_str = self._judge_by_wuxing(tian_wx, ren_wx, di_wx)
+            result['sancai'] = f"{sancai_config} - {judge_str}"
+        
+        # 计算评分
+        result['score'] = self._calculate_wuge_score(result)
+        
+        return result
+    
+    def _calc_single_surname_single_given(self, s, g):
+        """单姓单名"""
+        tiange = s + 1
+        renge = s + g
+        dige = g + 1
+        waige = 2
+        zongge = s + g
+        return tiange, renge, dige, waige, zongge
+    
+    def _calc_single_surname_double_given(self, s, g1, g2):
+        """单姓双名"""
+        tiange = s + 1
+        renge = s + g1
+        dige = g1 + g2
+        waige = g2 + 1
+        zongge = s + g1 + g2
+        return tiange, renge, dige, waige, zongge
+    
+    def _calc_double_surname_single_given(self, s1, s2, g):
+        """复姓单名"""
+        tiange = s1 + s2
+        renge = s2 + g
+        dige = g + 1
+        waige = s1 + 1
+        zongge = s1 + s2 + g
+        return tiange, renge, dige, waige, zongge
+    
+    def _calc_double_surname_double_given(self, s1, s2, g1, g2):
+        """复姓双名"""
+        tiange = s1 + s2
+        renge = s2 + g1
+        dige = g1 + g2
+        waige = s1 + g2
+        zongge = s1 + s2 + g1 + g2
+        return tiange, renge, dige, waige, zongge
+    
+    def _get_strokes(self, name: str) -> List[int]:
+        """从数据库获取笔画数"""
+        conn = sqlite3.connect(self.db_path)
+        cursor = conn.cursor()
+        
+        strokes = []
+        try:
+            for char in name:
+                cursor.execute(
+                    'SELECT strokes FROM kangxi_strokes WHERE character=?',
+                    (char,)
+                )
+                row = cursor.fetchone()
+                if row:
+                    strokes.append(row[0])
+                else:
+                    logger.warning(f"未找到字 '{char}' 的笔画数，使用默认值10")
+                    strokes.append(10)
+        finally:
+            conn.close()
+        
+        return strokes
+    
+    def _analyze_ge(self, number: int, ge_name: str) -> Dict:
+        """分析格的五行和吉凶"""
+        # 数理五行
+        wuxing = ['水', '木', '木', '火', '火', '土', '土', '金', '金', '水'][number % 10]
+        
+        # 查询吉凶
+        fortune_info = self.JIXIONG_MAP.get(number, {
+            '吉凶': '凶', '含义': '未知数理，难以预测', '类别': '未知运'
+        })
+        fortune = fortune_info['吉凶']
+        
+        return {
+            'num': number,
+            'element': wuxing,
+            'fortune': fortune
+        }
+    
+    def _judge_by_wuxing(self, tian, ren, di):
+        """根据五行生克关系判断吉凶"""
+        tian_ren_relation = self._get_relation(tian, ren)
+        ren_di_relation = self._get_relation(ren, di)
+        
+        if tian_ren_relation == "生" and ren_di_relation == "生":
+            return "大吉"
+        elif tian_ren_relation == "克" and ren_di_relation == "克":
+            return "凶"
+        elif tian_ren_relation == "同" and ren_di_relation == "同":
+            return "半吉"
+        elif (tian_ren_relation == '生' and ren_di_relation in ('同', '平')) or \
+            (tian_ren_relation in ('同', '平') and ren_di_relation == '生'):
+            return '半吉'
+        else:
+            return '平'
+    
+    def _get_relation(self, wuxing1, wuxing2):
+        """判断两个五行之间的关系"""
+        if wuxing1 == wuxing2:
+            return "同"
+        elif self.WUXING_SHENG.get(wuxing1) == wuxing2:
+            return "生"
+        elif self.WUXING_KE.get(wuxing1) == wuxing2:
+            return "克"
+        else:
+            return "平"
+    
+    def _calculate_wuge_score(self, wuge: Dict) -> int:
+        """计算五格评分"""
+        score = 50
+        
+        # 根据吉凶加分
+        fortune_scores = {'大吉': 10, '吉': 7, '半吉': 4, '凶': 0}
+        for ge_key in ['tiange', 'renge', 'dige', 'waige', 'zongge']:
+            fortune = wuge[ge_key]['fortune']
+            score += fortune_scores.get(fortune, 0)
+        
+        # 三才配置加分
+        if '大吉' in wuge['sancai']:
+            score += 10
+        elif '吉' in wuge['sancai']:
+            score += 5
+        
+        return min(100, score)
