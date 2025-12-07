@@ -521,34 +521,174 @@ class BaziCalculator:
         return tongyi, tongyi_strength, yilei, yilei_strength
     
     def _determine_xiyongshen(self, rizhu: str, wuxing_count: Dict, month: int, 
-                             bazi_str: str = None) -> Tuple[List, List]:
-        """确定喜用神和忌神"""
+                             bazi_str: str = None, threshold: float = 0.55) -> Tuple[List, List]:
+        """确定喜用神和忌神（高级版：含调候、优先级、十神标签）
+        
+        Args:
+            rizhu: 日主天干
+            wuxing_count: 五行个数统计（用于降级判断）
+            month: 月份（保留兼容性）
+            bazi_str: 八字字符串
+            threshold: 判断身强的阈值，默认55%（>55%为身强）
+            
+        Returns:
+            (喜用神列表, 忌神列表)
+        """
         rizhu_wx = self.TIANGAN_WUXING.get(rizhu, '土')
         
         if bazi_str:
             try:
+                # 计算五行强度
                 strength = self._calculate_wuxing_strength(bazi_str)
-                tongyi, tongyi_strength, yilei, yilei_strength = \
+                tongyi_list, tongyi_strength, yilei_list, yilei_strength = \
                     self._calculate_tongyi_yilei(rizhu, strength)
                 
-                xiyong = []
-                ji = []
+                # 计算同类比例
+                total_strength = tongyi_strength + yilei_strength
+                if total_strength == 0:
+                    raise ValueError("五行强度总和，数据异常")
                 
-                if tongyi_strength > yilei_strength:
-                    xiyong = yilei.copy()
-                    ji = tongyi.copy()
-                    logger.info("日主偏强，喜用神为异类（克泄耗）")
+                tongyi_ratio = tongyi_strength / total_strength
+                
+                # 判断日主强弱
+                if tongyi_ratio >= threshold:
+                    strength_status = 'strong'  # 身强
+                elif tongyi_ratio <= (1 - threshold):
+                    strength_status = 'weak'    # 身弱
                 else:
-                    xiyong = tongyi.copy()
-                    ji = yilei.copy()
-                    logger.info("日主偏弱，喜用神为同类（生扶）")
+                    strength_status = 'balanced'  # 中和
                 
-                return xiyong, ji
+                # === 五行生克关系表（十神体系）===
+                wuxing_relations = {
+                    '木': {'sheng_wo': '水', 'wo_sheng': '火', 'ke_wo': '金', 'wo_ke': '土'},
+                    '火': {'sheng_wo': '木', 'wo_sheng': '土', 'ke_wo': '水', 'wo_ke': '金'},
+                    '土': {'sheng_wo': '火', 'wo_sheng': '金', 'ke_wo': '木', 'wo_ke': '水'},
+                    '金': {'sheng_wo': '土', 'wo_sheng': '水', 'ke_wo': '火', 'wo_ke': '木'},
+                    '水': {'sheng_wo': '金', 'wo_sheng': '木', 'ke_wo': '土', 'wo_ke': '火'},
+                }
+                rel = wuxing_relations[rizhu_wx]
+                
+                # 十神名称映射
+                shishen_names = {
+                    rel['sheng_wo']: "印星",
+                    rizhu_wx: "比劫",
+                    rel['ke_wo']: "官杀",
+                    rel['wo_ke']: "财星",
+                    rel['wo_sheng']: "食伤"
+                }
+                
+                # === 基础喜忌判断 ===
+                base_xiyong = []
+                base_jishen = []
+                
+                if strength_status == 'strong':
+                    # 身强：喜克泄耗（官杀、食伤、财）
+                    base_xiyong = [rel['ke_wo'], rel['wo_sheng'], rel['wo_ke']]
+                    base_jishen = [rel['sheng_wo'], rizhu_wx]
+                elif strength_status == 'weak':
+                    # 身弱：喜生扶（印、比劫）
+                    base_xiyong = [rel['sheng_wo'], rizhu_wx]
+                    base_jishen = [rel['ke_wo'], rel['wo_sheng'], rel['wo_ke']]
+                else:  # balanced
+                    base_xiyong = []
+                    base_jishen = []
+                
+                # === 调候用神（穷通宝鉴精简版）===
+                # 提取月支
+                month_zhi = bazi_str.split()[1][1] if len(bazi_str.split()) >= 2 else None
+                tiaohou_wu = self._get_tiaohou_yongshen(rizhu, month_zhi)
+                
+                # === 按强度和角色分级 ===
+                def get_wu_status(wu):
+                    """判断五行强度状态"""
+                    s = strength.get(wu, 0)
+                    if s < 100:
+                        return "极弱"
+                    elif s < 500:
+                        return "弱"
+                    elif s < 1500:
+                        return "中"
+                    else:
+                        return "旺"
+                
+                # 构建用神体系（用神、喜神、闲神）
+                yongshen = []   # 核心用神（急需且力量不足）
+                xishen = []     # 喜神（有益但非急需）
+                jishen = []     # 忌神
+                
+                for wu in self.WUXING_SHENG_SEQUENCE:
+                    wu_strength_status = get_wu_status(wu)
+                    shishen_label = shishen_names.get(wu, "闲神")
+                    
+                    if wu in base_xiyong:
+                        # 喜用五行：根据强度决定是用神还是喜神
+                        if wu_strength_status in ["极弱", "弱"]:
+                            # 缺而急需 → 用神
+                            label = f"{wu}({shishen_label})"
+                            # 调候用神优先
+                            if wu == tiaohou_wu:
+                                yongshen.insert(0, label)  # 调候用神置顶
+                            else:
+                                yongshen.append(label)
+                        elif wu_strength_status == "中":
+                            # 适中 → 喜神
+                            xishen.append(f"{wu}({shishen_label})")
+                        # 旺的情况不列入（已经够旺了）
+                    elif wu in base_jishen:
+                        jishen.append(f"{wu}({shishen_label})")
+                
+                # 合并用神和喜神为喜用神列表
+                xiyong_labels = yongshen + xishen
+                
+                # === 生成专业描述 ===
+                if strength_status == 'strong':
+                    theory = "身强喜克泄耗"
+                    if yongshen:
+                        desc = f"用神为{'/'.join(yongshen)}"
+                    else:
+                        desc = "五行流通为宜"
+                    if xishen:
+                        desc += f"，喜神为{'/'.join(xishen)}"
+                    if tiaohou_wu:
+                        tiaohou_label = f"{tiaohou_wu}({shishen_names.get(tiaohou_wu, '调候')})"
+                        desc += f"；调候用神为{tiaohou_label}"
+                    
+                    logger.info(f"日主{rizhu}({rizhu_wx})身强 同类:{tongyi_ratio:.1%} {theory} | {desc}")
+                    
+                elif strength_status == 'weak':
+                    theory = "身弱喜生扶"
+                    if yongshen:
+                        desc = f"用神为{'/'.join(yongshen)}"
+                    else:
+                        desc = "宜扶助日主"
+                    if xishen:
+                        desc += f"，喜神为{'/'.join(xishen)}"
+                    if tiaohou_wu:
+                        tiaohou_label = f"{tiaohou_wu}({shishen_names.get(tiaohou_wu, '调候')})"
+                        desc += f"；调候用神为{tiaohou_label}"
+                    
+                    logger.info(f"日主{rizhu}({rizhu_wx})身弱 同类:{tongyi_ratio:.1%} {theory} | {desc}")
+                    
+                else:  # balanced
+                    logger.info(f"日主{rizhu}({rizhu_wx})中和 同类:{tongyi_ratio:.1%} 五行平衡，顺其自然")
+                    if tiaohou_wu:
+                        tiaohou_label = f"{tiaohou_wu}({shishen_names.get(tiaohou_wu, '调候')})"
+                        xiyong_labels = [tiaohou_label]  # 中和八字，调候为主
+                
+                # 提取纯五行列表（去除标签）
+                xiyong_pure = [label.split('(')[0] for label in xiyong_labels]
+                jishen_pure = [label.split('(')[0] for label in jishen]
+                
+                # 去重
+                xiyong_pure = list(dict.fromkeys(xiyong_pure))
+                jishen_pure = list(dict.fromkeys(jishen_pure))
+                
+                return xiyong_pure, jishen_pure
                 
             except Exception as e:
-                logger.warning(f"强度表方法计算失败，使用简化方法: {e}")
+                logger.warning(f"高级喜用神计算失败，使用简化方法: {e}")
         
-        # 降级到简化判断
+        # 降级到简化判断（基于五行个数）
         xiyong = []
         ji = []
         
@@ -561,7 +701,50 @@ class BaziCalculator:
         if not xiyong:
             xiyong = [self.WUXING_SHENG.get(rizhu_wx, '土')]
         
+        logger.info(f"使用简化方法: 喜用神={xiyong}, 忌神={ji}")
+        
         return xiyong, ji
+    
+    def _get_tiaohou_yongshen(self, rizhu: str, month_zhi: str) -> str:
+        """获取调候用神（基于穷通宝鉴）
+        
+        调候：调和气候，冬月用火暖，夏月用水润
+        
+        Args:
+            rizhu: 日主天干
+            month_zhi: 月支地支
+            
+        Returns:
+            调候用神五行，如 '火'、'水' 等，无则返回 None
+        """
+        # 穷通宝鉴调候表（精简版，仅冬夏关键月）
+        tiaohou_table = {
+            # 冬月（水冷，需火暖）
+            '子': {'甲': '丙', '乙': '丙', '丙': '壬', '丁': '甲', '戊': '丙', 
+                   '己': '丙', '庚': '丁', '辛': '丁', '壬': '丙', '癸': '丙'},
+            '丑': {'甲': '丙', '乙': '丙', '丙': '壬', '丁': '甲', '戊': '丙', 
+                   '己': '丙', '庚': '丁', '辛': '丁', '壬': '丙', '癸': '丙'},
+            '亥': {'甲': '庚', '乙': '丙', '丙': '壬', '丁': '甲', '戊': '丙', 
+                   '己': '丙', '庚': '丁', '辛': '丁', '壬': '丙', '癸': '丙'},
+            # 夏月（火炎，需水济）
+            '午': {'甲': '壬', '乙': '癸', '丙': '壬', '丁': '壬', '戊': '壬', 
+                   '己': '癸', '庚': '壬', '辛': '壬', '壬': '辛', '癸': '辛'},
+            '巳': {'甲': '庚', '乙': '癸', '丙': '壬', '丁': '壬', '戊': '甲', 
+                   '己': '甲', '庚': '壬', '辛': '壬', '壬': '辛', '癸': '辛'},
+            '未': {'甲': '癸', '乙': '癸', '丙': '壬', '丁': '壬', '戊': '甲', 
+                   '己': '甲', '庚': '壬', '辛': '壬', '壬': '辛', '癸': '辛'},
+        }
+        
+        if not month_zhi or month_zhi not in tiaohou_table:
+            return None
+        
+        if rizhu not in tiaohou_table[month_zhi]:
+            return None
+        
+        tiaohou_tiangan = tiaohou_table[month_zhi][rizhu]
+        tiaohou_wuxing = self.TIANGAN_WUXING.get(tiaohou_tiangan)
+        
+        return tiaohou_wuxing
     
     def _get_siji_yongshen(self, rizhu: str, birth_dt: datetime, solar_term: str = '') -> str:
         """获取四季用神参考"""
