@@ -1,6 +1,6 @@
 {
-  "input_file": "tests\\example_input.json",
-  "process_time": "20251208_010239",
+  "input_file": "tests\\example_input.csv",
+  "process_time": "20251208_212431",
   "total": 5,
   "success": 5,
   "failed": 0,
@@ -16,35 +16,46 @@
         "longitude": 116.4074,
         "latitude": 39.9042
       },
-      "comprehensive_score": 75,
+      "comprehensive_score": 73,
       "wuge": {
         "tiange": {
           "num": 12,
           "element": "木",
-          "fortune": "凶"
+          "fortune": "凶",
+          "meaning": "意志薄弱，家庭缘薄",
+          "category": "不足运"
         },
         "renge": {
           "num": 22,
           "element": "木",
-          "fortune": "凶"
+          "fortune": "凶",
+          "meaning": "秋草逢霜，怀才不遇",
+          "category": "逆境运"
         },
         "dige": {
           "num": 12,
           "element": "木",
-          "fortune": "凶"
+          "fortune": "凶",
+          "meaning": "意志薄弱，家庭缘薄",
+          "category": "不足运"
         },
         "waige": {
           "num": 2,
           "element": "木",
-          "fortune": "凶"
+          "fortune": "凶",
+          "meaning": "根基不牢，混沌未定",
+          "category": "破坏运"
         },
         "zongge": {
           "num": 22,
           "element": "木",
-          "fortune": "凶"
+          "fortune": "凶",
+          "meaning": "秋草逢霜，怀才不遇",
+          "category": "逆境运"
         },
         "sancai": "木木木 - 大吉",
-        "score": 60
+        "score": 60,
+        "sancai_meaning": "根深蒂固，蓬勃发展，安泰吉祥，配置上等"
       },
       "bazi": {
         "bazi_str": "己巳 丁丑 庚辰 辛巳",
@@ -82,19 +93,19 @@
           "percent": 37.736720554272516
         },
         "rizhu": "庚",
-        "siji": "日主天干金生于冬季",
+        "siji": "日主天干金生于冬季，必须有火、土相助，忌无火、土反而有金、水，忌木多而无火。",
         "xiyong_shen": [
           "木",
-          "火",
           "水"
         ],
+        "xiyong_desc": "日主庚(金)身强 同类:62.3% 身强喜克泄耗 | 用神为木(财星)，喜神为水(食伤)；调候用神为火(官杀)",
         "ji_shen": [
-          "金",
-          "土"
+          "土",
+          "金"
         ],
-        "score": 85,
+        "score": 80,
         "lunar_date": "1989年12月19日巳时",
-        "color": "绿色、青色、翠色、红色、紫色、粉色、黑色、蓝色、灰色"
+        "color": "绿色、青色、翠色、黑色、蓝色、灰色"
       },
       "ziyi": {
         "analysis": "姓名'张伟'字义音形分析结果",
@@ -130,35 +141,46 @@
         "longitude": 121.4737,
         "latitude": 31.2304
       },
-      "comprehensive_score": 84,
+      "comprehensive_score": 80,
       "wuge": {
         "tiange": {
           "num": 8,
           "element": "金",
-          "fortune": "吉"
+          "fortune": "吉",
+          "meaning": "意志刚健，勤勉发展，贯彻志望",
+          "category": "坚刚运"
         },
         "renge": {
           "num": 16,
           "element": "土",
-          "fortune": "大吉"
+          "fortune": "大吉",
+          "meaning": "贵人得助，能获众望，成就大业",
+          "category": "首领运"
         },
         "dige": {
           "num": 10,
           "element": "水",
-          "fortune": "凶"
+          "fortune": "凶",
+          "meaning": "万事终局，暗藏险恶",
+          "category": "零暗运"
         },
         "waige": {
           "num": 2,
           "element": "木",
-          "fortune": "凶"
+          "fortune": "凶",
+          "meaning": "根基不牢，混沌未定",
+          "category": "破坏运"
         },
         "zongge": {
           "num": 16,
           "element": "土",
-          "fortune": "大吉"
+          "fortune": "大吉",
+          "meaning": "贵人得助，能获众望，成就大业",
+          "category": "首领运"
         },
         "sancai": "金土水 - 凶",
-        "score": 77
+        "score": 77,
+        "sancai_meaning": "成功运被压抑，基础不稳，易生突发之灾"
       },
       "bazi": {
         "bazi_str": "壬申 乙巳 丙申 乙未",
@@ -196,19 +218,15 @@
           "percent": 47.246850209986
         },
         "rizhu": "丙",
-        "siji": "日主天干火生于夏季",
+        "siji": "日主天干火生于夏季，必须有水相助，金（生水源）为佳，忌木火（炎燥太过），忌火炎土燥无水。",
         "xiyong_shen": [
-          "土",
-          "金",
           "水"
         ],
-        "ji_shen": [
-          "火",
-          "木"
-        ],
-        "score": 95,
+        "xiyong_desc": "日主丙(火)中和 同类:52.8% 五行平衡，顺其自然",
+        "ji_shen": [],
+        "score": 85,
         "lunar_date": "1992年4月18日未时",
-        "color": "黄色、棕色、咖啡色、白色、金色、银色、黑色、蓝色、灰色"
+        "color": "黑色、蓝色、灰色"
       },
       "ziyi": {
         "analysis": "姓名'李娜'字义音形分析结果",
@@ -244,35 +262,46 @@
         "longitude": 113.2644,
         "latitude": 23.1291
       },
-      "comprehensive_score": 81,
+      "comprehensive_score": 77,
       "wuge": {
         "tiange": {
           "num": 5,
           "element": "土",
-          "fortune": "大吉"
+          "fortune": "大吉",
+          "meaning": "五行之数，循环相生，福祉无穷",
+          "category": "福禄运"
         },
         "renge": {
           "num": 15,
           "element": "土",
-          "fortune": "大吉"
+          "fortune": "大吉",
+          "meaning": "福寿圆满，涵养雅量，德高望重",
+          "category": "财富运"
         },
         "dige": {
           "num": 12,
           "element": "木",
-          "fortune": "凶"
+          "fortune": "凶",
+          "meaning": "意志薄弱，家庭缘薄",
+          "category": "不足运"
         },
         "waige": {
           "num": 2,
           "element": "木",
-          "fortune": "凶"
+          "fortune": "凶",
+          "meaning": "根基不牢，混沌未定",
+          "category": "破坏运"
         },
         "zongge": {
           "num": 15,
           "element": "土",
-          "fortune": "大吉"
+          "fortune": "大吉",
+          "meaning": "福寿圆满，涵养雅量，德高望重",
+          "category": "财富运"
         },
         "sancai": "土土木 - 平",
-        "score": 80
+        "score": 80,
+        "sancai_meaning": "配置一般，需综合分析"
       },
       "bazi": {
         "bazi_str": "乙丑 己卯 丙午 壬辰",
@@ -310,19 +339,18 @@
           "percent": 41.760722347629795
         },
         "rizhu": "丙",
-        "siji": "日主天干火生于春季",
+        "siji": "日主天干火生于春季，必须有水相助，金（生水）为佳，忌木（火旺）、土（晦火），忌木多火炽而无水制。",
         "xiyong_shen": [
-          "土",
-          "金",
-          "水"
+          "金"
         ],
+        "xiyong_desc": "日主丙(火)身强 同类:58.2% 身强喜克泄耗 | 用神为金(财星)",
         "ji_shen": [
-          "火",
-          "木"
+          "木",
+          "火"
         ],
-        "score": 85,
+        "score": 75,
         "lunar_date": "1985年1月17日辰时",
-        "color": "黄色、棕色、咖啡色、白色、金色、银色、黑色、蓝色、灰色"
+        "color": "白色、金色、银色"
       },
       "ziyi": {
         "analysis": "姓名'王强'字义音形分析结果",
@@ -358,35 +386,46 @@
         "longitude": 114.0579,
         "latitude": 22.5431
       },
-      "comprehensive_score": 75,
+      "comprehensive_score": 73,
       "wuge": {
         "tiange": {
           "num": 16,
           "element": "土",
-          "fortune": "大吉"
+          "fortune": "大吉",
+          "meaning": "贵人得助，能获众望，成就大业",
+          "category": "首领运"
         },
         "renge": {
           "num": 22,
           "element": "木",
-          "fortune": "凶"
+          "fortune": "凶",
+          "meaning": "秋草逢霜，怀才不遇",
+          "category": "逆境运"
         },
         "dige": {
           "num": 8,
           "element": "金",
-          "fortune": "吉"
+          "fortune": "吉",
+          "meaning": "意志刚健，勤勉发展，贯彻志望",
+          "category": "坚刚运"
         },
         "waige": {
           "num": 2,
           "element": "木",
-          "fortune": "凶"
+          "fortune": "凶",
+          "meaning": "根基不牢，混沌未定",
+          "category": "破坏运"
         },
         "zongge": {
           "num": 22,
           "element": "木",
-          "fortune": "凶"
+          "fortune": "凶",
+          "meaning": "秋草逢霜，怀才不遇",
+          "category": "逆境运"
         },
         "sancai": "土木金 - 平",
-        "score": 67
+        "score": 67,
+        "sancai_meaning": "配置一般，需综合分析"
       },
       "bazi": {
         "bazi_str": "戊辰 癸亥 己丑 壬申",
@@ -424,19 +463,19 @@
           "percent": 65.1567944250871
         },
         "rizhu": "己",
-        "siji": "日主天干土生于冬季",
+        "siji": "日主天干土生于冬季，必须有火相助，土为佳，忌木（克土）、水（寒湿），忌水多土流无火。",
         "xiyong_shen": [
-          "土",
           "火"
         ],
+        "xiyong_desc": "日主己(土)身弱 同类:34.8% 身弱喜生扶 | 用神为火(印星)；调候用神为火(印星)",
         "ji_shen": [
           "木",
           "金",
           "水"
         ],
-        "score": 80,
+        "score": 75,
         "lunar_date": "1988年10月22日申时",
-        "color": "黄色、棕色、咖啡色、红色、紫色、粉色"
+        "color": "红色、紫色、粉色"
       },
       "ziyi": {
         "analysis": "姓名'刘芳'字义音形分析结果",
@@ -477,30 +516,41 @@
         "tiange": {
           "num": 11,
           "element": "木",
-          "fortune": "大吉"
+          "fortune": "大吉",
+          "meaning": "草木逢春，稳健着实，富贵荣达",
+          "category": "稳健运"
         },
         "renge": {
           "num": 18,
           "element": "金",
-          "fortune": "吉"
+          "fortune": "吉",
+          "meaning": "铁镜重磨，权威显达，博得名利",
+          "category": "艺能运"
         },
         "dige": {
           "num": 9,
           "element": "水",
-          "fortune": "凶"
+          "fortune": "凶",
+          "meaning": "舟破浪急，兴尽凶始",
+          "category": "破舟进海"
         },
         "waige": {
           "num": 2,
           "element": "木",
-          "fortune": "凶"
+          "fortune": "凶",
+          "meaning": "根基不牢，混沌未定",
+          "category": "破坏运"
         },
         "zongge": {
           "num": 18,
           "element": "金",
-          "fortune": "吉"
+          "fortune": "吉",
+          "meaning": "铁镜重磨，权威显达，博得名利",
+          "category": "艺能运"
         },
         "sancai": "木金水 - 半吉",
-        "score": 79
+        "score": 79,
+        "sancai_meaning": "配置一般，需综合分析"
       },
       "bazi": {
         "bazi_str": "乙亥 癸未 甲辰 庚午",
@@ -538,12 +588,13 @@
           "percent": 43.40155257586451
         },
         "rizhu": "甲",
-        "siji": "日主天干木生于夏季",
+        "siji": "日主天干木生于夏季，必须有水相助，金（生水）为佳，忌火（炎燥）、土（克水），忌火土炎燥而无水。",
         "xiyong_shen": [
           "火",
           "土",
           "金"
         ],
+        "xiyong_desc": "日主甲(木)身强 同类:56.6% 身强喜克泄耗 | 五行流通为宜，喜神为火(食伤)/土(财星)/金(官杀)；调候用神为水(印星)",
         "ji_shen": [
           "木",
           "水"
