@@ -210,12 +210,12 @@ def main():
             
             result = processor.process_file(args.batch)
             if result['success']:
-                print(f"\n✓ 批量处理完成")
+                print(f"\n[完成] 批量处理完成")
                 print(f"  成功: {result['success_count']} 条")
                 print(f"  失败: {result['failed_count']} 条")
                 print(f"  结果已保存到: {result['output_file']}")
             else:
-                print(f"\n✗ 批量处理失败: {result.get('error', '未知错误')}")
+                print(f"\n[错误] 批量处理失败: {result.get('error', '未知错误')}")
                 return 1
             return 0
         

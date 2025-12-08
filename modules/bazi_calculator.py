@@ -109,6 +109,180 @@ class BaziCalculator:
             {'甲': [360, 318, 342, 360, 330, 300, 300, 312, 318, 300, 300, 360],
              '壬': [840, 770, 700, 700, 728, 742, 700, 700, 840, 840, 724, 798]},
         ]
+        
+        # 四季用神速查表（来自传统命理典籍）
+        self.SIJI_YONGSHEN_TABLE = {
+            '木': {
+                '春季': {
+                    'yongshen': '火',
+                    'theory': '初春木旺，需火泄秀',
+                    'must_have': '火',
+                    'better_have': '水、土',
+                    'avoid': '金（克木）',
+                    'bad_pattern': '木多无火（郁而不发）'
+                },
+                '夏季': {
+                    'yongshen': '水',
+                    'theory': '夏月木火俱旺，需水润局',
+                    'must_have': '水',
+                    'better_have': '金（生水）',
+                    'avoid': '火（炎燥）、土（克水）',
+                    'bad_pattern': '火土炎燥而无水'
+                },
+                '秋季': {
+                    'yongshen': '水',
+                    'theory': '金旺克木，水生木为用',
+                    'must_have': '水',
+                    'better_have': '土（泄金）',
+                    'avoid': '金（克重）',
+                    'bad_pattern': '金多木折'
+                },
+                '冬季': {
+                    'yongshen': '火',
+                    'theory': '冬月水寒木冻，需火暖局',
+                    'must_have': '火',
+                    'better_have': '土、木',
+                    'avoid': '水（太寒）、金（无火）',
+                    'bad_pattern': '水多木漂而无火'
+                }
+            },
+            '火': {
+                '春季': {
+                    'yongshen': '水',
+                    'theory': '春木助火，火势炎上',
+                    'must_have': '水',
+                    'better_have': '金（生水）',
+                    'avoid': '木（火旺）、土（晦火）',
+                    'bad_pattern': '木多火炽而无水制'
+                },
+                '夏季': {
+                    'yongshen': '水',
+                    'theory': '夏月火炎，水为急需',
+                    'must_have': '水',
+                    'better_have': '金（生水源）',
+                    'avoid': '木火（炎燥太过）',
+                    'bad_pattern': '火炎土燥无水'
+                },
+                '秋季': {
+                    'yongshen': '木',
+                    'theory': '金旺火囚，木生火为用',
+                    'must_have': '木',
+                    'better_have': '土',
+                    'avoid': '水（灭火）、金（克木）',
+                    'bad_pattern': '金水旺而无木'
+                },
+                '冬季': {
+                    'yongshen': '木',
+                    'theory': '冬月水旺火灭，木生火为急',
+                    'must_have': '木',
+                    'better_have': '土',
+                    'avoid': '水（克火）',
+                    'bad_pattern': '水多火灭'
+                }
+            },
+            '土': {
+                '春季': {
+                    'yongshen': '火',
+                    'theory': '春月木旺克土，火生土为用',
+                    'must_have': '火',
+                    'better_have': '金、土',
+                    'avoid': '木（克土太过）',
+                    'bad_pattern': '木多土崩无火'
+                },
+                '夏季': {
+                    'yongshen': '水',
+                    'theory': '夏月土燥，水润土为用',
+                    'must_have': '水',
+                    'better_have': '金（生水）',
+                    'avoid': '火（燥土）',
+                    'bad_pattern': '火炎土焦无水'
+                },
+                '秋季': {
+                    'yongshen': '火',
+                    'theory': '金旺泄土，火生土为用',
+                    'must_have': '火',
+                    'better_have': '木',
+                    'avoid': '金（泄土气）',
+                    'bad_pattern': '金多土弱无火'
+                },
+                '冬季': {
+                    'yongshen': '火',
+                    'theory': '冬月土寒，火暖土为用',
+                    'must_have': '火',
+                    'better_have': '土',
+                    'avoid': '木（克土）、水（寒湿）',
+                    'bad_pattern': '水多土流无火'
+                }
+            },
+            '金': {
+                '春季': {
+                    'yongshen': '土',
+                    'theory': '春月木旺金缺，土生金为用',
+                    'must_have': '土',
+                    'better_have': '火（炼金）',
+                    'avoid': '木（克金）',
+                    'bad_pattern': '木旺金缺无土'
+                },
+                '夏季': {
+                    'yongshen': '水',
+                    'theory': '夏月火旺金熔，水泄秀为用',
+                    'must_have': '水',
+                    'better_have': '土（生金）',
+                    'avoid': '火（克金）、木（生火）',
+                    'bad_pattern': '火旺金熔无水'
+                },
+                '秋季': {
+                    'yongshen': '火',
+                    'theory': '金旺需火锻炼成器',
+                    'must_have': '火',
+                    'better_have': '木（生火）',
+                    'avoid': '金（太旺）、土（埋金）',
+                    'bad_pattern': '金多无火锻炼'
+                },
+                '冬季': {
+                    'yongshen': '火',
+                    'theory': '冬月水寒金冷，火暖金为用',
+                    'must_have': '火、土',
+                    'better_have': '',
+                    'avoid': '无火、土反而有金、水',
+                    'bad_pattern': '木多而无火'
+                }
+            },
+            '水': {
+                '春季': {
+                    'yongshen': '金',
+                    'theory': '春木泄水，金生水为用',
+                    'must_have': '金',
+                    'better_have': '土（制木）',
+                    'avoid': '木（泄水）',
+                    'bad_pattern': '木多水缩无金'
+                },
+                '夏季': {
+                    'yongshen': '金',
+                    'theory': '夏月水弱，金生水为用',
+                    'must_have': '金',
+                    'better_have': '水',
+                    'avoid': '火（克金）、土（克水）',
+                    'bad_pattern': '火土旺而无金水'
+                },
+                '秋季': {
+                    'yongshen': '木',
+                    'theory': '金多水浊，木泄秀为用',
+                    'must_have': '木',
+                    'better_have': '火',
+                    'avoid': '土（克水）、金（水浊）',
+                    'bad_pattern': '金多水浊无木'
+                },
+                '冬季': {
+                    'yongshen': '火',
+                    'theory': '冬月水寒，火暖局为用',
+                    'must_have': '火',
+                    'better_have': '土',
+                    'avoid': '金（助水）、水（太寒）',
+                    'bad_pattern': '水多无火土'
+                }
+            }
+        }
     
     def calculate_bazi(self, birth_dt: datetime, wannianli_data: dict, longitude: float,
                       latitude: float) -> Dict:
@@ -178,7 +352,12 @@ class BaziCalculator:
         yilei_percent = (yilei_strength / total_strength * 100) if total_strength > 0 else 0
         
         # 9. 确定喜用神
-        xiyong_shen, ji_shen = self._determine_xiyongshen(rizhu, wuxing_count, lunar_month, bazi_str)
+        xiyong_result = self._determine_xiyongshen(rizhu, wuxing_count, lunar_month, bazi_str)
+        if isinstance(xiyong_result, tuple) and len(xiyong_result) == 3:
+            xiyong_shen, ji_shen, xiyong_desc = xiyong_result
+        else:
+            xiyong_shen, ji_shen = xiyong_result
+            xiyong_desc = ""
         
         # 10. 四季用神参考
         solar_term = wannianli_data.get('solar_term', '') if wannianli_data else ''
@@ -203,6 +382,7 @@ class BaziCalculator:
             'rizhu': rizhu,
             'siji': siji_yongshen,
             'xiyong_shen': xiyong_shen,
+            'xiyong_desc': xiyong_desc,
             'ji_shen': ji_shen,
             'score': self._calculate_bazi_score(wuxing_count, xiyong_shen),
             'lunar_date': lunar_date
@@ -641,6 +821,7 @@ class BaziCalculator:
                 xiyong_labels = yongshen + xishen
                 
                 # === 生成专业描述 ===
+                formatted_desc = ""
                 if strength_status == 'strong':
                     theory = "身强喜克泄耗"
                     if yongshen:
@@ -654,6 +835,7 @@ class BaziCalculator:
                         desc += f"；调候用神为{tiaohou_label}"
                     
                     logger.info(f"日主{rizhu}({rizhu_wx})身强 同类:{tongyi_ratio:.1%} {theory} | {desc}")
+                    formatted_desc = f"日主{rizhu}({rizhu_wx})身强 同类:{tongyi_ratio:.1%} {theory} | {desc}"
                     
                 elif strength_status == 'weak':
                     theory = "身弱喜生扶"
@@ -668,9 +850,11 @@ class BaziCalculator:
                         desc += f"；调候用神为{tiaohou_label}"
                     
                     logger.info(f"日主{rizhu}({rizhu_wx})身弱 同类:{tongyi_ratio:.1%} {theory} | {desc}")
+                    formatted_desc = f"日主{rizhu}({rizhu_wx})身弱 同类:{tongyi_ratio:.1%} {theory} | {desc}"
                     
                 else:  # balanced
                     logger.info(f"日主{rizhu}({rizhu_wx})中和 同类:{tongyi_ratio:.1%} 五行平衡，顺其自然")
+                    formatted_desc = f"日主{rizhu}({rizhu_wx})中和 同类:{tongyi_ratio:.1%} 五行平衡，顺其自然"
                     if tiaohou_wu:
                         tiaohou_label = f"{tiaohou_wu}({shishen_names.get(tiaohou_wu, '调候')})"
                         xiyong_labels = [tiaohou_label]  # 中和八字，调候为主
@@ -683,7 +867,7 @@ class BaziCalculator:
                 xiyong_pure = list(dict.fromkeys(xiyong_pure))
                 jishen_pure = list(dict.fromkeys(jishen_pure))
                 
-                return xiyong_pure, jishen_pure
+                return xiyong_pure, jishen_pure, formatted_desc
                 
             except Exception as e:
                 logger.warning(f"高级喜用神计算失败，使用简化方法: {e}")
@@ -747,7 +931,17 @@ class BaziCalculator:
         return tiaohou_wuxing
     
     def _get_siji_yongshen(self, rizhu: str, birth_dt: datetime, solar_term: str = '') -> str:
-        """获取四季用神参考"""
+        """获取四季用神参考（返回详细描述）
+        
+        Args:
+            rizhu: 日主天干
+            birth_dt: 出生日期时间
+            solar_term: 节气名称（可选）
+            
+        Returns:
+            格式化的四季用神描述，如：
+            "日主天干金生于冬季,必须有火、土相助，忌无火、土反而有金、水，忌木多而无火。"
+        """
         rizhu_wx = self.TIANGAN_WUXING.get(rizhu, '土')
         
         spring_terms = ['立春', '雨水', '惊蛰', '春分', '清明', '谷雨']
@@ -755,6 +949,7 @@ class BaziCalculator:
         autumn_terms = ['立秋', '处暑', '白露', '秋分', '寒露', '霜降']
         winter_terms = ['立冬', '小雪', '大雪', '冬至', '小寒', '大寒']
         
+        # 判断季节
         if solar_term:
             if solar_term in spring_terms:
                 season = "春季"
@@ -769,6 +964,32 @@ class BaziCalculator:
         else:
             season = self._get_season_by_solar_term_query(birth_dt)
         
+        # 从速查表获取详细信息
+        if rizhu_wx in self.SIJI_YONGSHEN_TABLE and season in self.SIJI_YONGSHEN_TABLE[rizhu_wx]:
+            siji_info = self.SIJI_YONGSHEN_TABLE[rizhu_wx][season]
+            
+            # 构建描述
+            desc_parts = [f"日主天干{rizhu_wx}生于{season}"]
+            
+            # 必须有
+            if siji_info['must_have']:
+                desc_parts.append(f"必须有{siji_info['must_have']}相助")
+            
+            # 更好有
+            if siji_info['better_have']:
+                desc_parts.append(f"{siji_info['better_have']}为佳")
+            
+            # 忌讳
+            if siji_info['avoid']:
+                desc_parts.append(f"忌{siji_info['avoid']}")
+            
+            # 不良格局
+            if siji_info['bad_pattern']:
+                desc_parts.append(f"忌{siji_info['bad_pattern']}")
+            
+            return "，".join(desc_parts) + "。"
+        
+        # 降级：返回简单描述
         return f"日主天干{rizhu_wx}生于{season}"
     
     def _get_season_by_month(self, month: int) -> str:

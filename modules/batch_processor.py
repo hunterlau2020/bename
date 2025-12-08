@@ -298,10 +298,12 @@ class BatchProcessor:
         results = []
         total = len(records)
         
-        print(f"\n开始批量处理 {total} 条记录...\n")
+        print(f"\n{'='*70}")
+        print(f"开始批量处理 {total} 条记录")
+        print(f"{'='*70}\n")
         
         for idx, record in enumerate(records, 1):
-            print(f"处理 [{idx}/{total}]: {record['name']} ...", end=' ')
+            print(f"[{idx}/{total}] {record['name']}", end=' ')
             
             try:
                 # 准备参数
@@ -343,33 +345,73 @@ class BatchProcessor:
                 
                 # 显示八字信息
                 bazi = result.get('bazi', {})
+                score = result.get('comprehensive_score', 0)
                 if bazi:
-                    print("✓")
-                    print(f"    八字: {bazi.get('bazi_str', '')}")
+                    print(f"[成功] 综合评分: {score}分")
+                    print(f"  八字: {bazi.get('bazi_str', '')}")
+                    print(f"  日主: {bazi.get('rizhu', '')} - {bazi.get('siji', '')}")
                     
-                    # 显示五行强度
+                    # 显示五行强度（更紧凑的格式）
                     if 'wuxing_strength' in bazi:
                         strength = bazi['wuxing_strength']
-                        total = sum(strength.values())
+                        total_strength = sum(strength.values())
                         strength_parts = []
                         for wx in ['木', '火', '土', '金', '水']:
                             s = strength.get(wx, 0)
-                            percent = (s / total * 100) if total > 0 else 0
-                            strength_parts.append(f"{wx}{s}({percent:.1f}%)")
-                        print(f"    五行强度: {' '.join(strength_parts)}")
+                            percent = (s / total_strength * 100) if total_strength > 0 else 0
+                            # 强度状态标记
+                            if s < 100:
+                                mark = '!'
+                            elif s < 500:
+                                mark = '-'
+                            elif s >= 1500:
+                                mark = '+'
+                            else:
+                                mark = ''
+                            strength_parts.append(f"{wx}{s}{mark}")
+                        print(f"  五行: {' '.join(strength_parts)}  (!极弱 -弱 +旺)")
                     
-                    # 显示同类异类
+                    # 显示同类异类和喜用神
                     if 'tongyi' in bazi and 'yilei' in bazi:
                         tongyi = bazi['tongyi']
                         yilei = bazi['yilei']
-                        print(f"    同类({''.join(tongyi['elements'])}): {tongyi['strength']} ({tongyi['percent']:.1f}%)")
-                        print(f"    异类({''.join(yilei['elements'])}): {yilei['strength']} ({yilei['percent']:.1f}%)")
-                        if tongyi['strength'] > yilei['strength']:
-                            print(f"    日主偏强，喜用神: {' '.join(bazi.get('xiyong_shen', []))}")
+                        tongyi_elem = ''.join(tongyi['elements'])
+                        yilei_elem = ''.join(yilei['elements'])
+                        print(f"  同类({tongyi_elem}){tongyi['strength']}({tongyi['percent']:.1f}%) | "
+                              f"异类({yilei_elem}){yilei['strength']}({yilei['percent']:.1f}%)")
+                        
+                        xiyong = bazi.get('xiyong_shen', [])
+                        ji = bazi.get('ji_shen', [])
+                        if tongyi['percent'] > 55:
+                            status = "身强"
+                        elif tongyi['percent'] < 45:
+                            status = "身弱"
                         else:
-                            print(f"    日主偏弱，喜用神: {' '.join(bazi.get('xiyong_shen', []))}")
+                            status = "中和"
+                        
+                        print(f"  判断: {status} | 喜用: {','.join(xiyong)}", end='')
+                        if ji:
+                            print(f" | 忌: {','.join(ji)}")
+                        else:
+                            print()
+                    
+                    # 显示四季用神参考
+                    if bazi.get('siji'):
+                        siji = bazi['siji']
+                        # 如果是详细格式，显示完整信息
+                        if len(siji) > 20:  # 详细格式通常较长
+                            print(f"  四季: {siji}")
+                    
+                    # 显示五格信息（紧凑格式）
+                    if 'wuge' in result:
+                        wuge = result['wuge']
+                        print(f"  五格: 天{wuge['tiange']['num']}({wuge['tiange']['fortune']}) "
+                              f"人{wuge['renge']['num']}({wuge['renge']['fortune']}) "
+                              f"地{wuge['dige']['num']}({wuge['dige']['fortune']}) "
+                              f"外{wuge['waige']['num']}({wuge['waige']['fortune']}) "
+                              f"总{wuge['zongge']['num']}({wuge['zongge']['fortune']}) | {wuge['sancai']}")
                 else:
-                    print("✓")
+                    print(f"[成功] 综合评分: {score}分")
                 
             except ValueError as ve:
                 error_msg = str(ve)
@@ -378,7 +420,7 @@ class BatchProcessor:
                     'name': record.get('name', '未知'),
                     'error': error_msg
                 })
-                print(f"✗ {error_msg}")
+                print(f"[失败] {error_msg}")
                 logger.error(f"数据验证失败 {name}: {error_msg}")
                 
             except Exception as e:
@@ -388,8 +430,14 @@ class BatchProcessor:
                     'name': record.get('name', '未知'),
                     'error': error_msg
                 })
-                print(f"✗ {error_msg}")
+                print(f"[失败] {error_msg}")
                 logger.exception(f"处理记录失败: {record}")
+        
+        print(f"\n{'='*70}")
+        print(f"批量处理完成")
+        print(f"总计: {total} 条 | 成功: {sum(1 for r in results if r['success'])} 条 | "
+              f"失败: {sum(1 for r in results if not r['success'])} 条")
+        print(f"{'='*70}\n")
         
         return results
     
