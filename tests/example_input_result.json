@@ -1,16 +1,16 @@
 {
   "input_file": "tests\\example_input.csv",
-  "process_time": "20251208_234224",
+  "process_time": "20251209_014357",
   "total": 5,
   "success": 5,
   "failed": 0,
   "results": [
     {
-      "name": "张伟",
+      "name": "张秉猴",
       "success": true,
       "basic_info": {
         "surname": "张",
-        "given_name": "伟",
+        "given_name": "秉猴",
         "gender": "男",
         "birth_time": "1990-01-15 10:30",
         "longitude": 116.4074,
@@ -27,16 +27,25 @@
           "luck": "吉"
         },
         {
-          "character": "伟",
-          "traditional": "偉",
-          "strokes": 11,
-          "radical": "亻",
-          "bs_strokes": 2,
-          "wuxing": "土",
+          "character": "秉",
+          "traditional": "秉",
+          "strokes": 8,
+          "radical": "禾",
+          "bs_strokes": 5,
+          "wuxing": "水",
           "luck": "吉"
+        },
+        {
+          "character": "猴",
+          "traditional": "猴",
+          "strokes": 13,
+          "radical": "犭",
+          "bs_strokes": 3,
+          "wuxing": "木",
+          "luck": "中"
         }
       ],
-      "comprehensive_score": 77,
+      "comprehensive_score": 79,
       "wuge": {
         "tiange": {
           "num": 12,
@@ -46,36 +55,36 @@
           "category": "不足运"
         },
         "renge": {
-          "num": 22,
-          "element": "木",
+          "num": 19,
+          "element": "水",
           "fortune": "凶",
-          "meaning": "秋草逢霜，怀才不遇",
-          "category": "逆境运"
+          "meaning": "风云蔽日，成功虽早",
+          "category": "多难运"
         },
         "dige": {
-          "num": 12,
+          "num": 21,
           "element": "木",
-          "fortune": "凶",
-          "meaning": "意志薄弱，家庭缘薄",
-          "category": "不足运"
+          "fortune": "大吉",
+          "meaning": "天官赐福，明月光照，独立权威",
+          "category": "首领运"
         },
         "waige": {
-          "num": 2,
-          "element": "木",
+          "num": 14,
+          "element": "火",
           "fortune": "凶",
-          "meaning": "根基不牢，混沌未定",
-          "category": "破坏运"
+          "meaning": "忍得苦难，时来运转",
+          "category": "破兆运"
         },
         "zongge": {
-          "num": 22,
+          "num": 32,
           "element": "木",
-          "fortune": "凶",
-          "meaning": "秋草逢霜，怀才不遇",
-          "category": "逆境运"
+          "fortune": "大吉",
+          "meaning": "宝马金鞍，侥幸多望，前途无限",
+          "category": "财富运"
         },
-        "sancai": "木木木 - 大吉",
-        "score": 60,
-        "sancai_meaning": "根深蒂固，蓬勃发展，安泰吉祥，配置上等"
+        "sancai": "木水木 - 凶",
+        "score": 70,
+        "sancai_meaning": "虽可获一时成功，但因基础不稳而易生突变"
       },
       "bazi": {
         "bazi_str": "己巳 丁丑 庚辰 辛巳",
@@ -128,25 +137,27 @@
         "color": "绿色、青色、翠色、黑色、蓝色、灰色"
       },
       "ziyi": {
-        "score": 100,
+        "score": 91,
         "luck_analysis": {
-          "score": 100,
+          "score": 92,
           "details": [
             "張(吉)",
-            "偉(吉)"
+            "秉(吉)",
+            "猴(中)"
           ],
           "comment": "字义吉祥，寓意美好"
         },
         "tone_analysis": {
-          "score": 100,
-          "pattern": "阴平上声",
+          "score": 90,
+          "pattern": "阴平上声阳平",
           "tones": [
             1,
-            3
+            3,
+            2
           ],
-          "comment": "音调多变，平仄相间，音韵和谐"
+          "comment": "音调多变，平仄相间"
         },
-        "analysis": "【字义吉凶】張(吉) 偉(吉) - 字义吉祥，寓意美好\n【音韵分析】阴平上声 - 音调多变，平仄相间，音韵和谐\n【综合评价】字义音韵俱佳，是理想的姓名",
+        "analysis": "【字义吉凶】張(吉) 秉(吉) 猴(中) - 字义吉祥，寓意美好\n【音韵分析】阴平上声阳平 - 音调多变，平仄相间\n【综合评价】字义音韵俱佳，是理想的姓名",
         "chars_detail": [
           {
             "character": "张",
@@ -157,27 +168,134 @@
             "radical": "弓"
           },
           {
-            "character": "伟",
-            "traditional": "偉",
-            "pinyin": "wěi",
+            "character": "秉",
+            "traditional": "秉",
+            "pinyin": "bǐng",
             "luck": "吉",
-            "wuxing": "土",
-            "radical": "亻"
+            "wuxing": "水",
+            "radical": "禾"
+          },
+          {
+            "character": "猴",
+            "traditional": "猴",
+            "pinyin": "hóu",
+            "luck": "中",
+            "wuxing": "木",
+            "radical": "犭"
           }
         ]
       },
       "shengxiao": {
-        "shengxiao": "马",
+        "shengxiao": "蛇",
+        "wuxing": "火",
+        "sanhe": [
+          "牛",
+          "鸡"
+        ],
+        "liuhe": "猴",
         "xi_zigen": [
-          "艹",
+          "口",
+          "宀",
           "木",
-          "禾"
+          "田",
+          "禾",
+          "虫",
+          "豆",
+          "米",
+          "酉",
+          "丑"
         ],
         "ji_zigen": [
-          "火",
-          "日"
+          "日",
+          "山",
+          "草",
+          "水",
+          "人",
+          "刀",
+          "血",
+          "猪",
+          "虎",
+          "寅"
         ],
-        "score": 80
+        "xi_found": [
+          "禾"
+        ],
+        "ji_found": [],
+        "sanhe_found": [
+          "猴(六合)"
+        ],
+        "wuxing_details": [
+          {
+            "char": "张",
+            "wuxing": "火",
+            "relation": "same",
+            "score_change": 2,
+            "description": "火(同类扶持)"
+          },
+          {
+            "char": "秉",
+            "wuxing": "水",
+            "relation": "ke",
+            "score_change": -5,
+            "description": "水克火(相克不利)"
+          },
+          {
+            "char": "猴",
+            "wuxing": "木",
+            "relation": "sheng",
+            "score_change": 3,
+            "description": "木生火(相生助力)"
+          }
+        ],
+        "score": 85,
+        "comment": "蛇喜洞穴、草丛，喜肉食，忌日光、水，忌猪、虎",
+        "analysis": "生肖蛇：五行属火，三合生肖为牛、鸡，六合生肖为猴\n特性：蛇喜洞穴、草丛，喜肉食，忌日光、水，忌猪、虎\n[O] 姓名五行：张(火(同类扶持))、秉(水克火(相克不利))、猴(木生火(相生助力))\n[+] 姓名含三合/六合生肖字：猴(六合)（增强运势）\n[+] 姓名含喜用字根：禾\n[+] 姓名未含忌用字根\n评价：姓名与生肖十分相合，字根选择理想",
+        "calculation_steps": [
+          {
+            "step": "基础分",
+            "value": 75,
+            "description": "生肖分析基础分"
+          },
+          {
+            "step": "三合/六合",
+            "value": 5,
+            "description": "三合/六合生肖字: +5分",
+            "details": [
+              "猴(六合)"
+            ]
+          },
+          {
+            "step": "喜用字根",
+            "value": 5,
+            "description": "喜用字根1个: +5分",
+            "details": [
+              "禾"
+            ]
+          },
+          {
+            "step": "最终得分",
+            "value": 85,
+            "description": "总分: 85分 (限制在50-100之间)",
+            "evaluation": "姓名与生肖十分相合，字根选择理想"
+          }
+        ],
+        "calculation_summary": "基础分75 +5(三合) +5(喜用) = 85分",
+        "recommended_xi_wuxing": [
+          "火",
+          "木"
+        ],
+        "recommended_ji_wuxing": [
+          "水",
+          "土"
+        ],
+        "recommended_xi_shengxiao": [
+          "牛",
+          "鸡",
+          "猴"
+        ],
+        "recommended_ji_shengxiao": [
+          "猪"
+        ]
       },
       "chenggu": {
         "weight": 3.1,
@@ -216,7 +334,7 @@
           "luck": "吉"
         }
       ],
-      "comprehensive_score": 83,
+      "comprehensive_score": 82,
       "wuge": {
         "tiange": {
           "num": 8,
@@ -344,16 +462,119 @@
       },
       "shengxiao": {
         "shengxiao": "猴",
+        "wuxing": "金",
+        "sanhe": [
+          "鼠",
+          "龙"
+        ],
+        "liuhe": "蛇",
         "xi_zigen": [
-          "艹",
           "木",
-          "禾"
+          "禾",
+          "口",
+          "宀",
+          "人",
+          "王",
+          "君",
+          "豆",
+          "米",
+          "田"
         ],
         "ji_zigen": [
-          "火",
-          "日"
+          "日",
+          "山",
+          "刀",
+          "血",
+          "金",
+          "禾",
+          "虎",
+          "蛇",
+          "猪",
+          "犬"
         ],
-        "score": 80
+        "xi_found": [
+          "木"
+        ],
+        "ji_found": [],
+        "sanhe_found": [],
+        "wuxing_details": [
+          {
+            "char": "李",
+            "wuxing": "木",
+            "relation": "bei_ke",
+            "score_change": -2,
+            "description": "金克木(受克)"
+          },
+          {
+            "char": "娜",
+            "wuxing": "火",
+            "relation": "ke",
+            "score_change": -5,
+            "description": "火克金(相克不利)"
+          }
+        ],
+        "score": 73,
+        "comment": "猴喜树木，喜洞穴、五谷，忌日光、刀血，忌虎、蛇、猪",
+        "analysis": "生肖猴：五行属金，三合生肖为鼠、龙，六合生肖为蛇\n特性：猴喜树木，喜洞穴、五谷，忌日光、刀血，忌虎、蛇、猪\n[-] 姓名五行：李(金克木(受克))、娜(火克金(相克不利))\n[+] 姓名含喜用字根：木\n[+] 姓名未含忌用字根\n评价：姓名与生肖基本相合，字根选择尚可",
+        "calculation_steps": [
+          {
+            "step": "基础分",
+            "value": 75,
+            "description": "生肖分析基础分"
+          },
+          {
+            "step": "五行关系",
+            "value": -7,
+            "description": "五行相生相克: -7分",
+            "details": [
+              {
+                "char": "李",
+                "wuxing": "木",
+                "relation": "bei_ke",
+                "score_change": -2,
+                "description": "金克木(受克)"
+              },
+              {
+                "char": "娜",
+                "wuxing": "火",
+                "relation": "ke",
+                "score_change": -5,
+                "description": "火克金(相克不利)"
+              }
+            ]
+          },
+          {
+            "step": "喜用字根",
+            "value": 5,
+            "description": "喜用字根1个: +5分",
+            "details": [
+              "木"
+            ]
+          },
+          {
+            "step": "最终得分",
+            "value": 73,
+            "description": "总分: 73分 (限制在50-100之间)",
+            "evaluation": "姓名与生肖基本相合，字根选择尚可"
+          }
+        ],
+        "calculation_summary": "基础分75 -7(五行) +5(喜用) = 73分",
+        "recommended_xi_wuxing": [
+          "金",
+          "土"
+        ],
+        "recommended_ji_wuxing": [
+          "火",
+          "水"
+        ],
+        "recommended_xi_shengxiao": [
+          "鼠",
+          "龙",
+          "蛇"
+        ],
+        "recommended_ji_shengxiao": [
+          "虎"
+        ]
       },
       "chenggu": {
         "weight": 4.2,
@@ -392,7 +613,7 @@
           "luck": "吉"
         }
       ],
-      "comprehensive_score": 80,
+      "comprehensive_score": 78,
       "wuge": {
         "tiange": {
           "num": 5,
@@ -523,16 +744,109 @@
       },
       "shengxiao": {
         "shengxiao": "牛",
+        "wuxing": "土",
+        "sanhe": [
+          "蛇",
+          "鸡"
+        ],
+        "liuhe": "鼠",
         "xi_zigen": [
           "艹",
-          "木",
-          "禾"
+          "氵",
+          "水",
+          "田",
+          "车",
+          "禾",
+          "豆",
+          "米",
+          "金",
+          "宀"
         ],
         "ji_zigen": [
+          "日",
+          "山",
+          "彡",
+          "巾",
+          "衣",
+          "马",
+          "羊",
           "火",
-          "日"
+          "血",
+          "刀"
         ],
-        "score": 80
+        "xi_found": [],
+        "ji_found": [],
+        "sanhe_found": [],
+        "wuxing_details": [
+          {
+            "char": "王",
+            "wuxing": "土",
+            "relation": "same",
+            "score_change": 2,
+            "description": "土(同类扶持)"
+          },
+          {
+            "char": "强",
+            "wuxing": "木",
+            "relation": "ke",
+            "score_change": -5,
+            "description": "木克土(相克不利)"
+          }
+        ],
+        "score": 72,
+        "comment": "牛喜食草、水，喜车（耕田），忌太阳、披彩衣，忌马、羊",
+        "analysis": "生肖牛：五行属土，三合生肖为蛇、鸡，六合生肖为鼠\n特性：牛喜食草、水，喜车（耕田），忌太阳、披彩衣，忌马、羊\n[-] 姓名五行：王(土(同类扶持))、强(木克土(相克不利))\n[O] 姓名未含喜用字根\n[+] 姓名未含忌用字根\n评价：姓名与生肖基本相合，字根选择尚可",
+        "calculation_steps": [
+          {
+            "step": "基础分",
+            "value": 75,
+            "description": "生肖分析基础分"
+          },
+          {
+            "step": "五行关系",
+            "value": -3,
+            "description": "五行相生相克: -3分",
+            "details": [
+              {
+                "char": "王",
+                "wuxing": "土",
+                "relation": "same",
+                "score_change": 2,
+                "description": "土(同类扶持)"
+              },
+              {
+                "char": "强",
+                "wuxing": "木",
+                "relation": "ke",
+                "score_change": -5,
+                "description": "木克土(相克不利)"
+              }
+            ]
+          },
+          {
+            "step": "最终得分",
+            "value": 72,
+            "description": "总分: 72分 (限制在50-100之间)",
+            "evaluation": "姓名与生肖基本相合，字根选择尚可"
+          }
+        ],
+        "calculation_summary": "基础分75 -3(五行) = 72分",
+        "recommended_xi_wuxing": [
+          "土",
+          "火"
+        ],
+        "recommended_ji_wuxing": [
+          "木",
+          "金"
+        ],
+        "recommended_xi_shengxiao": [
+          "蛇",
+          "鸡",
+          "鼠"
+        ],
+        "recommended_ji_shengxiao": [
+          "羊"
+        ]
       },
       "chenggu": {
         "weight": 3.3,
@@ -571,7 +885,7 @@
           "luck": "吉"
         }
       ],
-      "comprehensive_score": 81,
+      "comprehensive_score": 80,
       "wuge": {
         "tiange": {
           "num": 16,
@@ -703,16 +1017,109 @@
       },
       "shengxiao": {
         "shengxiao": "龙",
+        "wuxing": "土",
+        "sanhe": [
+          "鼠",
+          "猴"
+        ],
+        "liuhe": "鸡",
         "xi_zigen": [
-          "艹",
-          "木",
-          "禾"
+          "氵",
+          "水",
+          "雨",
+          "云",
+          "王",
+          "大",
+          "君",
+          "帝",
+          "令",
+          "子"
         ],
         "ji_zigen": [
-          "火",
-          "日"
+          "犬",
+          "戌",
+          "田",
+          "山",
+          "虫",
+          "兔",
+          "卯",
+          "羊",
+          "小",
+          "肉"
         ],
-        "score": 80
+        "xi_found": [],
+        "ji_found": [],
+        "sanhe_found": [],
+        "wuxing_details": [
+          {
+            "char": "刘",
+            "wuxing": "火",
+            "relation": "sheng",
+            "score_change": 3,
+            "description": "火生土(相生助力)"
+          },
+          {
+            "char": "芳",
+            "wuxing": "木",
+            "relation": "ke",
+            "score_change": -5,
+            "description": "木克土(相克不利)"
+          }
+        ],
+        "score": 73,
+        "comment": "龙喜水、云雨，喜为王，忌犬、兔，忌下田、山洞",
+        "analysis": "生肖龙：五行属土，三合生肖为鼠、猴，六合生肖为鸡\n特性：龙喜水、云雨，喜为王，忌犬、兔，忌下田、山洞\n[-] 姓名五行：刘(火生土(相生助力))、芳(木克土(相克不利))\n[O] 姓名未含喜用字根\n[+] 姓名未含忌用字根\n评价：姓名与生肖基本相合，字根选择尚可",
+        "calculation_steps": [
+          {
+            "step": "基础分",
+            "value": 75,
+            "description": "生肖分析基础分"
+          },
+          {
+            "step": "五行关系",
+            "value": -2,
+            "description": "五行相生相克: -2分",
+            "details": [
+              {
+                "char": "刘",
+                "wuxing": "火",
+                "relation": "sheng",
+                "score_change": 3,
+                "description": "火生土(相生助力)"
+              },
+              {
+                "char": "芳",
+                "wuxing": "木",
+                "relation": "ke",
+                "score_change": -5,
+                "description": "木克土(相克不利)"
+              }
+            ]
+          },
+          {
+            "step": "最终得分",
+            "value": 73,
+            "description": "总分: 73分 (限制在50-100之间)",
+            "evaluation": "姓名与生肖基本相合，字根选择尚可"
+          }
+        ],
+        "calculation_summary": "基础分75 -2(五行) = 73分",
+        "recommended_xi_wuxing": [
+          "土",
+          "火"
+        ],
+        "recommended_ji_wuxing": [
+          "木",
+          "金"
+        ],
+        "recommended_xi_shengxiao": [
+          "鼠",
+          "猴",
+          "鸡"
+        ],
+        "recommended_ji_shengxiao": [
+          "狗"
+        ]
       },
       "chenggu": {
         "weight": 3.7,
@@ -751,7 +1158,7 @@
           "luck": "吉"
         }
       ],
-      "comprehensive_score": 84,
+      "comprehensive_score": 83,
       "wuge": {
         "tiange": {
           "num": 17,
@@ -884,16 +1291,109 @@
       },
       "shengxiao": {
         "shengxiao": "猪",
+        "wuxing": "水",
+        "sanhe": [
+          "兔",
+          "羊"
+        ],
+        "liuhe": "虎",
         "xi_zigen": [
-          "艹",
+          "豆",
+          "米",
+          "禾",
+          "草",
+          "金",
           "木",
-          "禾"
+          "月",
+          "口",
+          "宀",
+          "田"
         ],
         "ji_zigen": [
-          "火",
-          "日"
+          "刀",
+          "血",
+          "石",
+          "人",
+          "王",
+          "君",
+          "猴",
+          "虎",
+          "蛇",
+          "示"
         ],
-        "score": 80
+        "xi_found": [],
+        "ji_found": [],
+        "sanhe_found": [],
+        "wuxing_details": [
+          {
+            "char": "陈",
+            "wuxing": "火",
+            "relation": "bei_ke",
+            "score_change": -2,
+            "description": "水克火(受克)"
+          },
+          {
+            "char": "明",
+            "wuxing": "火",
+            "relation": "bei_ke",
+            "score_change": -2,
+            "description": "水克火(受克)"
+          }
+        ],
+        "score": 71,
+        "comment": "猪喜五谷杂粮，喜洞穴，忌刀血、祭祀，忌猴、虎、蛇",
+        "analysis": "生肖猪：五行属水，三合生肖为兔、羊，六合生肖为虎\n特性：猪喜五谷杂粮，喜洞穴，忌刀血、祭祀，忌猴、虎、蛇\n[-] 姓名五行：陈(水克火(受克))、明(水克火(受克))\n[O] 姓名未含喜用字根\n[+] 姓名未含忌用字根\n评价：姓名与生肖基本相合，字根选择尚可",
+        "calculation_steps": [
+          {
+            "step": "基础分",
+            "value": 75,
+            "description": "生肖分析基础分"
+          },
+          {
+            "step": "五行关系",
+            "value": -4,
+            "description": "五行相生相克: -4分",
+            "details": [
+              {
+                "char": "陈",
+                "wuxing": "火",
+                "relation": "bei_ke",
+                "score_change": -2,
+                "description": "水克火(受克)"
+              },
+              {
+                "char": "明",
+                "wuxing": "火",
+                "relation": "bei_ke",
+                "score_change": -2,
+                "description": "水克火(受克)"
+              }
+            ]
+          },
+          {
+            "step": "最终得分",
+            "value": 71,
+            "description": "总分: 71分 (限制在50-100之间)",
+            "evaluation": "姓名与生肖基本相合，字根选择尚可"
+          }
+        ],
+        "calculation_summary": "基础分75 -4(五行) = 71分",
+        "recommended_xi_wuxing": [
+          "水",
+          "金"
+        ],
+        "recommended_ji_wuxing": [
+          "土",
+          "木"
+        ],
+        "recommended_xi_shengxiao": [
+          "兔",
+          "羊",
+          "虎"
+        ],
+        "recommended_ji_shengxiao": [
+          "蛇"
+        ]
       },
       "chenggu": {
         "weight": 4.5,

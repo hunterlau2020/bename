@@ -133,10 +133,82 @@ def format_shengxiao(shengxiao):
     """格式化生肖信息"""
     lines = []
     lines.append("  【生肖喜忌】")
-    lines.append(f"    生肖: {shengxiao['shengxiao']}")
-    lines.append(f"    喜字根: {', '.join(shengxiao['xi_zigen'])}")
-    lines.append(f"    忌字根: {', '.join(shengxiao['ji_zigen'])}")
-    lines.append(f"    评分: {shengxiao['score']}分")
+    
+    # 生肖基本信息（包含五行）
+    sx = shengxiao['shengxiao']
+    wx = shengxiao.get('wuxing', '未知')
+    lines.append(f"    生肖: {sx}({wx}) | 评分: {shengxiao['score']}分")
+    
+    # 三合六合信息
+    if shengxiao.get('sanhe'):
+        sanhe_str = '、'.join(shengxiao['sanhe'])
+        liuhe = shengxiao.get('liuhe', '')
+        if liuhe:
+            lines.append(f"    三合: {sanhe_str} | 六合: {liuhe}")
+        else:
+            lines.append(f"    三合: {sanhe_str}")
+    
+    # 显示详细的五行关系
+    if shengxiao.get('wuxing_details'):
+        lines.append(f"    五行关系:")
+        for detail in shengxiao['wuxing_details']:
+            char = detail['char']
+            wx = detail['wuxing']
+            desc = detail['description']
+            score = detail['score_change']
+            sign = '+' if score >= 0 else ''
+            lines.append(f"      {char}({wx}): {desc} {sign}{score}分")
+    
+    # 显示计算过程（跳过基础分和最终得分）
+    if shengxiao.get('calculation_steps'):
+        calc_lines = []
+        for step in shengxiao['calculation_steps']:
+            step_name = step['step']
+            if step_name not in ['基础分', '最终得分']:
+                step_value = step['value']
+                step_desc = step['description']
+                if isinstance(step_value, (int, float)) and step_value != 0:
+                    sign = '+' if step_value >= 0 else ''
+                    
+                    # 对于五行关系，已经在上面显示了详细信息，这里只显示总分
+                    if step_name == '五行关系':
+                        calc_lines.append(f"      {step_name}总计: {sign}{step_value}分")
+                    else:
+                        # 显示其他加减分项
+                        details = step.get('details', [])
+                        if details:
+                            detail_str = '、'.join(details)
+                            calc_lines.append(f"      {step_name}: {sign}{step_value}分 [{detail_str}]")
+                        else:
+                            calc_lines.append(f"      {step_name}: {sign}{step_value}分 - {step_desc}")
+        
+        if calc_lines:
+            lines.append(f"    计算过程:")
+            lines.extend(calc_lines)
+    
+    # 建议的喜忌五行和生肖
+    if shengxiao.get('recommended_xi_wuxing') or shengxiao.get('recommended_ji_wuxing'):
+        xi_wx = shengxiao.get('recommended_xi_wuxing', [])
+        ji_wx = shengxiao.get('recommended_ji_wuxing', [])
+        xi_str = '、'.join(xi_wx) if xi_wx else '无'
+        ji_str = '、'.join(ji_wx) if ji_wx else '无'
+        lines.append(f"    建议五行: 喜{xi_str} | 忌{ji_str}")
+    
+    if shengxiao.get('recommended_xi_shengxiao') or shengxiao.get('recommended_ji_shengxiao'):
+        xi_sx = shengxiao.get('recommended_xi_shengxiao', [])
+        ji_sx = shengxiao.get('recommended_ji_shengxiao', [])
+        xi_str = '、'.join(xi_sx) if xi_sx else '无'
+        ji_str = '、'.join(ji_sx) if ji_sx else '无'
+        lines.append(f"    建议生肖: 喜{xi_str} | 忌{ji_str}")
+    
+    # 传统的喜忌字根（折叠显示）
+    lines.append(f"    喜字根: {', '.join(shengxiao['xi_zigen'][:10])}{'...' if len(shengxiao['xi_zigen']) > 10 else ''}")
+    lines.append(f"    忌字根: {', '.join(shengxiao['ji_zigen'][:10])}{'...' if len(shengxiao['ji_zigen']) > 10 else ''}")
+    
+    # 生肖特性说明
+    if shengxiao.get('comment'):
+        lines.append(f"    特性: {shengxiao['comment']}")
+    
     return "\n".join(lines)
 
 

@@ -458,6 +458,58 @@ class BatchProcessor:
                               f"地{wuge['dige']['num']}({wuge['dige']['fortune']}) "
                               f"外{wuge['waige']['num']}({wuge['waige']['fortune']}) "
                               f"总{wuge['zongge']['num']}({wuge['zongge']['fortune']}) | {wuge['sancai']}")
+                    
+                    # 显示生肖信息
+                    if 'shengxiao' in result:
+                        shengxiao_info = result['shengxiao']
+                        sx = shengxiao_info.get('shengxiao', '')
+                        wx = shengxiao_info.get('wuxing', '')
+                        score_sx = shengxiao_info.get('score', 0)
+                        
+                        print(f"  生肖: {sx}({wx}) 得分:{score_sx}分")
+                        
+                        # 显示详细计算过程
+                        calc_steps = shengxiao_info.get('calculation_steps', [])
+                        if calc_steps:
+                            print(f"    计算过程:")
+                            for step in calc_steps:
+                                step_name = step.get('step', '')
+                                step_value = step.get('value', 0)
+                                step_desc = step.get('description', '')
+                                
+                                # 跳过基础分和最终得分，只显示加减分项
+                                if step_name not in ['基础分', '最终得分']:
+                                    if isinstance(step_value, (int, float)) and step_value != 0:
+                                        # 显示加减分项的详细信息
+                                        details = step.get('details', [])
+                                        if details:
+                                            if step_name == '五行关系':
+                                                detail_str = '、'.join([f"{d['char']}({d['description']})" for d in details])
+                                                print(f"      {step_name}: {step_value:+d}分 [{detail_str}]")
+                                            else:
+                                                detail_str = '、'.join([str(d) for d in details])
+                                                print(f"      {step_name}: {step_value:+d}分 [{detail_str}]")
+                                        else:
+                                            print(f"      {step_name}: {step_value:+d}分")
+                        
+                        # 显示建议
+                        xi_wuxing = shengxiao_info.get('recommended_xi_wuxing', [])
+                        ji_wuxing = shengxiao_info.get('recommended_ji_wuxing', [])
+                        xi_shengxiao = shengxiao_info.get('recommended_xi_shengxiao', [])
+                        ji_shengxiao = shengxiao_info.get('recommended_ji_shengxiao', [])
+                        
+                        if xi_wuxing or ji_wuxing:
+                            print(f"    建议五行: 喜{'、'.join(xi_wuxing) if xi_wuxing else '无'} | 忌{'、'.join(ji_wuxing) if ji_wuxing else '无'}")
+                        if xi_shengxiao or ji_shengxiao:
+                            print(f"    建议生肖: 喜{'、'.join(xi_shengxiao) if xi_shengxiao else '无'} | 忌{'、'.join(ji_shengxiao) if ji_shengxiao else '无'}")
+                    
+                    # 显示字义音形信息
+                    if 'ziyi' in result:
+                        ziyi_info = result['ziyi']
+                        ziyi_score = ziyi_info.get('score', 0)
+                        luck_score = ziyi_info.get('luck_analysis', {}).get('score', 0)
+                        tone_score = ziyi_info.get('tone_analysis', {}).get('score', 0)
+                        print(f"  字义音形: 综合{ziyi_score}分 (字义{luck_score}分 音韵{tone_score}分)")
                 else:
                     print(f"[成功] 综合评分: {score}分")
                 

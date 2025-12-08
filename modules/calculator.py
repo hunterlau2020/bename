@@ -36,7 +36,7 @@ class Calculator:
         self.wuge_calc = WugeCalculator(db_path)
         self.chenggu_calc = ChengguCalculator(db_path)
         self.color_calc = ColorCalculator()
-        self.shengxiao_analyzer = ShengxiaoAnalyzer()
+        self.shengxiao_analyzer = ShengxiaoAnalyzer(db_path)
         self.ziyi_analyzer = ZiyiAnalyzer(db_path)
     
     def calculate_name(self, surname: str, given_name: str, gender: str, birth_time: str,

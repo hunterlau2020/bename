@@ -376,9 +376,37 @@ class UserInterface:
         # 生肖喜忌分析
         print(f"\n【生肖喜忌分析】(得分: {result['shengxiao']['score']}分)")
         shengxiao = result['shengxiao']
-        print(f"生肖: {shengxiao['shengxiao']}")
-        print(f"喜用字根: {' '.join(shengxiao['xi_zigen'])}")
-        print(f"忌用字根: {' '.join(shengxiao['ji_zigen'])}")
+        print(f"生肖: {shengxiao['shengxiao']} (五行: {shengxiao.get('wuxing', '未知')})")
+        
+        # 显示三合六合
+        if 'sanhe' in shengxiao and shengxiao['sanhe']:
+            sanhe_str = '、'.join(shengxiao['sanhe'])
+            print(f"三合生肖: {sanhe_str}")
+        if 'liuhe' in shengxiao and shengxiao['liuhe']:
+            print(f"六合生肖: {shengxiao['liuhe']}")
+        
+        # 显示计算过程
+        if 'calculation_summary' in shengxiao:
+            print(f"\n评分计算: {shengxiao['calculation_summary']}")
+        
+        # 显示详细分析
+        if 'analysis' in shengxiao and shengxiao['analysis']:
+            print(f"\n详细分析:")
+            for line in shengxiao['analysis'].split('\n'):
+                if line.strip():
+                    print(f"  {line}")
+        else:
+            print(f"喜用字根: {' '.join(shengxiao['xi_zigen'])}")
+            print(f"忌用字根: {' '.join(shengxiao['ji_zigen'])}")
+        
+        # 显示详细计算步骤
+        if 'calculation_steps' in shengxiao and shengxiao['calculation_steps']:
+            print(f"\n计算步骤:")
+            for step in shengxiao['calculation_steps']:
+                if 'value' in step and isinstance(step['value'], (int, float)):
+                    print(f"  {step['step']}: {step['value']:+d}分 - {step['description']}")
+                else:
+                    print(f"  {step['step']}: {step['description']}")
         
         # 称骨算命
         print(f"\n【称骨算命】")
