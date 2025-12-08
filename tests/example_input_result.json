@@ -1,6 +1,6 @@
 {
   "input_file": "tests\\example_input.csv",
-  "process_time": "20251208_212431",
+  "process_time": "20251208_234224",
   "total": 5,
   "success": 5,
   "failed": 0,
@@ -16,7 +16,27 @@
         "longitude": 116.4074,
         "latitude": 39.9042
       },
-      "comprehensive_score": 73,
+      "kangxi_info": [
+        {
+          "character": "张",
+          "traditional": "張",
+          "strokes": 11,
+          "radical": "弓",
+          "bs_strokes": 3,
+          "wuxing": "火",
+          "luck": "吉"
+        },
+        {
+          "character": "伟",
+          "traditional": "偉",
+          "strokes": 11,
+          "radical": "亻",
+          "bs_strokes": 2,
+          "wuxing": "土",
+          "luck": "吉"
+        }
+      ],
+      "comprehensive_score": 77,
       "wuge": {
         "tiange": {
           "num": 12,
@@ -108,8 +128,43 @@
         "color": "绿色、青色、翠色、黑色、蓝色、灰色"
       },
       "ziyi": {
-        "analysis": "姓名'张伟'字义音形分析结果",
-        "score": 75
+        "score": 100,
+        "luck_analysis": {
+          "score": 100,
+          "details": [
+            "張(吉)",
+            "偉(吉)"
+          ],
+          "comment": "字义吉祥，寓意美好"
+        },
+        "tone_analysis": {
+          "score": 100,
+          "pattern": "阴平上声",
+          "tones": [
+            1,
+            3
+          ],
+          "comment": "音调多变，平仄相间，音韵和谐"
+        },
+        "analysis": "【字义吉凶】張(吉) 偉(吉) - 字义吉祥，寓意美好\n【音韵分析】阴平上声 - 音调多变，平仄相间，音韵和谐\n【综合评价】字义音韵俱佳，是理想的姓名",
+        "chars_detail": [
+          {
+            "character": "张",
+            "traditional": "張",
+            "pinyin": "zhāng",
+            "luck": "吉",
+            "wuxing": "火",
+            "radical": "弓"
+          },
+          {
+            "character": "伟",
+            "traditional": "偉",
+            "pinyin": "wěi",
+            "luck": "吉",
+            "wuxing": "土",
+            "radical": "亻"
+          }
+        ]
       },
       "shengxiao": {
         "shengxiao": "马",
@@ -141,7 +196,27 @@
         "longitude": 121.4737,
         "latitude": 31.2304
       },
-      "comprehensive_score": 80,
+      "kangxi_info": [
+        {
+          "character": "李",
+          "traditional": "李",
+          "strokes": 7,
+          "radical": "木",
+          "bs_strokes": 4,
+          "wuxing": "木",
+          "luck": "吉"
+        },
+        {
+          "character": "娜",
+          "traditional": "娜",
+          "strokes": 9,
+          "radical": "女",
+          "bs_strokes": 3,
+          "wuxing": "火",
+          "luck": "吉"
+        }
+      ],
+      "comprehensive_score": 83,
       "wuge": {
         "tiange": {
           "num": 8,
@@ -229,8 +304,43 @@
         "color": "黑色、蓝色、灰色"
       },
       "ziyi": {
-        "analysis": "姓名'李娜'字义音形分析结果",
-        "score": 75
+        "score": 94,
+        "luck_analysis": {
+          "score": 100,
+          "details": [
+            "李(吉)",
+            "娜(吉)"
+          ],
+          "comment": "字义吉祥，寓意美好"
+        },
+        "tone_analysis": {
+          "score": 80,
+          "pattern": "上声去声",
+          "tones": [
+            3,
+            4
+          ],
+          "comment": "音调多变"
+        },
+        "analysis": "【字义吉凶】李(吉) 娜(吉) - 字义吉祥，寓意美好\n【音韵分析】上声去声 - 音调多变\n【综合评价】字义音韵俱佳，是理想的姓名",
+        "chars_detail": [
+          {
+            "character": "李",
+            "traditional": "李",
+            "pinyin": "lǐ",
+            "luck": "吉",
+            "wuxing": "木",
+            "radical": "木"
+          },
+          {
+            "character": "娜",
+            "traditional": "娜",
+            "pinyin": "nà",
+            "luck": "吉",
+            "wuxing": "火",
+            "radical": "女"
+          }
+        ]
       },
       "shengxiao": {
         "shengxiao": "猴",
@@ -262,7 +372,27 @@
         "longitude": 113.2644,
         "latitude": 23.1291
       },
-      "comprehensive_score": 77,
+      "kangxi_info": [
+        {
+          "character": "王",
+          "traditional": "王",
+          "strokes": 4,
+          "radical": "王",
+          "bs_strokes": 4,
+          "wuxing": "土",
+          "luck": "吉"
+        },
+        {
+          "character": "强",
+          "traditional": "強",
+          "strokes": 11,
+          "radical": "弓",
+          "bs_strokes": 3,
+          "wuxing": "木",
+          "luck": "吉"
+        }
+      ],
+      "comprehensive_score": 80,
       "wuge": {
         "tiange": {
           "num": 5,
@@ -353,8 +483,43 @@
         "color": "白色、金色、银色"
       },
       "ziyi": {
-        "analysis": "姓名'王强'字义音形分析结果",
-        "score": 75
+        "score": 91,
+        "luck_analysis": {
+          "score": 100,
+          "details": [
+            "王(吉)",
+            "強(吉)"
+          ],
+          "comment": "字义吉祥，寓意美好"
+        },
+        "tone_analysis": {
+          "score": 70,
+          "pattern": "阳平阳平",
+          "tones": [
+            2,
+            2
+          ],
+          "comment": "音调单一"
+        },
+        "analysis": "【字义吉凶】王(吉) 強(吉) - 字义吉祥，寓意美好\n【音韵分析】阳平阳平 - 音调单一\n【综合评价】字义音韵俱佳，是理想的姓名",
+        "chars_detail": [
+          {
+            "character": "王",
+            "traditional": "王",
+            "pinyin": "wáng",
+            "luck": "吉",
+            "wuxing": "土",
+            "radical": "王"
+          },
+          {
+            "character": "强",
+            "traditional": "強",
+            "pinyin": "qiáng",
+            "luck": "吉",
+            "wuxing": "木",
+            "radical": "弓"
+          }
+        ]
       },
       "shengxiao": {
         "shengxiao": "牛",
@@ -386,7 +551,27 @@
         "longitude": 114.0579,
         "latitude": 22.5431
       },
-      "comprehensive_score": 73,
+      "kangxi_info": [
+        {
+          "character": "刘",
+          "traditional": "劉",
+          "strokes": 15,
+          "radical": "刂",
+          "bs_strokes": 2,
+          "wuxing": "火",
+          "luck": "吉"
+        },
+        {
+          "character": "芳",
+          "traditional": "芳",
+          "strokes": 10,
+          "radical": "艹",
+          "bs_strokes": 3,
+          "wuxing": "木",
+          "luck": "吉"
+        }
+      ],
+      "comprehensive_score": 81,
       "wuge": {
         "tiange": {
           "num": 16,
@@ -396,18 +581,18 @@
           "category": "首领运"
         },
         "renge": {
-          "num": 22,
-          "element": "木",
-          "fortune": "凶",
-          "meaning": "秋草逢霜，怀才不遇",
-          "category": "逆境运"
+          "num": 25,
+          "element": "土",
+          "fortune": "吉",
+          "meaning": "资性英敏，才能奇特，克服傲慢",
+          "category": "温和运"
         },
         "dige": {
-          "num": 8,
-          "element": "金",
-          "fortune": "吉",
-          "meaning": "意志刚健，勤勉发展，贯彻志望",
-          "category": "坚刚运"
+          "num": 11,
+          "element": "木",
+          "fortune": "大吉",
+          "meaning": "草木逢春，稳健着实，富贵荣达",
+          "category": "稳健运"
         },
         "waige": {
           "num": 2,
@@ -417,14 +602,14 @@
           "category": "破坏运"
         },
         "zongge": {
-          "num": 22,
-          "element": "木",
-          "fortune": "凶",
-          "meaning": "秋草逢霜，怀才不遇",
-          "category": "逆境运"
+          "num": 25,
+          "element": "土",
+          "fortune": "吉",
+          "meaning": "资性英敏，才能奇特，克服傲慢",
+          "category": "温和运"
         },
-        "sancai": "土木金 - 平",
-        "score": 67,
+        "sancai": "土土木 - 平",
+        "score": 84,
         "sancai_meaning": "配置一般，需综合分析"
       },
       "bazi": {
@@ -478,8 +663,43 @@
         "color": "红色、紫色、粉色"
       },
       "ziyi": {
-        "analysis": "姓名'刘芳'字义音形分析结果",
-        "score": 75
+        "score": 94,
+        "luck_analysis": {
+          "score": 100,
+          "details": [
+            "劉(吉)",
+            "芳(吉)"
+          ],
+          "comment": "字义吉祥，寓意美好"
+        },
+        "tone_analysis": {
+          "score": 80,
+          "pattern": "阳平阴平",
+          "tones": [
+            2,
+            1
+          ],
+          "comment": "音调多变"
+        },
+        "analysis": "【字义吉凶】劉(吉) 芳(吉) - 字义吉祥，寓意美好\n【音韵分析】阳平阴平 - 音调多变\n【综合评价】字义音韵俱佳，是理想的姓名",
+        "chars_detail": [
+          {
+            "character": "刘",
+            "traditional": "劉",
+            "pinyin": "liú",
+            "luck": "吉",
+            "wuxing": "火",
+            "radical": "刂"
+          },
+          {
+            "character": "芳",
+            "traditional": "芳",
+            "pinyin": "fāng",
+            "luck": "吉",
+            "wuxing": "木",
+            "radical": "艹"
+          }
+        ]
       },
       "shengxiao": {
         "shengxiao": "龙",
@@ -511,21 +731,41 @@
         "longitude": 116.4074,
         "latitude": 39.9042
       },
-      "comprehensive_score": 85,
+      "kangxi_info": [
+        {
+          "character": "陈",
+          "traditional": "陳",
+          "strokes": 16,
+          "radical": "阝",
+          "bs_strokes": 3,
+          "wuxing": "火",
+          "luck": "吉"
+        },
+        {
+          "character": "明",
+          "traditional": "明",
+          "strokes": 8,
+          "radical": "日",
+          "bs_strokes": 4,
+          "wuxing": "火",
+          "luck": "吉"
+        }
+      ],
+      "comprehensive_score": 84,
       "wuge": {
         "tiange": {
-          "num": 11,
-          "element": "木",
-          "fortune": "大吉",
-          "meaning": "草木逢春，稳健着实，富贵荣达",
-          "category": "稳健运"
+          "num": 17,
+          "element": "金",
+          "fortune": "半吉",
+          "meaning": "排除万难，权威刚强，如能容忍",
+          "category": "刚强运"
         },
         "renge": {
-          "num": 18,
-          "element": "金",
+          "num": 24,
+          "element": "火",
           "fortune": "吉",
-          "meaning": "铁镜重磨，权威显达，博得名利",
-          "category": "艺能运"
+          "meaning": "家门余庆，钱财丰盈，白手成家",
+          "category": "财富运"
         },
         "dige": {
           "num": 9,
@@ -542,14 +782,14 @@
           "category": "破坏运"
         },
         "zongge": {
-          "num": 18,
-          "element": "金",
+          "num": 24,
+          "element": "火",
           "fortune": "吉",
-          "meaning": "铁镜重磨，权威显达，博得名利",
-          "category": "艺能运"
+          "meaning": "家门余庆，钱财丰盈，白手成家",
+          "category": "财富运"
         },
-        "sancai": "木金水 - 半吉",
-        "score": 79,
+        "sancai": "金火水 - 平",
+        "score": 68,
         "sancai_meaning": "配置一般，需综合分析"
       },
       "bazi": {
@@ -604,8 +844,43 @@
         "color": "红色、紫色、粉色、黄色、棕色、咖啡色、白色、金色、银色"
       },
       "ziyi": {
-        "analysis": "姓名'陈明'字义音形分析结果",
-        "score": 75
+        "score": 91,
+        "luck_analysis": {
+          "score": 100,
+          "details": [
+            "陳(吉)",
+            "明(吉)"
+          ],
+          "comment": "字义吉祥，寓意美好"
+        },
+        "tone_analysis": {
+          "score": 70,
+          "pattern": "阳平阳平",
+          "tones": [
+            2,
+            2
+          ],
+          "comment": "音调单一"
+        },
+        "analysis": "【字义吉凶】陳(吉) 明(吉) - 字义吉祥，寓意美好\n【音韵分析】阳平阳平 - 音调单一\n【综合评价】字义音韵俱佳，是理想的姓名",
+        "chars_detail": [
+          {
+            "character": "陈",
+            "traditional": "陳",
+            "pinyin": "chén",
+            "luck": "吉",
+            "wuxing": "火",
+            "radical": "阝"
+          },
+          {
+            "character": "明",
+            "traditional": "明",
+            "pinyin": "míng",
+            "luck": "吉",
+            "wuxing": "火",
+            "radical": "日"
+          }
+        ]
       },
       "shengxiao": {
         "shengxiao": "猪",

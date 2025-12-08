@@ -27,6 +27,54 @@ class BatchProcessor:
         self.calculator = calculator
         self.storage = storage
     
+    def _get_kangxi_info(self, name: str) -> List[Dict]:
+        """
+        获取姓名中每个字的康熙字典信息
+        :param name: 姓名
+        :return: 字典信息列表
+        """
+        import sqlite3
+        
+        kangxi_info = []
+        try:
+            conn = sqlite3.connect('local.db')
+            cursor = conn.cursor()
+            
+            for char in name:
+                cursor.execute("""
+                    SELECT character, traditional, strokes, radical, bs_strokes, wuxing, luck
+                    FROM kangxi_strokes 
+                    WHERE character = ?
+                """, (char,))
+                
+                row = cursor.fetchone()
+                if row:
+                    kangxi_info.append({
+                        'character': row[0],
+                        'traditional': row[1] or row[0],
+                        'strokes': row[2],
+                        'radical': row[3] or '未知',
+                        'bs_strokes': row[4] or 0,
+                        'wuxing': row[5] or '未知',
+                        'luck': row[6] or '未知'
+                    })
+                else:
+                    kangxi_info.append({
+                        'character': char,
+                        'traditional': char,
+                        'strokes': 0,
+                        'radical': '未知',
+                        'bs_strokes': 0,
+                        'wuxing': '未知',
+                        'luck': '未知'
+                    })
+            
+            conn.close()
+        except Exception as e:
+            logger.error(f"查询康熙字典信息失败: {e}")
+        
+        return kangxi_info
+    
     def process_file(self, input_file: str) -> Dict[str, Any]:
         """
         处理输入文件
@@ -477,6 +525,7 @@ class BatchProcessor:
                         'longitude': result.get('longitude'),
                         'latitude': result.get('latitude')
                     },
+                    'kangxi_info': self._get_kangxi_info(item['name']),
                     'comprehensive_score': result.get('comprehensive_score', 0),
                     'wuge': result.get('wuge', {}),
                     'bazi': result.get('bazi', {}),

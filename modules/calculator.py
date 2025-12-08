@@ -37,7 +37,7 @@ class Calculator:
         self.chenggu_calc = ChengguCalculator(db_path)
         self.color_calc = ColorCalculator()
         self.shengxiao_analyzer = ShengxiaoAnalyzer()
-        self.ziyi_analyzer = ZiyiAnalyzer()
+        self.ziyi_analyzer = ZiyiAnalyzer(db_path)
     
     def calculate_name(self, surname: str, given_name: str, gender: str, birth_time: str,
                       longitude: float, latitude: float) -> Dict:

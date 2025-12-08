@@ -1202,10 +1202,12 @@ def show_help():
     print("  --convert-with-com    使用 COM 转换 Excel（仅Windows）")
     print("  --convert-lunar       转换万年历 SQL 文件为 JSON")
     print("  --merge-calendar      合并万年历数据（1900-1969 + 1970-2099）")
+    print("  --merge-mdb           合并康熙字典MDB数据库（添加五行、吉凶）")
     print("  （无参数）            转换康熙字典（默认）")
     print("\n示例:")
     print("  python convert_tools.py --convert-lunar")
     print("  python convert_tools.py --merge-calendar")
+    print("  python convert_tools.py --merge-mdb")
     print("  python convert_tools.py --test")
     print("\n文件说明:")
     print("  输入文件:")
@@ -1236,6 +1238,8 @@ def main():
             return convert_lunar_sql()
         elif sys.argv[1] == '--merge-calendar' or sys.argv[1] == '--merge':
             return merge_calendar()
+        elif sys.argv[1] == '--merge-mdb' or sys.argv[1] == '--mdb':
+            return merge_kangxi_mdb()
         else:
             print(f"未知选项: {sys.argv[1]}")
             print("使用 --help 查看帮助")
@@ -1302,6 +1306,330 @@ def main():
         str(variants),
         str(output_json)
     )
+    
+    return 0
+
+
+class KangxiMdbMerger:
+    """康熙字典MDB数据库合并器"""
+    
+    def __init__(self):
+        """初始化"""
+        pass
+    
+    def read_mdb_data(self, mdb_path: str) -> List[Dict]:
+        """
+        读取康熙字典.mdb数据库
+        :param mdb_path: MDB文件路径
+        :return: 字典数据列表
+        """
+        print(f"正在读取 MDB 数据库: {mdb_path}")
+        
+        try:
+            import pyodbc
+        except ImportError:
+            print("\n✗ 错误: 需要安装 pyodbc 库")
+            print("  运行: pip install pyodbc")
+            return []
+        
+        if not Path(mdb_path).exists():
+            print(f"\n✗ 错误: 文件不存在 - {mdb_path}")
+            return []
+        
+        records = []
+        
+        try:
+            # 构建连接字符串
+            conn_str = (
+                r'DRIVER={Microsoft Access Driver (*.mdb, *.accdb)};'
+                f'DBQ={mdb_path};'
+            )
+            
+            conn = pyodbc.connect(conn_str)
+            cursor = conn.cursor()
+            
+            # 先列出所有表名
+            print("  可用的表:")
+            for row in cursor.tables(tableType='TABLE'):
+                print(f"    - {row.table_name}")
+            
+            # 尝试不同的表名
+            table_name = None
+            possible_names = ['Content', '康熙字典', 'kangxi', 'Kangxi', 'data', '字典']
+            
+            for name in possible_names:
+                try:
+                    cursor.execute(f"SELECT COUNT(*) FROM [{name}]")
+                    table_name = name
+                    print(f"  使用表名: {name}")
+                    break
+                except:
+                    continue
+            
+            if not table_name:
+                print("  ✗ 未找到有效的表名")
+                conn.close()
+                return []
+            
+            # 查询所有数据
+            cursor.execute(f"""
+                SELECT jtz, ftbh, py, bs, bsbh, jtbh, qmjx, wx
+                FROM [{table_name}]
+            """)
+            
+            count = 0
+            for row in cursor.fetchall():
+                record = {
+                    'character': row[0].strip() if row[0] else '',
+                    'strokes': int(row[1]) if row[1] else 0,
+                    'pinyin': row[2].strip() if row[2] else '',
+                    'radical': row[3].strip() if row[3] else '',
+                    'bs_strokes': int(row[4]) if row[4] else 0,
+                    'ch_strokes': int(row[5]) if row[5] else 0,
+                    'luck': row[6].strip() if row[6] else '',
+                    'wuxing': row[7].strip() if row[7] else ''
+                }
+                
+                if record['character']:  # 只保留有字符的记录
+                    records.append(record)
+                    count += 1
+            
+            cursor.close()
+            conn.close()
+            
+            print(f"  成功读取 {count} 条记录")
+            return records
+            
+        except Exception as e:
+            print(f"\n✗ 读取MDB失败: {e}")
+            import traceback
+            traceback.print_exc()
+            return []
+    
+    def merge_with_json(self, mdb_data: List[Dict], json_path: str, output_path: str = None):
+        """
+        合并MDB数据到kangxi.json
+        :param mdb_data: MDB数据列表
+        :param json_path: 现有kangxi.json路径
+        :param output_path: 输出路径，默认覆盖原文件
+        """
+        print(f"\n正在合并数据到: {json_path}")
+        
+        if not Path(json_path).exists():
+            print(f"\n✗ 错误: JSON文件不存在 - {json_path}")
+            return False
+        
+        try:
+            # 读取现有JSON数据
+            with open(json_path, 'r', encoding='utf-8') as f:
+                json_data = json.load(f)
+            
+            existing_records = json_data.get('data', [])
+            print(f"  现有记录数: {len(existing_records)}")
+            
+            # 构建MDB数据的查找字典
+            mdb_dict = {record['character']: record for record in mdb_data}
+            print(f"  MDB记录数: {len(mdb_dict)}")
+            
+            # 合并数据
+            updated_count = 0
+            new_fields_count = 0
+            
+            for record in existing_records:
+                char = record.get('character', '')
+                
+                if char in mdb_dict:
+                    mdb_record = mdb_dict[char]
+                    
+                    # 覆盖字段：strokes, radical
+                    if mdb_record['strokes'] > 0:
+                        record['strokes'] = mdb_record['strokes']
+                    if mdb_record['radical']:
+                        record['radical'] = mdb_record['radical']
+                    
+                    # 添加新字段
+                    record['bs_strokes'] = mdb_record['bs_strokes']
+                    record['ch_strokes'] = mdb_record['ch_strokes']
+                    record['luck'] = mdb_record['luck']
+                    record['wuxing'] = mdb_record['wuxing']
+                    
+                    updated_count += 1
+                    new_fields_count += 1
+            
+            print(f"  更新记录数: {updated_count}")
+            print(f"  添加新字段记录数: {new_fields_count}")
+            
+            # 保存合并后的数据
+            output_file = output_path if output_path else json_path
+            
+            output_data = {
+                "version": "2.0",
+                "description": "康熙字典笔画数据（含五行、吉凶）",
+                "source": "Unihan + 康熙字典.mdb",
+                "total_records": len(existing_records),
+                "data": existing_records
+            }
+            
+            with open(output_file, 'w', encoding='utf-8') as f:
+                json.dump(output_data, f, ensure_ascii=False, indent=2)
+            
+            print(f"\n✓ 成功保存到: {output_file}")
+            
+            # 显示示例
+            if updated_count > 0:
+                print("\n示例记录:")
+                for record in existing_records[:3]:
+                    if 'wuxing' in record:
+                        print(f"  {record['character']}: 笔画={record['strokes']}, "
+                              f"部首={record['radical']}, 五行={record['wuxing']}, "
+                              f"吉凶={record['luck']}")
+                        break
+            
+            return True
+            
+        except Exception as e:
+            print(f"\n✗ 合并失败: {e}")
+            import traceback
+            traceback.print_exc()
+            return False
+    
+    def export_to_database(self, json_path: str, db_path: str = 'local.db'):
+        """
+        将kangxi.json数据导入到数据库
+        :param json_path: kangxi.json路径
+        :param db_path: 数据库路径
+        """
+        print(f"\n正在导入数据到数据库: {db_path}")
+        
+        if not Path(json_path).exists():
+            print(f"\n✗ 错误: JSON文件不存在 - {json_path}")
+            return False
+        
+        try:
+            import sqlite3
+            
+            # 读取JSON数据
+            with open(json_path, 'r', encoding='utf-8') as f:
+                json_data = json.load(f)
+            
+            records = json_data.get('data', [])
+            print(f"  待导入记录数: {len(records)}")
+            
+            # 连接数据库
+            conn = sqlite3.connect(db_path)
+            cursor = conn.cursor()
+            
+            # 更新表结构（如果需要）
+            try:
+                cursor.execute("PRAGMA table_info(kangxi_strokes)")
+                columns = [row[1] for row in cursor.fetchall()]
+                
+                new_columns = [
+                    ('bs_strokes', 'INTEGER DEFAULT 0'),
+                    ('ch_strokes', 'INTEGER DEFAULT 0'),
+                    ('luck', 'TEXT'),
+                    ('wuxing', 'TEXT')
+                ]
+                
+                for col_name, col_type in new_columns:
+                    if col_name not in columns:
+                        print(f"  添加字段: {col_name}")
+                        cursor.execute(f"ALTER TABLE kangxi_strokes ADD COLUMN {col_name} {col_type}")
+            except Exception as e:
+                print(f"  警告: 更新表结构失败 - {e}")
+            
+            # 插入数据
+            inserted_count = 0
+            updated_count = 0
+            
+            for record in records:
+                try:
+                    cursor.execute("""
+                        INSERT OR REPLACE INTO kangxi_strokes 
+                        (character, traditional, strokes, pinyin, radical, 
+                         bs_strokes, ch_strokes, luck, wuxing)
+                        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+                    """, (
+                        record.get('character', ''),
+                        record.get('traditional', ''),
+                        record.get('strokes', 0),
+                        record.get('pinyin', ''),
+                        record.get('radical', ''),
+                        record.get('bs_strokes', 0),
+                        record.get('ch_strokes', 0),
+                        record.get('luck', ''),
+                        record.get('wuxing', '')
+                    ))
+                    
+                    if cursor.rowcount > 0:
+                        inserted_count += 1
+                    else:
+                        updated_count += 1
+                        
+                except Exception as e:
+                    print(f"  警告: 插入记录失败 {record.get('character', '')}: {e}")
+            
+            conn.commit()
+            conn.close()
+            
+            print(f"  插入: {inserted_count} 条")
+            print(f"  更新: {updated_count} 条")
+            print(f"\n✓ 数据导入完成")
+            
+            return True
+            
+        except Exception as e:
+            print(f"\n✗ 导入失败: {e}")
+            import traceback
+            traceback.print_exc()
+            return False
+
+
+def merge_kangxi_mdb():
+    """合并康熙字典MDB数据库"""
+    base_dir = Path(__file__).parent
+    
+    mdb_path = base_dir / "predata" / "kangxi-master" / "kangxi-master" / "康熙字典" / "康熙字典.mdb"
+    json_path = base_dir / "data" / "kangxi.json"
+    db_path = base_dir / "local.db"
+    
+    print("=" * 60)
+    print("康熙字典MDB数据合并工具")
+    print("=" * 60)
+    print(f"MDB:  {mdb_path}")
+    print(f"JSON: {json_path}")
+    print(f"DB:   {db_path}")
+    print()
+    
+    merger = KangxiMdbMerger()
+    
+    # 1. 读取MDB数据
+    print("步骤 1: 读取MDB数据库")
+    mdb_data = merger.read_mdb_data(str(mdb_path))
+    
+    if not mdb_data:
+        print("\n✗ 未读取到MDB数据")
+        return 1
+    
+    # 2. 合并到JSON
+    print("\n步骤 2: 合并到kangxi.json")
+    success = merger.merge_with_json(mdb_data, str(json_path))
+    
+    if not success:
+        print("\n✗ 合并失败")
+        return 1
+    
+    # 3. 导入数据库
+    print("\n步骤 3: 导入到数据库")
+    success = merger.export_to_database(str(json_path), str(db_path))
+    
+    if not success:
+        print("\n✗ 导入数据库失败")
+        return 1
+    
+    print("\n" + "=" * 60)
+    print("合并完成!")
+    print("=" * 60)
     
     return 0
 

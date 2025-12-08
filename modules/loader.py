@@ -38,6 +38,10 @@ class DataLoader:
                 strokes INTEGER NOT NULL,
                 pinyin TEXT,
                 radical TEXT,
+                bs_strokes INTEGER DEFAULT 0,
+                ch_strokes INTEGER DEFAULT 0,
+                luck TEXT,
+                wuxing TEXT,
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             )
             ''')
@@ -393,14 +397,18 @@ class DataLoader:
                 for item in data:
                     cursor.execute('''
                     INSERT OR REPLACE INTO kangxi_strokes 
-                    (character, traditional, strokes, pinyin, radical)
-                    VALUES (?, ?, ?, ?, ?)
+                    (character, traditional, strokes, pinyin, radical, bs_strokes, ch_strokes, luck, wuxing)
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?) ?, ?, ?, ?)
                     ''', (
                         item['character'],
-                        item.get('traditional', ''),
+                        item.get('traditional', item['character']),
                         item['strokes'],
                         item.get('pinyin', ''),
-                        item.get('radical', '')
+                        item.get('radical', ''),
+                        item.get('bs_strokes', 0),
+                        item.get('ch_strokes', 0),
+                        item.get('luck', ''),
+                        item.get('wuxing', '')
                     ))
                     count += 1
             

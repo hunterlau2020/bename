@@ -177,6 +177,17 @@ def view_result(result_file):
         # 基本信息
         info = result['basic_info']
         print(f"  姓名: {info['surname']}{info['given_name']} | 性别: {info['gender']} | 出生: {info['birth_time']}")
+        
+        # 康熙字典信息
+        if 'kangxi_info' in result and result['kangxi_info']:
+            for kx in result['kangxi_info']:
+                parts = [f"笔画={kx['strokes']}", f"部首={kx['radical']}"]
+                if kx.get('wuxing') and kx['wuxing'] != '未知':
+                    parts.append(f"五行={kx['wuxing']}")
+                if kx.get('luck') and kx['luck'] != '未知':
+                    parts.append(f"吉凶={kx['luck']}")
+                print(f"    {kx.get('traditional', kx['character'])}: {', '.join(parts)}")
+        
         if info.get('longitude') and info.get('latitude'):
             print(f"  地点: 东经 {info['longitude']}° 北纬 {info['latitude']}°")
         

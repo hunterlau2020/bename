@@ -6,7 +6,7 @@
 import logging
 import re
 from datetime import datetime
-from typing import Optional, Tuple
+from typing import Optional, Tuple, List, Dict
 
 from .calculator import Calculator
 from .storage import Storage
@@ -224,6 +224,54 @@ class UserInterface:
         print("   搜索城市名称，通常在信息框中会显示经纬度")
         print("=" * 60 + "\n")
     
+    def _get_kangxi_info(self, name: str) -> List[Dict]:
+        """
+        获取姓名中每个字的康熙字典信息
+        :param name: 姓名
+        :return: 字典信息列表
+        """
+        import sqlite3
+        
+        kangxi_info = []
+        try:
+            conn = sqlite3.connect('local.db')
+            cursor = conn.cursor()
+            
+            for char in name:
+                cursor.execute("""
+                    SELECT character, traditional, strokes, radical, bs_strokes, wuxing, luck
+                    FROM kangxi_strokes 
+                    WHERE character = ?
+                """, (char,))
+                
+                row = cursor.fetchone()
+                if row:
+                    kangxi_info.append({
+                        'character': row[0],
+                        'traditional': row[1] or row[0],
+                        'strokes': row[2],
+                        'radical': row[3] or '未知',
+                        'bs_strokes': row[4] or 0,
+                        'wuxing': row[5] or '未知',
+                        'luck': row[6] or '未知'
+                    })
+                else:
+                    kangxi_info.append({
+                        'character': char,
+                        'traditional': char,
+                        'strokes': 0,
+                        'radical': '未知',
+                        'bs_strokes': 0,
+                        'wuxing': '未知',
+                        'luck': '未知'
+                    })
+            
+            conn.close()
+        except Exception as e:
+            logger.error(f"查询康熙字典信息失败: {e}")
+        
+        return kangxi_info
+    
     def _display_result(self, result: dict):
         """显示计算结果"""
         print("\n" + "=" * 60)
@@ -233,6 +281,18 @@ class UserInterface:
         # 基本信息
         print(f"\n【基本信息】")
         print(f"姓名: {result['name']}")
+        
+        # 显示康熙字典详细信息
+        kangxi_info = self._get_kangxi_info(result['name'])
+        if kangxi_info:
+            for info in kangxi_info:
+                parts = [f"笔画={info['strokes']}", f"部首={info['radical']}"]
+                if info['wuxing'] != '未知':
+                    parts.append(f"五行={info['wuxing']}")
+                if info['luck'] != '未知':
+                    parts.append(f"吉凶={info['luck']}")
+                print(f"  {info['traditional']}: {', '.join(parts)}")
+        
         print(f"性别: {result['gender']}")
         print(f"出生时间(阳历): {result['birth_time']}")
         
@@ -294,7 +354,24 @@ class UserInterface:
         
         # 字义音形分析
         print(f"\n【字义音形分析】(得分: {result['ziyi']['score']}分)")
-        print(f"{result['ziyi']['analysis']}")
+        ziyi = result['ziyi']
+        
+        # 显示字符详情（如果有）
+        if 'chars_detail' in ziyi:
+            chars_parts = []
+            for char_info in ziyi['chars_detail']:
+                char = char_info['traditional']
+                luck = char_info['luck']
+                chars_parts.append(f"{char}({luck})")
+            print(f"字符: {' '.join(chars_parts)}")
+        
+        # 显示分析内容
+        if 'analysis' in ziyi:
+            for line in ziyi['analysis'].split('\n'):
+                if line.strip():
+                    print(f"{line}")
+        else:
+            print(f"{ziyi.get('analysis', '无详细分析')}")
         
         # 生肖喜忌分析
         print(f"\n【生肖喜忌分析】(得分: {result['shengxiao']['score']}分)")
