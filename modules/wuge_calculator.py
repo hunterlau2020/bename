@@ -263,7 +263,11 @@ class WugeCalculator:
                 surname_strokes[0], surname_strokes[1], given_strokes[0], given_strokes[1]
             )
         else:
-            raise ValueError(f"不支持的姓名格式: 姓氏{len(surname)}字 + 名字{len(given_name)}字")
+            # raise ValueError(f"不支持的姓名格式: 姓氏{len(surname)}字 + 名字{len(given_name)}字")
+            tiange, renge, dige, waige, zongge =  self._calc_multiple_surname_multiple_given(
+                surname_strokes, given_strokes
+            )
+            
         
         # 分析各格
         result = {
@@ -332,6 +336,38 @@ class WugeCalculator:
         dige = g1 + g2
         waige = s1 + g2
         zongge = s1 + s2 + g1 + g2
+        return tiange, renge, dige, waige, zongge
+    
+    def _calc_multiple_surname_multiple_given(self, s, g):
+        """多姓多名（仅供扩展使用）"""
+        if len(s) < 1:
+            tiange = 1
+            renge = 1 + g[0]
+        elif len(s) == 1:
+            tiange = s[0] + 1
+            renge = s[-1] + g[0]
+        elif len(s) >= 2:
+            tiange = s[0] + s[1]
+            renge = s[-1] + g[0]
+        
+        if len(g) < 1:
+            raise ValueError("名字至少需要一个字")
+        elif len(g) == 1:
+            dige = g[0] + 1
+        elif len(g) >= 2:
+            dige = sum(g) 
+        
+        zongge = sum(s) + sum(g)
+        
+        if len(s) <= 1 and len(g) == 1: # 单姓单名
+            waige = 2
+        elif len(s) > 1 and len(g) > 1: # 多姓多名
+            waige = s[0] + g[-1]
+        elif len(s) > 1 and len(g) == 1: # 多姓单名
+            waige = s[0] + 1
+        elif len(s) <= 1 and len(g) > 1: # 单姓多名
+            waige = g[-1] + 1
+        
         return tiange, renge, dige, waige, zongge
     
     def _get_strokes(self, name: str) -> List[int]:

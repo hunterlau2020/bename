@@ -41,6 +41,7 @@ python bazi.py -t
 
 # 批量处理
 python bazi.py -b tests/example_input.json
+python tests/view_batch_result.py tests/example_input_result.json
 
 # 查看帮助
 python bazi.py -h
