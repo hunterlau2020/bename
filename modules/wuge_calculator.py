@@ -269,6 +269,10 @@ class WugeCalculator:
             )
             
         
+        # 总格>81回卷（行业惯例）
+        if zongge > 81:
+            zongge = zongge - 81
+
         # 分析各格
         result = {
             'tiange': self._analyze_ge(tiange, '天格'),

@@ -45,6 +45,34 @@ class DataLoader:
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             )
             ''')
+
+            # 公司版：行业配置表
+            cursor.execute('''
+            CREATE TABLE IF NOT EXISTS industry_config (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                industry_code TEXT NOT NULL UNIQUE,
+                industry_name TEXT NOT NULL,
+                primary_wuxing TEXT,
+                secondary_wuxing TEXT,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            )
+            ''')
+
+            # 公司版：行业吉字符表
+            cursor.execute('''
+            CREATE TABLE IF NOT EXISTS industry_lucky_chars (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                industry_code TEXT NOT NULL,
+                character TEXT NOT NULL,
+                char_wuxing TEXT,
+                frequency INTEGER,
+                score_bonus INTEGER,
+                meaning TEXT,
+                examples TEXT,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                UNIQUE(industry_code, character)
+            )
+            ''')
             
             # 字义数据表
             cursor.execute('''
@@ -224,7 +252,10 @@ class DataLoader:
             ('sancai', 'sancai.json'),
             ('shengxiao', 'shengxiao.json'),
             ('chenggu', 'chenggu.json'),
-            ('wannianli', 'wannianli.json')
+            ('wannianli', 'wannianli.json'),
+            # 以下为公司版行业字库，作为外部资源登记加载记录，不入库
+            ('industry_wuxing', 'industry_wuxing.json'),
+            ('industry_lucky_chars', 'industry_lucky_chars.json')
         ]
         
         for resource_name, filename in resources:
@@ -281,6 +312,27 @@ class DataLoader:
                     'failed_count': 0
                 }
             
+            # 公司版行业资源：特殊处理（导入到行业表）
+            if resource_name in ('industry_wuxing', 'industry_lucky_chars'):
+                import_result = self._import_data(resource_name, data)
+                validation = {
+                    'valid': True,
+                    'total': import_result.get('count', 0),
+                    'passed': import_result.get('count', 0),
+                    'failed': 0
+                }
+                # 记录加载历史
+                self._record_load_history(
+                    resource_name, file_path, file_hash,
+                    import_result['count'], 'success' if import_result['success'] else 'failed'
+                )
+                return {
+                    'success': import_result['success'],
+                    'total': validation['total'],
+                    'success_count': import_result['count'],
+                    'failed_count': validation['failed']
+                }
+
             # 称骨数据特殊处理
             if resource_name == 'chenggu':
                 # 称骨数据直接传递整个对象
@@ -398,7 +450,7 @@ class DataLoader:
                     cursor.execute('''
                     INSERT OR REPLACE INTO kangxi_strokes 
                     (character, traditional, strokes, pinyin, radical, bs_strokes, ch_strokes, luck, wuxing)
-                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?) ?, ?, ?, ?)
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
                     ''', (
                         item['character'],
                         item.get('traditional', item['character']),
@@ -638,6 +690,41 @@ class DataLoader:
                         lunar_month_name, zodiac, lunar_month, lunar_day, solar_term
                     ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                     ''', batch_data)
+            
+            elif resource_name == 'industry_wuxing':
+                # data 是 {industry_code: {industry_name, primary_wuxing, secondary_wuxing}}
+                for code, info in (data or {}).items():
+                    cursor.execute('''
+                    INSERT OR REPLACE INTO industry_config
+                    (industry_code, industry_name, primary_wuxing, secondary_wuxing)
+                    VALUES (?, ?, ?, ?)
+                    ''', (
+                        code,
+                        info.get('industry_name', code),
+                        info.get('primary_wuxing', ''),
+                        info.get('secondary_wuxing', '')
+                    ))
+                    count += 1
+
+            elif resource_name == 'industry_lucky_chars':
+                # data 是 {industry_code: {char: {char_wuxing, frequency, score_bonus, meaning, examples}}}
+                for code, chars in (data or {}).items():
+                    for ch, meta in (chars or {}).items():
+                        examples = meta.get('examples', [])
+                        cursor.execute('''
+                        INSERT OR REPLACE INTO industry_lucky_chars
+                        (industry_code, character, char_wuxing, frequency, score_bonus, meaning, examples)
+                        VALUES (?, ?, ?, ?, ?, ?, ?)
+                        ''', (
+                            code,
+                            ch,
+                            meta.get('char_wuxing', ''),
+                            int(meta.get('frequency', 0)) if meta.get('frequency') is not None else None,
+                            int(meta.get('score_bonus', 0)) if meta.get('score_bonus') is not None else None,
+                            meta.get('meaning', ''),
+                            json.dumps(examples, ensure_ascii=False) if isinstance(examples, list) else str(examples)
+                        ))
+                        count += 1
             
             conn.commit()
             logger.info(f"成功导入 {count} 条记录到 {resource_name}")
