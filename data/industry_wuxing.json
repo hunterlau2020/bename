@@ -1,0 +1,17 @@
+{
+  "tech": {"industry_name": "科技", "primary_wuxing": "木", "secondary_wuxing": "火"},
+  "finance": {"industry_name": "金融", "primary_wuxing": "金", "secondary_wuxing": "水"},
+  "education": {"industry_name": "教育", "primary_wuxing": "木", "secondary_wuxing": "水"},
+  "catering": {"industry_name": "餐饮", "primary_wuxing": "火", "secondary_wuxing": ""},
+  "realestate": {"industry_name": "房地产", "primary_wuxing": "土", "secondary_wuxing": ""},
+  "trade": {"industry_name": "贸易", "primary_wuxing": "水", "secondary_wuxing": "木"},
+  "manufacture": {"industry_name": "制造", "primary_wuxing": "金", "secondary_wuxing": "火"},
+  "construction": {"industry_name": "建筑", "primary_wuxing": "土", "secondary_wuxing": ""},
+  "culture": {"industry_name": "文化娱乐", "primary_wuxing": "木", "secondary_wuxing": "火"},
+  "medical": {"industry_name": "医疗健康", "primary_wuxing": "木", "secondary_wuxing": "土"},
+  "logistics": {"industry_name": "交通运输", "primary_wuxing": "水", "secondary_wuxing": "金"},
+  "energy": {"industry_name": "能源", "primary_wuxing": "火", "secondary_wuxing": "水"},
+  "environment": {"industry_name": "环保", "primary_wuxing": "木", "secondary_wuxing": "水"},
+  "tourism": {"industry_name": "旅游", "primary_wuxing": "水", "secondary_wuxing": "木"},
+  "agriculture": {"industry_name": "农业", "primary_wuxing": "土", "secondary_wuxing": "木"}
+}

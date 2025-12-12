@@ -1,0 +1,2014 @@
+{
+  "tech": {
+    "智": {
+      "frequency": 90,
+      "score_bonus": 5,
+      "meaning": "智慧、智能",
+      "examples": [
+        "智联",
+        "智云"
+      ]
+    },
+    "创": {
+      "frequency": 92,
+      "score_bonus": 5,
+      "meaning": "创新、创造",
+      "examples": [
+        "创新",
+        "创业"
+      ]
+    },
+    "新": {
+      "frequency": 88,
+      "score_bonus": 4,
+      "meaning": "新颖、更新",
+      "examples": [
+        "新科",
+        "新技"
+      ]
+    },
+    "云": {
+      "frequency": 95,
+      "score_bonus": 5,
+      "meaning": "云计算、云端",
+      "examples": [
+        "阿里云",
+        "腾讯云"
+      ]
+    },
+    "数": {
+      "frequency": 85,
+      "score_bonus": 4,
+      "meaning": "数据、数字化",
+      "examples": [
+        "数联",
+        "数据家"
+      ]
+    },
+    "联": {
+      "frequency": 83,
+      "score_bonus": 4,
+      "meaning": "联系、联合",
+      "examples": [
+        "联想",
+        "联通"
+      ]
+    },
+    "网": {
+      "frequency": 90,
+      "score_bonus": 5,
+      "meaning": "网络、互联网",
+      "examples": [
+        "网联",
+        "网信"
+      ]
+    },
+    "讯": {
+      "frequency": 82,
+      "score_bonus": 4,
+      "meaning": "信息、通讯",
+      "examples": [
+        "讯飞",
+        "讯通"
+      ]
+    },
+    "科": {
+      "frequency": 88,
+      "score_bonus": 4,
+      "meaning": "科技、科学",
+      "examples": [
+        "科讯",
+        "科联"
+      ]
+    },
+    "达": {
+      "frequency": 80,
+      "score_bonus": 4,
+      "meaning": "通达、达到",
+      "examples": [
+        "达科",
+        "达新"
+      ]
+    },
+    "赢": {
+      "frequency": 78,
+      "score_bonus": 3,
+      "meaning": "赢取、成功",
+      "examples": [
+        "赢创",
+        "赢科"
+      ]
+    },
+    "博": {
+      "frequency": 75,
+      "score_bonus": 3,
+      "meaning": "广博、博学",
+      "examples": [
+        "博智",
+        "博科"
+      ]
+    },
+    "腾": {
+      "frequency": 85,
+      "score_bonus": 4,
+      "meaning": "飞腾、发展",
+      "examples": [
+        "腾讯",
+        "腾科"
+      ]
+    },
+    "芯": {
+      "frequency": 90,
+      "score_bonus": 5,
+      "meaning": "芯片、核心",
+      "examples": [
+        "芯联",
+        "芯谷"
+      ]
+    },
+    "端": {
+      "frequency": 76,
+      "score_bonus": 3,
+      "meaning": "端点、端口",
+      "examples": [
+        "端联",
+        "端科"
+      ]
+    },
+    "软": {
+      "frequency": 78,
+      "score_bonus": 3,
+      "meaning": "软件、柔软",
+      "examples": [
+        "软通",
+        "软联"
+      ]
+    },
+    "算": {
+      "frequency": 80,
+      "score_bonus": 4,
+      "meaning": "计算、算法",
+      "examples": [
+        "算联",
+        "算科"
+      ]
+    },
+    
+    "码": {
+      "frequency": 78,
+      "score_bonus": 3,
+      "meaning": "代码、数码",
+      "examples": [
+        "码云",
+        "码科"
+      ]
+    },
+    "库": {
+      "frequency": 76,
+      "score_bonus": 3,
+      "meaning": "数据库、仓库",
+      "examples": [
+        "数库",
+        "智库"
+      ]
+    },
+    "谷": {
+      "frequency": 80,
+      "score_bonus": 3,
+      "meaning": "硅谷、数据谷",
+      "examples": [
+        "数谷",
+        "科谷"
+      ]
+    }
+  },
+  "finance": {
+    "金": {
+      "frequency": 95,
+      "score_bonus": 5,
+      "meaning": "金钱、财富",
+      "examples": [
+        "中金",
+        "金信"
+      ]
+    },
+    "财": {
+      "frequency": 92,
+      "score_bonus": 5,
+      "meaning": "财富、财运",
+      "examples": [
+        "财通",
+        "财富"
+      ]
+    },
+    "富": {
+      "frequency": 88,
+      "score_bonus": 4,
+      "meaning": "富足、富有",
+      "examples": [
+        "富邦",
+        "富通"
+      ]
+    },
+    "银": {
+      "frequency": 90,
+      "score_bonus": 5,
+      "meaning": "白银、银行",
+      "examples": [
+        "银联",
+        "银通"
+      ]
+    },
+    "通": {
+      "frequency": 82,
+      "score_bonus": 4,
+      "meaning": "通达、流通",
+      "examples": [
+        "融通",
+        "交通"
+      ]
+    },
+    "融": {
+      "frequency": 85,
+      "score_bonus": 4,
+      "meaning": "金融、融合",
+      "examples": [
+        "金融",
+        "融信"
+      ]
+    },
+    "汇": {
+      "frequency": 88,
+      "score_bonus": 5,
+      "meaning": "汇聚、汇兑",
+      "examples": [
+        "汇丰",
+        "汇通"
+      ]
+    },
+    "信": {
+      "frequency": 86,
+      "score_bonus": 4,
+      "meaning": "信用、信托",
+      "examples": [
+        "信达",
+        "信诚"
+      ]
+    },
+    "泰": {
+      "frequency": 78,
+      "score_bonus": 3,
+      "meaning": "安泰、稳定",
+      "examples": [
+        "泰和",
+        "泰信"
+      ]
+    },
+    "德": {
+      "frequency": 80,
+      "score_bonus": 4,
+      "meaning": "德行、信义",
+      "examples": [
+        "德邦",
+        "德信"
+      ]
+    },
+    "顺": {
+      "frequency": 75,
+      "score_bonus": 3,
+      "meaning": "顺畅、成功",
+      "examples": [
+        "顺丰",
+        "顺信"
+      ]
+    },
+    "盛": {
+      "frequency": 77,
+      "score_bonus": 3,
+      "meaning": "兴盛、繁盛",
+      "examples": [
+        "盛德",
+        "盛信"
+      ]
+    },
+    "鑫": {
+      "frequency": 85,
+      "score_bonus": 4,
+      "meaning": "金多兴旺",
+      "examples": [
+        "鑫诚",
+        "鑫源"
+      ]
+    },
+    "达": {
+      "frequency": 80,
+      "score_bonus": 4,
+      "meaning": "通达、达到",
+      "examples": [
+        "达信",
+        "达融"
+      ]
+    },
+    "昌": {
+      "frequency": 76,
+      "score_bonus": 3,
+      "meaning": "昌盛、兴旺",
+      "examples": [
+        "昌信",
+        "昌融"
+      ]
+    },
+    "恒": {
+      "frequency": 82,
+      "score_bonus": 4,
+      "meaning": "恒久、恒信",
+      "examples": [
+        "恒生",
+        "恒信"
+      ]
+    },
+    "宏": {
+      "frequency": 78,
+      "score_bonus": 3,
+      "meaning": "宏大、宏观",
+      "examples": [
+        "宏信",
+        "宏融"
+      ]
+    },
+    "源": {
+      "frequency": 84,
+      "score_bonus": 4,
+      "meaning": "源泉、资金来源",
+      "examples": [
+        "源信",
+        "源融"
+      ]
+    },
+    "优": {
+      "frequency": 75,
+      "score_bonus": 3,
+      "meaning": "优秀、优选",
+      "examples": [
+        "优信",
+        "优融"
+      ]
+    },
+    "邦": {
+      "frequency": 76,
+      "score_bonus": 3,
+      "meaning": "国家、伙伴",
+      "examples": [
+        "德邦",
+        "邦信"
+      ]
+    }
+  },
+  "education": {
+    "学": {
+      "frequency": 95,
+      "score_bonus": 5,
+      "meaning": "学习",
+      "examples": [
+        "学园",
+        "学府"
+      ]
+    },
+    "育": {
+      "frequency": 92,
+      "score_bonus": 5,
+      "meaning": "教育",
+      "examples": [
+        "育才",
+        "育英"
+      ]
+    },
+    "智": {
+      "frequency": 90,
+      "score_bonus": 5,
+      "meaning": "智慧",
+      "examples": [
+        "智学",
+        "智教"
+      ]
+    },
+    "知": {
+      "frequency": 85,
+      "score_bonus": 4,
+      "meaning": "知识",
+      "examples": [
+        "知行",
+        "知学"
+      ]
+    },
+    "文": {
+      "frequency": 88,
+      "score_bonus": 4,
+      "meaning": "文化",
+      "examples": [
+        "文华",
+        "文博"
+      ]
+    },
+    "博": {
+      "frequency": 80,
+      "score_bonus": 4,
+      "meaning": "博学",
+      "examples": [
+        "博雅",
+        "博文"
+      ]
+    },
+    "雅": {
+      "frequency": 78,
+      "score_bonus": 3,
+      "meaning": "高雅",
+      "examples": [
+        "雅思",
+        "雅学"
+      ]
+    },
+    "德": {
+      "frequency": 82,
+      "score_bonus": 4,
+      "meaning": "品德",
+      "examples": [
+        "德育",
+        "德行"
+      ]
+    },
+    "思": {
+      "frequency": 84,
+      "score_bonus": 4,
+      "meaning": "思考",
+      "examples": [
+        "思源",
+        "思博"
+      ]
+    },
+    "启": {
+      "frequency": 86,
+      "score_bonus": 4,
+      "meaning": "启迪",
+      "examples": [
+        "启智",
+        "启航"
+      ]
+    },
+    "慧": {
+      "frequency": 83,
+      "score_bonus": 4,
+      "meaning": "聪慧",
+      "examples": [
+        "慧学",
+        "慧思"
+      ]
+    },
+    "明": {
+      "frequency": 87,
+      "score_bonus": 4,
+      "meaning": "明理",
+      "examples": [
+        "明德",
+        "明智"
+      ]
+    },
+    "研": {
+      "frequency": 79,
+      "score_bonus": 3,
+      "meaning": "研究",
+      "examples": [
+        "研学",
+        "研修"
+      ]
+    },
+    "培": {
+      "frequency": 81,
+      "score_bonus": 3,
+      "meaning": "培养",
+      "examples": [
+        "培优",
+        "培新"
+      ]
+    },
+    "才": {
+      "frequency": 85,
+      "score_bonus": 4,
+      "meaning": "人才",
+      "examples": [
+        "才俊",
+        "才华"
+      ]
+    },
+    "英": {
+      "frequency": 83,
+      "score_bonus": 4,
+      "meaning": "英才",
+      "examples": [
+        "英才",
+        "英博"
+      ]
+    },
+    "优": {
+      "frequency": 82,
+      "score_bonus": 4,
+      "meaning": "优秀",
+      "examples": [
+        "优学",
+        "优培"
+      ]
+    },
+    "尚": {
+      "frequency": 76,
+      "score_bonus": 3,
+      "meaning": "崇尚",
+      "examples": [
+        "尚德",
+        "尚学"
+      ]
+    },
+    "乐": {
+      "frequency": 77,
+      "score_bonus": 3,
+      "meaning": "快乐学习",
+      "examples": [
+        "乐学",
+        "乐智"
+      ]
+    },
+    "源": {
+      "frequency": 78,
+      "score_bonus": 3,
+      "meaning": "源泉",
+      "examples": [
+        "源智",
+        "源学"
+      ]
+    }
+  },
+  "catering": {
+    "味": {
+      "frequency": 95,
+      "score_bonus": 5,
+      "meaning": "滋味",
+      "examples": [
+        "味道",
+        "本味"
+      ]
+    },
+    "香": {
+      "frequency": 93,
+      "score_bonus": 5,
+      "meaning": "香气",
+      "examples": [
+        "飘香",
+        "香满"
+      ]
+    },
+    "鲜": {
+      "frequency": 90,
+      "score_bonus": 5,
+      "meaning": "新鲜",
+      "examples": [
+        "鲜派",
+        "鲜味"
+      ]
+    },
+    "品": {
+      "frequency": 85,
+      "score_bonus": 4,
+      "meaning": "品味",
+      "examples": [
+        "上品",
+        "臻品"
+      ]
+    },
+    "食": {
+      "frequency": 88,
+      "score_bonus": 4,
+      "meaning": "饮食",
+      "examples": [
+        "食尚",
+        "食界"
+      ]
+    },
+    "悦": {
+      "frequency": 80,
+      "score_bonus": 4,
+      "meaning": "愉悦",
+      "examples": [
+        "悦食",
+        "悦味"
+      ]
+    },
+    "厨": {
+      "frequency": 82,
+      "score_bonus": 4,
+      "meaning": "厨艺",
+      "examples": [
+        "厨艺",
+        "厨道"
+      ]
+    },
+    "宴": {
+      "frequency": 83,
+      "score_bonus": 4,
+      "meaning": "宴席",
+      "examples": [
+        "喜宴",
+        "嘉宴"
+      ]
+    },
+    "鼎": {
+      "frequency": 79,
+      "score_bonus": 3,
+      "meaning": "鼎盛",
+      "examples": [
+        "鼎味",
+        "鼎食"
+      ]
+    },
+    "客": {
+      "frequency": 77,
+      "score_bonus": 3,
+      "meaning": "顾客",
+      "examples": [
+        "客来",
+        "迎客"
+      ]
+    },
+    "福": {
+      "frequency": 81,
+      "score_bonus": 3,
+      "meaning": "福气",
+      "examples": [
+        "福满",
+        "福苑"
+      ]
+    },
+    "锅": {
+      "frequency": 78,
+      "score_bonus": 3,
+      "meaning": "火锅",
+      "examples": [
+        "锅语",
+        "锅物"
+      ]
+    },
+    "堂": {
+      "frequency": 79,
+      "score_bonus": 3,
+      "meaning": "酒楼堂馆",
+      "examples": [
+        "食堂",
+        "味堂"
+      ]
+    },
+    "尚": {
+      "frequency": 76,
+      "score_bonus": 3,
+      "meaning": "时尚",
+      "examples": [
+        "食尚",
+        "味尚"
+      ]
+    },
+    "聚": {
+      "frequency": 82,
+      "score_bonus": 4,
+      "meaning": "相聚",
+      "examples": [
+        "聚味",
+        "聚鲜"
+      ]
+    },
+    "和": {
+      "frequency": 80,
+      "score_bonus": 3,
+      "meaning": "和美",
+      "examples": [
+        "和宴",
+        "和味"
+      ]
+    },
+    "尝": {
+      "frequency": 75,
+      "score_bonus": 3,
+      "meaning": "品尝",
+      "examples": [
+        "尝鲜",
+        "尝新"
+      ]
+    },
+    "家": {
+      "frequency": 78,
+      "score_bonus": 3,
+      "meaning": "家常",
+      "examples": [
+        "家味",
+        "家厨"
+      ]
+    },
+    "馆": {
+      "frequency": 77,
+      "score_bonus": 3,
+      "meaning": "餐馆",
+      "examples": [
+        "味馆",
+        "鲜馆"
+      ]
+    },
+    "坊": {
+      "frequency": 74,
+      "score_bonus": 3,
+      "meaning": "作坊、坊间",
+      "examples": [
+        "食坊",
+        "味坊"
+      ]
+    },
+    "铺": {
+      "frequency": 74,
+      "score_bonus": 3,
+      "meaning": "店铺",
+      "examples": [
+        "美铺",
+        "鲜铺"
+      ]
+    }
+  },
+  "realestate": {
+    "城": {
+      "frequency": 92,
+      "score_bonus": 5,
+      "meaning": "城市",
+      "examples": [
+        "城投",
+        "城建"
+      ]
+    },
+    "居": {
+      "frequency": 90,
+      "score_bonus": 5,
+      "meaning": "居住",
+      "examples": [
+        "宜居",
+        "安居"
+      ]
+    },
+    "园": {
+      "frequency": 88,
+      "score_bonus": 4,
+      "meaning": "园区",
+      "examples": [
+        "花园",
+        "园林"
+      ]
+    },
+    "府": {
+      "frequency": 84,
+      "score_bonus": 4,
+      "meaning": "府第",
+      "examples": [
+        "锦府",
+        "瑞府"
+      ]
+    },
+    "苑": {
+      "frequency": 83,
+      "score_bonus": 4,
+      "meaning": "花苑",
+      "examples": [
+        "书苑",
+        "锦苑"
+      ]
+    },
+    "景": {
+      "frequency": 86,
+      "score_bonus": 4,
+      "meaning": "景观",
+      "examples": [
+        "美景",
+        "景园"
+      ]
+    },
+    "都": {
+      "frequency": 80,
+      "score_bonus": 4,
+      "meaning": "都市",
+      "examples": [
+        "首都",
+        "新都"
+      ]
+    },
+    "湾": {
+      "frequency": 82,
+      "score_bonus": 4,
+      "meaning": "海湾",
+      "examples": [
+        "xx湾",
+        "碧湾"
+      ]
+    },
+    "峰": {
+      "frequency": 78,
+      "score_bonus": 3,
+      "meaning": "高峰",
+      "examples": [
+        "云峰",
+        "峰景"
+      ]
+    },
+    "庭": {
+      "frequency": 79,
+      "score_bonus": 3,
+      "meaning": "庭院",
+      "examples": [
+        "花庭",
+        "御庭"
+      ]
+    },
+    "尚": {
+      "frequency": 76,
+      "score_bonus": 3,
+      "meaning": "品尚",
+      "examples": [
+        "尚城",
+        "尚府"
+      ]
+    },
+    "嘉": {
+      "frequency": 77,
+      "score_bonus": 3,
+      "meaning": "嘉美",
+      "examples": [
+        "嘉园",
+        "嘉城"
+      ]
+    },
+    "泰": {
+      "frequency": 78,
+      "score_bonus": 3,
+      "meaning": "康泰",
+      "examples": [
+        "泰和",
+        "泰景"
+      ]
+    },
+    "宏": {
+      "frequency": 75,
+      "score_bonus": 3,
+      "meaning": "宏大",
+      "examples": [
+        "宏城",
+        "宏景"
+      ]
+    },
+    "瑞": {
+      "frequency": 75,
+      "score_bonus": 3,
+      "meaning": "祥瑞",
+      "examples": [
+        "瑞景",
+        "瑞府"
+      ]
+    },
+    "汇": {
+      "frequency": 80,
+      "score_bonus": 4,
+      "meaning": "汇聚",
+      "examples": [
+        "汇城",
+        "汇庭"
+      ]
+    },
+    "恒": {
+      "frequency": 81,
+      "score_bonus": 4,
+      "meaning": "恒久",
+      "examples": [
+        "恒泰",
+        "恒景"
+      ]
+    },
+    "鼎": {
+      "frequency": 76,
+      "score_bonus": 3,
+      "meaning": "鼎盛",
+      "examples": [
+        "鼎城",
+        "鼎园"
+      ]
+    },
+    "盛": {
+      "frequency": 77,
+      "score_bonus": 3,
+      "meaning": "兴盛",
+      "examples": [
+        "盛景",
+        "盛世"
+      ]
+    },
+    "邸": {
+      "frequency": 73,
+      "score_bonus": 3,
+      "meaning": "府邸",
+      "examples": [
+        "御邸",
+        "华邸"
+      ]
+    }
+  },
+  "trade": {
+    "贸": {
+      "frequency": 95,
+      "score_bonus": 5,
+      "meaning": "贸易",
+      "examples": [
+        "贸通",
+        "贸联"
+      ]
+    },
+    "通": {
+      "frequency": 92,
+      "score_bonus": 5,
+      "meaning": "畅通",
+      "examples": [
+        "畅通",
+        "通达"
+      ]
+    },
+    "达": {
+      "frequency": 90,
+      "score_bonus": 5,
+      "meaning": "到达、通达",
+      "examples": [
+        "达贸",
+        "达联"
+      ]
+    },
+    "联": {
+      "frequency": 88,
+      "score_bonus": 4,
+      "meaning": "联结",
+      "examples": [
+        "联贸",
+        "联通"
+      ]
+    },
+    "易": {
+      "frequency": 87,
+      "score_bonus": 4,
+      "meaning": "交易",
+      "examples": [
+        "贸易",
+        "易贸"
+      ]
+    },
+    "汇": {
+      "frequency": 86,
+      "score_bonus": 4,
+      "meaning": "汇聚",
+      "examples": [
+        "汇贸",
+        "汇达"
+      ]
+    },
+    "集": {
+      "frequency": 82,
+      "score_bonus": 4,
+      "meaning": "集散",
+      "examples": [
+        "集贸",
+        "集运"
+      ]
+    },
+    "源": {
+      "frequency": 81,
+      "score_bonus": 4,
+      "meaning": "货源",
+      "examples": [
+        "源贸",
+        "源通"
+      ]
+    },
+    "隆": {
+      "frequency": 79,
+      "score_bonus": 3,
+      "meaning": "兴隆",
+      "examples": [
+        "隆贸",
+        "隆达"
+      ]
+    },
+    "兴": {
+      "frequency": 80,
+      "score_bonus": 3,
+      "meaning": "兴盛",
+      "examples": [
+        "兴贸",
+        "兴通"
+      ]
+    },
+    "泰": {
+      "frequency": 78,
+      "score_bonus": 3,
+      "meaning": "安泰",
+      "examples": [
+        "泰贸",
+        "泰联"
+      ]
+    },
+    "迅": {
+      "frequency": 77,
+      "score_bonus": 3,
+      "meaning": "迅捷",
+      "examples": [
+        "迅贸",
+        "迅达"
+      ]
+    },
+    "捷": {
+      "frequency": 76,
+      "score_bonus": 3,
+      "meaning": "快捷",
+      "examples": [
+        "捷贸",
+        "捷通"
+      ]
+    },
+    "广": {
+      "frequency": 78,
+      "score_bonus": 3,
+      "meaning": "广阔",
+      "examples": [
+        "广贸",
+        "广达"
+      ]
+    },
+    "顺": {
+      "frequency": 75,
+      "score_bonus": 3,
+      "meaning": "顺畅",
+      "examples": [
+        "顺贸",
+        "顺通"
+      ]
+    },
+    "航": {
+      "frequency": 79,
+      "score_bonus": 3,
+      "meaning": "航运",
+      "examples": [
+        "航贸",
+        "航通"
+      ]
+    },
+    "途": {
+      "frequency": 74,
+      "score_bonus": 3,
+      "meaning": "途径",
+      "examples": [
+        "途贸",
+        "途联"
+      ]
+    },
+    "桥": {
+      "frequency": 73,
+      "score_bonus": 3,
+      "meaning": "桥梁",
+      "examples": [
+        "桥贸",
+        "桥联"
+      ]
+    },
+    "港": {
+      "frequency": 76,
+      "score_bonus": 3,
+      "meaning": "港口",
+      "examples": [
+        "港贸",
+        "港联"
+      ]
+    },
+    "商": {
+      "frequency": 80,
+      "score_bonus": 3,
+      "meaning": "商业",
+      "examples": [
+        "商贸",
+        "商通"
+      ]
+    }
+  },
+  "manufacture": {
+    "工": {
+      "frequency": 95,
+      "score_bonus": 5,
+      "meaning": "工业",
+      "examples": [
+        "工贸",
+        "工科"
+      ]
+    },
+    "机": {
+      "frequency": 92,
+      "score_bonus": 5,
+      "meaning": "机械",
+      "examples": [
+        "机电",
+        "机科"
+      ]
+    },
+    "智": {
+      "frequency": 90,
+      "score_bonus": 5,
+      "meaning": "智能制造",
+      "examples": [
+        "智造",
+        "智工"
+      ]
+    },
+    "创": {
+      "frequency": 88,
+      "score_bonus": 4,
+      "meaning": "创新",
+      "examples": [
+        "创工",
+        "创新"
+      ]
+    },
+    "科": {
+      "frequency": 86,
+      "score_bonus": 4,
+      "meaning": "科技",
+      "examples": [
+        "科工",
+        "科创"
+      ]
+    },
+    "造": {
+      "frequency": 84,
+      "score_bonus": 4,
+      "meaning": "制造",
+      "examples": [
+        "制造",
+        "智造"
+      ]
+    },
+    "精": {
+      "frequency": 83,
+      "score_bonus": 4,
+      "meaning": "精密",
+      "examples": [
+        "精工",
+        "精密"
+      ]
+    },
+    "锐": {
+      "frequency": 80,
+      "score_bonus": 3,
+      "meaning": "锐意",
+      "examples": [
+        "锐科",
+        "锐达"
+      ]
+    },
+    "达": {
+      "frequency": 82,
+      "score_bonus": 4,
+      "meaning": "达到、通达",
+      "examples": [
+        "达工",
+        "达科"
+      ]
+    },
+    "赛": {
+      "frequency": 78,
+      "score_bonus": 3,
+      "meaning": "领先",
+      "examples": [
+        "赛科",
+        "赛达"
+      ]
+    },
+    "腾": {
+      "frequency": 79,
+      "score_bonus": 3,
+      "meaning": "腾飞",
+      "examples": [
+        "腾工",
+        "腾科"
+      ]
+    },
+    "隆": {
+      "frequency": 77,
+      "score_bonus": 3,
+      "meaning": "兴隆",
+      "examples": [
+        "隆工",
+        "隆盛"
+      ]
+    },
+    "鑫": {
+      "frequency": 81,
+      "score_bonus": 4,
+      "meaning": "金多兴旺",
+      "examples": [
+        "鑫工",
+        "鑫达"
+      ]
+    },
+    "恒": {
+      "frequency": 80,
+      "score_bonus": 3,
+      "meaning": "恒久",
+      "examples": [
+        "恒工",
+        "恒科"
+      ]
+    },
+    "宏": {
+      "frequency": 76,
+      "score_bonus": 3,
+      "meaning": "宏大",
+      "examples": [
+        "宏工",
+        "宏达"
+      ]
+    },
+    "盛": {
+      "frequency": 75,
+      "score_bonus": 3,
+      "meaning": "繁盛",
+      "examples": [
+        "盛工",
+        "盛达"
+      ]
+    },
+    "铸": {
+      "frequency": 79,
+      "score_bonus": 3,
+      "meaning": "铸造",
+      "examples": [
+        "铸造",
+        "铸业"
+      ]
+    },
+    "塑": {
+      "frequency": 74,
+      "score_bonus": 3,
+      "meaning": "塑料",
+      "examples": [
+        "塑业",
+        "塑科"
+      ]
+    },
+    "模": {
+      "frequency": 73,
+      "score_bonus": 3,
+      "meaning": "模具",
+      "examples": [
+        "模具",
+        "模科"
+      ]
+    },
+    "锻": {
+      "frequency": 73,
+      "score_bonus": 3,
+      "meaning": "锻造",
+      "examples": [
+        "锻造",
+        "锻业"
+      ]
+    }
+  },
+  "construction": {
+    "建": {
+      "frequency": 95,
+      "score_bonus": 5,
+      "meaning": "建设",
+      "examples": [
+        "建工",
+        "建业"
+      ]
+    },
+    "工": {
+      "frequency": 92,
+      "score_bonus": 5,
+      "meaning": "工程",
+      "examples": [
+        "工程",
+        "工建"
+      ]
+    },
+    "筑": {
+      "frequency": 90,
+      "score_bonus": 5,
+      "meaning": "建筑",
+      "examples": [
+        "筑工",
+        "筑业"
+      ]
+    },
+    "业": {
+      "frequency": 88,
+      "score_bonus": 4,
+      "meaning": "事业",
+      "examples": [
+        "建业",
+        "宏业"
+      ]
+    },
+    "城": {
+      "frequency": 86,
+      "score_bonus": 4,
+      "meaning": "城市",
+      "examples": [
+        "城建",
+        "城投"
+      ]
+    },
+    "宏": {
+      "frequency": 84,
+      "score_bonus": 4,
+      "meaning": "宏大",
+      "examples": [
+        "宏建",
+        "宏图"
+      ]
+    },
+    "泰": {
+      "frequency": 82,
+      "score_bonus": 4,
+      "meaning": "安泰",
+      "examples": [
+        "泰建",
+        "泰工"
+      ]
+    },
+    "隆": {
+      "frequency": 80,
+      "score_bonus": 4,
+      "meaning": "兴隆",
+      "examples": [
+        "隆建",
+        "隆业"
+      ]
+    },
+    "鼎": {
+      "frequency": 79,
+      "score_bonus": 3,
+      "meaning": "鼎盛",
+      "examples": [
+        "鼎建",
+        "鼎业"
+      ]
+    },
+    "基": {
+      "frequency": 81,
+      "score_bonus": 4,
+      "meaning": "基础",
+      "examples": [
+        "基建",
+        "基业"
+      ]
+    },
+    "桩": {
+      "frequency": 75,
+      "score_bonus": 3,
+      "meaning": "桩基",
+      "examples": [
+        "桩工",
+        "桩业"
+      ]
+    },
+    "梁": {
+      "frequency": 76,
+      "score_bonus": 3,
+      "meaning": "梁柱",
+      "examples": [
+        "梁柱",
+        "梁业"
+      ]
+    },
+    "峰": {
+      "frequency": 74,
+      "score_bonus": 3,
+      "meaning": "高峰",
+      "examples": [
+        "峰建",
+        "峰业"
+      ]
+    },
+    "合": {
+      "frequency": 78,
+      "score_bonus": 3,
+      "meaning": "联合",
+      "examples": [
+        "合建",
+        "合创"
+      ]
+    },
+    "创": {
+      "frequency": 77,
+      "score_bonus": 3,
+      "meaning": "创新",
+      "examples": [
+        "创建",
+        "创新"
+      ]
+    },
+    "远": {
+      "frequency": 75,
+      "score_bonus": 3,
+      "meaning": "远景",
+      "examples": [
+        "远建",
+        "远图"
+      ]
+    },
+    "达": {
+      "frequency": 76,
+      "score_bonus": 3,
+      "meaning": "到达",
+      "examples": [
+        "达建",
+        "达业"
+      ]
+    },
+    "盛": {
+      "frequency": 74,
+      "score_bonus": 3,
+      "meaning": "兴盛",
+      "examples": [
+        "盛建",
+        "盛业"
+      ]
+    },
+    "瑞": {
+      "frequency": 74,
+      "score_bonus": 3,
+      "meaning": "祥瑞",
+      "examples": [
+        "瑞建",
+        "瑞业"
+      ]
+    },
+    "新": {
+      "frequency": 80,
+      "score_bonus": 4,
+      "meaning": "更新",
+      "examples": [
+        "新建",
+        "新筑"
+      ]
+    }
+  },
+  "culture": {
+    "文": {
+      "frequency": 95,
+      "score_bonus": 5,
+      "meaning": "文化",
+      "examples": [
+        "文华",
+        "文博"
+      ]
+    },
+    "艺": {
+      "frequency": 92,
+      "score_bonus": 5,
+      "meaning": "艺术",
+      "examples": [
+        "艺苑",
+        "艺界"
+      ]
+    },
+    "新": {
+      "frequency": 90,
+      "score_bonus": 5,
+      "meaning": "新锐",
+      "examples": [
+        "新文",
+        "新艺"
+      ]
+    },
+    "尚": {
+      "frequency": 88,
+      "score_bonus": 4,
+      "meaning": "时尚",
+      "examples": [
+        "文尚",
+        "尚艺"
+      ]
+    },
+    "雅": {
+      "frequency": 86,
+      "score_bonus": 4,
+      "meaning": "典雅",
+      "examples": [
+        "雅文",
+        "雅艺"
+      ]
+    },
+    "众": {
+      "frequency": 85,
+      "score_bonus": 4,
+      "meaning": "大众",
+      "examples": [
+        "众艺",
+        "众文"
+      ]
+    },
+    "演": {
+      "frequency": 83,
+      "score_bonus": 4,
+      "meaning": "表演",
+      "examples": [
+        "演艺",
+        "演出"
+      ]
+    },
+    "星": {
+      "frequency": 82,
+      "score_bonus": 4,
+      "meaning": "明星",
+      "examples": [
+        "星文",
+        "星艺"
+      ]
+    },
+    "影": {
+      "frequency": 84,
+      "score_bonus": 4,
+      "meaning": "影视",
+      "examples": [
+        "影业",
+        "影艺"
+      ]
+    },
+    "梦": {
+      "frequency": 80,
+      "score_bonus": 3,
+      "meaning": "梦想",
+      "examples": [
+        "逐梦",
+        "星梦"
+      ]
+    },
+    "画": {
+      "frequency": 79,
+      "score_bonus": 3,
+      "meaning": "绘画",
+      "examples": [
+        "画院",
+        "画社"
+      ]
+    },
+    "书": {
+      "frequency": 81,
+      "score_bonus": 4,
+      "meaning": "书籍",
+      "examples": [
+        "书院",
+        "书社"
+      ]
+    },
+    "墨": {
+      "frequency": 78,
+      "score_bonus": 3,
+      "meaning": "墨香",
+      "examples": [
+        "墨韵",
+        "墨香"
+      ]
+    },
+    "韵": {
+      "frequency": 77,
+      "score_bonus": 3,
+      "meaning": "韵味",
+      "examples": [
+        "文韵",
+        "雅韵"
+      ]
+    },
+    "风": {
+      "frequency": 76,
+      "score_bonus": 3,
+      "meaning": "风尚",
+      "examples": [
+        "风华",
+        "风采"
+      ]
+    },
+    "华": {
+      "frequency": 80,
+      "score_bonus": 3,
+      "meaning": "华彩",
+      "examples": [
+        "文华",
+        "华艺"
+      ]
+    },
+    "乐": {
+      "frequency": 79,
+      "score_bonus": 3,
+      "meaning": "音乐",
+      "examples": [
+        "乐府",
+        "乐团"
+      ]
+    },
+    "音": {
+      "frequency": 78,
+      "score_bonus": 3,
+      "meaning": "声音",
+      "examples": [
+        "音华",
+        "音尚"
+      ]
+    },
+    "曲": {
+      "frequency": 76,
+      "score_bonus": 3,
+      "meaning": "曲艺",
+      "examples": [
+        "曲苑",
+        "曲社"
+      ]
+    },
+    "典": {
+      "frequency": 74,
+      "score_bonus": 3,
+      "meaning": "典籍",
+      "examples": [
+        "典藏",
+        "典雅"
+      ]
+    }
+  },
+  "medical": {
+    "医": {
+      "frequency": 95,
+      "score_bonus": 5,
+      "meaning": "医疗",
+      "examples": [
+        "医科",
+        "医苑"
+      ]
+    },
+    "康": {
+      "frequency": 92,
+      "score_bonus": 5,
+      "meaning": "健康",
+      "examples": [
+        "康复",
+        "康宁"
+      ]
+    },
+    "健": {
+      "frequency": 90,
+      "score_bonus": 5,
+      "meaning": "健身",
+      "examples": [
+        "健安",
+        "健达"
+      ]
+    },
+    "安": {
+      "frequency": 88,
+      "score_bonus": 4,
+      "meaning": "平安",
+      "examples": [
+        "安康",
+        "安泰"
+      ]
+    },
+    "泰": {
+      "frequency": 86,
+      "score_bonus": 4,
+      "meaning": "康泰",
+      "examples": [
+        "泰康",
+        "泰和"
+      ]
+    },
+    "仁": {
+      "frequency": 84,
+      "score_bonus": 4,
+      "meaning": "仁心",
+      "examples": [
+        "仁和",
+        "仁济"
+      ]
+    },
+    "和": {
+      "frequency": 83,
+      "score_bonus": 4,
+      "meaning": "和善",
+      "examples": [
+        "和康",
+        "和泰"
+      ]
+    },
+    "堂": {
+      "frequency": 82,
+      "score_bonus": 4,
+      "meaning": "药堂",
+      "examples": [
+        "同仁堂",
+        "xx堂"
+      ]
+    },
+    "生": {
+      "frequency": 81,
+      "score_bonus": 4,
+      "meaning": "生命",
+      "examples": [
+        "生命",
+        "生健"
+      ]
+    },
+    "药": {
+      "frequency": 84,
+      "score_bonus": 4,
+      "meaning": "药品",
+      "examples": [
+        "药业",
+        "药房"
+      ]
+    },
+    "疗": {
+      "frequency": 80,
+      "score_bonus": 3,
+      "meaning": "诊疗",
+      "examples": [
+        "疗健",
+        "疗护"
+      ]
+    },
+    "宁": {
+      "frequency": 79,
+      "score_bonus": 3,
+      "meaning": "安宁",
+      "examples": [
+        "康宁",
+        "安宁"
+      ]
+    },
+    "复": {
+      "frequency": 78,
+      "score_bonus": 3,
+      "meaning": "康复",
+      "examples": [
+        "复健",
+        "复诊"
+      ]
+    },
+    "瑞": {
+      "frequency": 77,
+      "score_bonus": 3,
+      "meaning": "瑞祥",
+      "examples": [
+        "瑞康",
+        "瑞健"
+      ]
+    },
+    "祥": {
+      "frequency": 76,
+      "score_bonus": 3,
+      "meaning": "吉祥",
+      "examples": [
+        "祥康",
+        "祥和"
+      ]
+    },
+    "泽": {
+      "frequency": 75,
+      "score_bonus": 3,
+      "meaning": "润泽",
+      "examples": [
+        "泽康",
+        "泽和"
+      ]
+    },
+    "惠": {
+      "frequency": 75,
+      "score_bonus": 3,
+      "meaning": "惠民",
+      "examples": [
+        "惠康",
+        "惠仁"
+      ]
+    },
+    "济": {
+      "frequency": 80,
+      "score_bonus": 3,
+      "meaning": "救济",
+      "examples": [
+        "济世",
+        "济民"
+      ]
+    },
+    "爱": {
+      "frequency": 78,
+      "score_bonus": 3,
+      "meaning": "关爱",
+      "examples": [
+        "爱心",
+        "爱康"
+      ]
+    },
+    "新": {
+      "frequency": 80,
+      "score_bonus": 4,
+      "meaning": "创新",
+      "examples": [
+        "新医",
+        "新康"
+      ]
+    }
+  },
+  "logistics": {
+    "运": {
+      "frequency": 95,
+      "score_bonus": 5,
+      "meaning": "运输",
+      "examples": [
+        "运通",
+        "好运"
+      ]
+    },
+    "达": {
+      "frequency": 92,
+      "score_bonus": 5,
+      "meaning": "到达、通达",
+      "examples": [
+        "达运",
+        "达通"
+      ]
+    },
+    "通": {
+      "frequency": 90,
+      "score_bonus": 5,
+      "meaning": "畅通",
+      "examples": [
+        "通运",
+        "通达"
+      ]
+    },
+    "航": {
+      "frequency": 88,
+      "score_bonus": 4,
+      "meaning": "航运",
+      "examples": [
+        "航运",
+        "航通"
+      ]
+    },
+    "速": {
+      "frequency": 86,
+      "score_bonus": 4,
+      "meaning": "速度",
+      "examples": [
+        "速运",
+        "速达"
+      ]
+    },
+    "捷": {
+      "frequency": 84,
+      "score_bonus": 4,
+      "meaning": "快捷",
+      "examples": [
+        "捷运",
+        "捷达"
+      ]
+    },
+    "快": {
+      "frequency": 83,
+      "score_bonus": 4,
+      "meaning": "快速",
+      "examples": [
+        "快运",
+        "快达"
+      ]
+    },
+    "联": {
+      "frequency": 82,
+      "score_bonus": 4,
+      "meaning": "联运",
+      "examples": [
+        "联运",
+        "联达"
+      ]
+    },
+    "配": {
+      "frequency": 81,
+      "score_bonus": 4,
+      "meaning": "配送",
+      "examples": [
+        "配运",
+        "配达"
+      ]
+    },
+    "送": {
+      "frequency": 80,
+      "score_bonus": 3,
+      "meaning": "派送",
+      "examples": [
+        "送达",
+        "送捷"
+      ]
+    },
+    "货": {
+      "frequency": 82,
+      "score_bonus": 4,
+      "meaning": "货运",
+      "examples": [
+        "货运",
+        "货达"
+      ]
+    },
+    "仓": {
+      "frequency": 79,
+      "score_bonus": 3,
+      "meaning": "仓储",
+      "examples": [
+        "仓运",
+        "仓配"
+      ]
+    },
+    "链": {
+      "frequency": 78,
+      "score_bonus": 3,
+      "meaning": "供应链",
+      "examples": [
+        "链达",
+        "链通"
+      ]
+    },
+    "途": {
+      "frequency": 77,
+      "score_bonus": 3,
+      "meaning": "途径",
+      "examples": [
+        "途运",
+        "途达"
+      ]
+    },
+    "路": {
+      "frequency": 76,
+      "score_bonus": 3,
+      "meaning": "道路",
+      "examples": [
+        "路运",
+        "路达"
+      ]
+    },
+    "行": {
+      "frequency": 76,
+      "score_bonus": 3,
+      "meaning": "行运",
+      "examples": [
+        "行运",
+        "行达"
+      ]
+    },
+    "道": {
+      "frequency": 75,
+      "score_bonus": 3,
+      "meaning": "通道",
+      "examples": [
+        "大道",
+        "通道"
+      ]
+    },
+    "恒": {
+      "frequency": 75,
+      "score_bonus": 3,
+      "meaning": "恒久",
+      "examples": [
+        "恒运",
+        "恒达"
+      ]
+    },
+    "顺": {
+      "frequency": 75,
+      "score_bonus": 3,
+      "meaning": "顺畅",
+      "examples": [
+        "顺运",
+        "顺达"
+      ]
+    },
+    "源": {
+      "frequency": 75,
+      "score_bonus": 3,
+      "meaning": "货源",
+      "examples": [
+        "源运",
+        "源通"
+      ]
+    }
+  }
+}
