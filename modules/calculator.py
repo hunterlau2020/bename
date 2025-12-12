@@ -172,7 +172,7 @@ class Calculator:
         Returns:
             综合评分
         """
-        score = (wuge_score * 0.3 + bazi_score * 0.4 + 
+        score = (wuge_score * 0.2 + bazi_score * 0.5 + 
                 ziyi_score * 0.15 + shengxiao_score * 0.15)
         return round(score)
     

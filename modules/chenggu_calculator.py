@@ -107,16 +107,16 @@ class ChengguCalculator:
                 fortune_text = "未找到对应命书"
             
             # 7. 根据骨重给出评价
-            if total_weight < 3.0:
+            if total_weight <= 2.1:
+                comment = "薄命之格，多灾多难"
+            elif total_weight <= 3.0:
                 comment = "命运较苦，需自强不息"
-            elif total_weight < 4.0:
-                comment = "命运一般，中等偏下"
-            elif total_weight < 5.0:
+            elif total_weight <= 4.4:
                 comment = "命运中等，衣食无忧"
             elif total_weight < 6.0:
-                comment = "命运较好，富贵安康"
-            else:
                 comment = "命运极佳，大富大贵"
+            else:
+                comment = "极尊贵之命，富贵显赫，常为王侯将相之格"
             
             return {
                 'weight': total_weight,
