@@ -1,4 +1,6 @@
 import json
+import sqlite3
+import logging
 from typing import Dict, Any, List
 from .company_parser import parse_company_name
 from .bazi_calculator import BaziCalculator
@@ -8,52 +10,50 @@ from .shengxiao_analyzer import ShengxiaoAnalyzer
 from .ziyi_analyzer import ZiyiAnalyzer
 from .wuge_calculator import WugeCalculator
 
+logger = logging.getLogger(__name__)
+
 class CompanyCalculator:
-    def __init__(self, data_dir: str = 'data'):
+    def __init__(self, data_dir: str = 'data', db_path: str = 'local.db'):
         self.data_dir = data_dir
+        self.db_path = db_path
         self.industry_analyzer = IndustryAnalyzer(
             rules_path_wuxing=f'{data_dir}/industry_wuxing.json',
-            lucky_chars_path=f'{data_dir}/industry_lucky_chars.json'
+            lucky_chars_path=f'{data_dir}/industry_lucky_chars.json',
+            db_path=db_path
         )
-        self.wuge_calc = WugeCalculator()
-        self.sx_analyzer = ShengxiaoAnalyzer()
-        self.ziyi_analyzer = ZiyiAnalyzer()
+        self.wuge_calc = WugeCalculator(db_path=db_path)
+        self.sx_analyzer = ShengxiaoAnalyzer(db_path=db_path)
+        self.ziyi_analyzer = ZiyiAnalyzer(db_path=db_path)
 
-    def analyze_single(self, full_name: str, bazi_info: Dict[str, Any]) -> Dict[str, Any]:
-        parsed = parse_company_name(full_name)
+    def analyze_single(self, prefix_name: str, main_name: str, suffix_name: str, form_org: str,
+                       full_name: str, bazi_info: Dict[str, Any]) -> Dict[str, Any]:
+        # 按用户要求：不在程序内拆分/拼接公司名，直接使用传入的全称
+        parsed = {
+            'full_name': full_name,
+            'main_name': main_name,
+            'prefix': prefix_name,
+            'industry_code': suffix_name
+        }
         # 从八字中提取喜用神与忌神
         xiyong_shen: List[str] = bazi_info.get('xiyong_shen', [])
         ji_shen: List[str] = bazi_info.get('ji_shen', [])
         industry_code: str = parsed.get('industry_code', '')
+        
+        # 映射中文行业名到英文code
+        industry_code_map = {
+            '科技': 'tech',
+            '网络': 'tech',
+            '金融': 'finance',
+            '餐饮': 'food',
+            '贸易': 'trade'
+        }
+        industry_en_code = industry_code_map.get(industry_code, '')
 
-        # 行业分析
-        industry_result = self.industry_analyzer.analyze_industry(parsed['main_name'], industry_code, xiyong_shen, ji_shen)
-        # 补充行业主五行便于入库展示
-        try:
-            ind_cfg = self.industry_analyzer.industry_config.get(industry_code, {})
-            industry_result['industry_wuxing'] = ind_cfg.get('primary_wuxing', '')
-        except Exception:
-            pass
-
-        # 五格计算：全称与主名两套
-        full_surname = parsed.get('prefix', '') or ''
-        full_given = parsed.get('main_name', '') or ''
-        wuge_full = self.wuge_calc.calculate_wuge(full_surname, full_given)
-
-        # 主名拆分为姓/名
-        main = parsed.get('main_name', '') or ''
-        split = self._split_main_for_wuge(main)
-        wuge_main = self.wuge_calc.calculate_wuge(split['surname'], split['given'])
-
-        # 五格评分（占比15%）：取两套的均值
-        wuge_total = int((wuge_full.get('score', 0) + wuge_main.get('score', 0)) / 2)
-
-        # 八字匹配占比35%（此处作为占位，使用xiyong_match做替代或从bazi_info传入）
-        bazi_match_score = int(bazi_info.get('bazi_match_score', industry_result['xiyong_match_score']))
-
-        # 生肖与字义分析
+        # 生肖与字义分析（提前进行以获取生肖五行信息）
         shengxiao_detail = {}
         ziyi_detail = {}
+        shengxiao_name = ''
+        shengxiao_wuxing = ''
         try:
             # 优先使用主名做分析（更贴近字号）
             main_for_eval = parsed.get('main_name') or parsed.get('full_name') or full_name
@@ -69,10 +69,60 @@ class CompanyCalculator:
                     birth_dt = None
             if birth_dt:
                 shengxiao_detail = self.sx_analyzer.analyze_shengxiao(main_for_eval, birth_dt)
+                shengxiao_name = shengxiao_detail.get('shengxiao', '')
+                shengxiao_wuxing = shengxiao_detail.get('wuxing', '')
             # 字义：不依赖生日
             ziyi_detail = self.ziyi_analyzer.analyze_ziyi(main_for_eval)
         except Exception:
             pass
+
+        # 五行与喜用神分析（独立于行业，但包含生肖五行信息）
+        wuxing_result = self.industry_analyzer.calculate_wuxing_match_score(
+            parsed['main_name'], industry_en_code, xiyong_shen, ji_shen,
+            shengxiao_name, shengxiao_wuxing
+        )
+        
+        # 行业吉祥字分析
+        lucky_char_result = self.industry_analyzer.calculate_lucky_char_score(parsed['main_name'], industry_en_code)
+        
+        # 获取喜用神描述
+        xiyong_desc = bazi_info.get('xiyong_desc', '')
+        
+        # 行业综合评分
+        industry_total_score = int(wuxing_result['match_score'] * 0.65 + (lucky_char_result['lucky_char_score'] / 30 * 100) * 0.35)
+        industry_grade = '不推荐'
+        if industry_total_score >= 90:
+            industry_grade = '极佳'
+        elif industry_total_score >= 80:
+            industry_grade = '优秀'
+        elif industry_total_score >= 70:
+            industry_grade = '良好'
+        elif industry_total_score >= 60:
+            industry_grade = '及格'
+        
+        # 补充行业主五行
+        industry_wuxing = ''
+        try:
+            ind_cfg = self.industry_analyzer.industry_config.get(industry_en_code, {})
+            industry_wuxing = ind_cfg.get('primary_wuxing', '')
+        except Exception:
+            pass
+
+        # 五格计算：全称与主名两套
+        # 五格计算统一使用“全称作为名”，不做自动拆分
+        wuge_full = self.wuge_calc.calculate_wuge('', parsed.get('full_name', '') or '')
+
+        # 主名拆分为姓/名
+        # 主名五格：同样不做拆分，避免误判
+        main = parsed.get('main_name', '') or ''
+        split = {'surname': '', 'given': main}
+        wuge_main = self.wuge_calc.calculate_wuge('', main)
+
+        # 五格评分（占比15%）：取两套的均值
+        wuge_total = int((wuge_full.get('score', 0) + wuge_main.get('score', 0)) / 2)
+
+        # 八字匹配占比35%（此处作为占位，使用xiyong_match做替代或从bazi_info传入）
+        bazi_match_score = int(bazi_info.get('bazi_match_score', wuxing_result['xiyong_match_score']))
 
         # 生肖占比5%
         shengxiao_score = int((shengxiao_detail.get('score') if shengxiao_detail else bazi_info.get('shengxiao_score', 75)) or 75)
@@ -80,23 +130,29 @@ class CompanyCalculator:
         # 字义音形占比5%
         ziyi_score = int((ziyi_detail.get('score') if ziyi_detail else bazi_info.get('ziyi_score', 75)) or 75)
 
-        # 喜用神匹配度单独占比20%，直接使用行业分析产出的xiyong_match_score
-        xiyong_match_score = int(industry_result['xiyong_match_score'])
+        # 喜用神匹配度单独占比20%
+        xiyong_match_score = int(wuxing_result['xiyong_match_score'])
 
         total_score = int(
             wuge_total * 0.15 +
-            (industry_result['total_score']) * 0.20 +
+            industry_total_score * 0.20 +
             bazi_match_score * 0.35 +
             xiyong_match_score * 0.20 +
             shengxiao_score * 0.05 +
             ziyi_score * 0.05
         )
 
+        # 逐字清单（全称与主名）
+        char_details = {
+            'full_name': self._get_char_details(full_name),
+            'main_name': self._get_char_details(parsed.get('main_name') or '')
+        }
+
         return {
             'parsed': parsed,
             'scores': {
                 'wuge_score': wuge_total,
-                'industry_score': industry_result['total_score'],
+                'industry_score': industry_total_score,
                 'bazi_match_score': bazi_match_score,
                 'xiyong_match_score': xiyong_match_score,
                 'shengxiao_score': shengxiao_score,
@@ -104,12 +160,61 @@ class CompanyCalculator:
                 'total_score': total_score,
                 'grade': self._grade(total_score)
             },
-            'industry_detail': industry_result,
+            'wuxing_analysis': {
+                'wuxing_dist': wuxing_result['wuxing_dist'],
+                'match_score': wuxing_result['match_score'],
+                'xiyong_match_score': wuxing_result['xiyong_match_score'],
+                'match_detail': wuxing_result['match_detail'],
+                'critical_principles': wuxing_result.get('critical_principles', {}),
+                'relative_principles': wuxing_result.get('relative_principles', {})
+            },
+            'industry_detail': {
+                'industry_code': industry_code,
+                'industry_wuxing': industry_wuxing,
+                'lucky_chars_found': lucky_char_result['lucky_chars_found'],
+                'lucky_char_score': lucky_char_result['lucky_char_score'],
+                'lucky_char_detail': lucky_char_result['detail'],
+                'suggested_chars': lucky_char_result['missing_chars'],
+                'total_score': industry_total_score,
+                'grade': industry_grade,
+                'calculation_steps': [
+                    {
+                        'step': '五行匹配分',
+                        'value': wuxing_result['match_score'],
+                        'description': f"五行分布: {wuxing_result['wuxing_dist']}, 权重: 65%"
+                    },
+                    {
+                        'step': '吉祥字匹配分',
+                        'value': lucky_char_result['lucky_char_score'],
+                        'description': f"找到吉祥字: {', '.join(lucky_char_result['lucky_chars_found']) or '无'}, 权重: 35%"
+                    },
+                    {
+                        'step': '行业综合得分',
+                        'value': industry_total_score,
+                        'description': f"{wuxing_result['match_score']} × 0.65 + ({lucky_char_result['lucky_char_score']} / 30 × 100) × 0.35 = {industry_total_score}",
+                        'evaluation': industry_grade
+                    }
+                ],
+                'calculation_summary': f"五行{wuxing_result['match_score']:.0f} × 0.65 + 吉字{lucky_char_result['lucky_char_score']:.0f} × 0.35 = {industry_total_score}分"
+            },
             'wuge_full': wuge_full,
             'wuge_main': wuge_main,
             'main_split': split,
             'shengxiao_detail': shengxiao_detail,
-            'ziyi_detail': ziyi_detail
+            'ziyi_detail': ziyi_detail,
+            'bazi_detail': {
+                'bazi_str': bazi_info.get('bazi_str'),
+                'wuxing': bazi_info.get('wuxing'),
+                'lunar_date': bazi_info.get('lunar_date'),
+                'xiyong_shen': bazi_info.get('xiyong_shen', []),
+                'ji_shen': bazi_info.get('ji_shen', []),
+                'xiyong_desc': xiyong_desc,
+                'rizhu': bazi_info.get('rizhu'),
+                'tongyi': bazi_info.get('tongyi'),
+                'yilei': bazi_info.get('yilei'),
+                'siji': bazi_info.get('siji')
+            },
+            'char_details': char_details
         }
 
     def build_bazi_info(self, birth_time: str, longitude: float, latitude: float) -> Dict[str, Any]:
@@ -136,8 +241,16 @@ class CompanyCalculator:
         return {
             'xiyong_shen': res.get('xiyong_shen', []),
             'ji_shen': res.get('ji_shen', []),
+            'xiyong_desc': res.get('xiyong_desc', ''),
             'bazi_match_score': int(res.get('score', 75)),
-            'birth_time': birth_time
+            'birth_time': birth_time,
+            'bazi_str': res.get('bazi_str'),
+            'wuxing': res.get('wuxing'),
+            'lunar_date': res.get('lunar_date'),
+            'rizhu': res.get('rizhu'),
+            'tongyi': res.get('tongyi'),
+            'yilei': res.get('yilei'),
+            'siji': res.get('siji')
         }
 
     def _grade(self, total: int) -> str:
@@ -177,12 +290,59 @@ class CompanyCalculator:
         # n > 4 视为双姓复名
         return {'surname': main[:2], 'given': main[2:]}
 
+    def _get_char_details(self, text: str) -> List[Dict[str, Any]]:
+        if not text:
+            return []
+        items: List[Dict[str, Any]] = []
+        try:
+            conn = sqlite3.connect(self.db_path)
+            cur = conn.cursor()
+            for ch in text:
+                cur.execute(
+                    "SELECT traditional, pinyin, strokes, wuxing, luck FROM kangxi_strokes WHERE character=?",
+                    (ch,)
+                )
+                row = cur.fetchone()
+                if row:
+                    trad, pinyin, strokes, wuxing, luck = row
+                    items.append({
+                        'char': ch,
+                        'traditional': trad or ch,
+                        'pinyin': pinyin or '',
+                        'strokes': strokes,
+                        'element': wuxing or '',
+                        'luck': luck or ''
+                    })
+                else:
+                    items.append({
+                        'char': ch,
+                        'traditional': ch,
+                        'pinyin': '',
+                        'strokes': None,
+                        'element': '',
+                        'luck': ''
+                    })
+        except Exception as e:
+            logger.exception(f"查询字符详情失败 for text={text}: {e}")
+        finally:
+            try:
+                conn.close()
+            except Exception:
+                pass
+        return items
+
     def batch_analyze(self, names: List[str], bazi_info: Dict[str, Any]) -> List[Dict[str, Any]]:
-        return [self.analyze_single(n, bazi_info) for n in names]
+        # TXT批量模式：names是完整公司名列表，逐个分析
+        results = []
+        for full_name in names:
+            # 不做拆分，传入空字段
+            result = self.analyze_single('', full_name, '', '', full_name, bazi_info)
+            results.append(result)
+        return results
 
     def compare(self, name_a: str, name_b: str, bazi_info: Dict[str, Any]) -> Dict[str, Any]:
-        a = self.analyze_single(name_a, bazi_info)
-        b = self.analyze_single(name_b, bazi_info)
+        a = self.analyze_single('', name_a, '', '', name_a, bazi_info)
+        b = self.analyze_single('', name_b, '', '', name_b, bazi_info)
         return {
             'a': a,
             'b': b,

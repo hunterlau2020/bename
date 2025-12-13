@@ -98,7 +98,7 @@ class ShengxiaoAnalyzer:
         """从万年历数据库查询生肖
         
         Args:
-            birth_date: 出生日期，格式如 '1990-05-15'
+            birth_date: 阳历出生日期，格式如 '1990-05-15'
             
         Returns:
             生肖名称，如 '马'
@@ -421,7 +421,7 @@ class ShengxiaoAnalyzer:
         
         Args:
             name: 姓名
-            birth_dt: 出生日期
+            birth_dt: 阳历出生日期，本方法不会校正太阳时
             
         Returns:
             生肖分析结果字典，包含：

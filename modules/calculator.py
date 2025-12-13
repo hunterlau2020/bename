@@ -17,6 +17,20 @@ from .color_calculator import ColorCalculator
 from .shengxiao_analyzer import ShengxiaoAnalyzer
 from .ziyi_analyzer import ZiyiAnalyzer
 
+# 统一日志配置：输出到文件和控制台（避免重复配置）
+_logger_configured = getattr(logging, '_bename_configured', False)
+if not _logger_configured:
+    logging.basicConfig(
+        level=logging.INFO,
+        format='%(asctime)s %(levelname)s [%(name)s] %(message)s',
+        handlers=[
+            logging.FileHandler('logs/app.log', encoding='utf-8'),
+            logging.StreamHandler()
+        ]
+    )
+    # 标记避免重复初始化
+    logging._bename_configured = True
+
 logger = logging.getLogger(__name__)
 
 
@@ -64,8 +78,9 @@ class Calculator:
             # 1. 数据验证
             self._validate_input(full_name, gender, birth_dt, longitude, latitude)
             
-            # 2. 优先从万年历获取完整信息
-            wannianli_data = self.bazi_calc._get_ganzhi_from_wannianli(birth_dt)
+            # 2. 优先从万年历获取完整信息（使用真太阳时，避免跨日偏差）
+            true_solar_dt = self.bazi_calc._calculate_true_solar_time(birth_dt, longitude)
+            wannianli_data = self.bazi_calc._get_ganzhi_from_wannianli(true_solar_dt)
             
             # 3. 三才五格计算（使用WugeCalculator）
             wuge_result = self.wuge_calc.calculate_wuge(surname, given_name)
@@ -80,10 +95,10 @@ class Calculator:
             ziyi_result = self.ziyi_analyzer.analyze_ziyi(full_name)
             
             # 7. 生肖喜忌分析（使用ShengxiaoAnalyzer）
-            shengxiao_result = self.shengxiao_analyzer.analyze_shengxiao(full_name, birth_dt)
+            shengxiao_result = self.shengxiao_analyzer.analyze_shengxiao(full_name, true_solar_dt)
             
             # 8. 称骨算命计算（使用ChengguCalculator）
-            chenggu_result = self.chenggu_calc.calculate_chenggu(birth_dt, wannianli_data)
+            chenggu_result = self.chenggu_calc.calculate_chenggu(true_solar_dt, wannianli_data)
             
             # 9. 综合评分
             comprehensive_score = self._calculate_comprehensive_score(

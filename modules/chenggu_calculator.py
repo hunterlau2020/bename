@@ -22,7 +22,7 @@ class ChengguCalculator:
         """称骨算命计算
         
         Args:
-            birth_dt: 出生日期时间
+            birth_dt: 阳历出生日期时间，本方法不会校正太阳时
             wannianli_data: 万年历数据（可选）
             
         Returns:

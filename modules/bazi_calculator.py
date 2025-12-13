@@ -289,7 +289,7 @@ class BaziCalculator:
         """计算生辰八字
         
         Args:
-            birth_dt: 出生日期时间
+            birth_dt: 出生日期时间，使用阳历时间，本方法会计算真太阳时
             wannianli_data: 万年历数据
             longitude: 经度
             latitude: 纬度
@@ -307,7 +307,7 @@ class BaziCalculator:
             year_gz = wannianli_data['year_ganzhi']
             month_gz = wannianli_data['month_ganzhi']
             day_gz = wannianli_data['day_ganzhi']
-            lunar_date = self._solar_to_lunar(birth_dt)
+            lunar_date = self._solar_to_lunar(true_solar_time)
             logger.info(f"使用万年历数据计算八字: {year_gz} {month_gz} {day_gz}")
             
             # 解析农历日期
@@ -327,7 +327,7 @@ class BaziCalculator:
             year_gz = self._get_year_ganzhi_by_lichun(birth_dt, lunar_year)
             month_gz = self._get_month_ganzhi_by_jieqi(birth_dt, year_gz)
             day_gz = self._get_day_ganzhi(birth_dt)
-            lunar_date = self._solar_to_lunar(birth_dt)
+            lunar_date = self._solar_to_lunar(true_solar_time)
         
         # 5. 计算时柱
         hour_gz = self._get_hour_ganzhi(true_solar_time, day_gz)
@@ -443,7 +443,10 @@ class BaziCalculator:
         return birth_dt + timedelta(minutes=time_diff_minutes)
     
     def _get_ganzhi_from_wannianli(self, birth_dt: datetime) -> Dict:
-        """从万年历数据库查询干支信息"""
+        """从万年历数据库查询干支信息
+        Args:
+            birth_dt: 出生日期时间，使用阳历时间，本方法不会计算真太阳时
+        """
         conn = sqlite3.connect(self.db_path)
         cursor = conn.cursor()
         

@@ -13,6 +13,41 @@
 - 批量处理（支持TXT/CSV/JSON格式）
 - 历史记录管理
 
+## 公司测名（SRD-公司版本）
+
+在个人版基础上扩展公司名称测试：
+
+- 公司名结构解析：[行政区划] + [字号/主名] + [行业/经营特点] + [组织形式]
+- 两套五格计算：主名与全称（总格>81按行业惯例减81）
+- 行业特性分析：五行匹配 + 行业吉祥字库；包含“喜用神匹配度”
+- 综合评分：五格15% + 行业20% + 八字35% + 喜用20% + 生肖5% + 字义5%
+- 负责人信息：性别必填、出生时间与经纬度必填（万年历优先）
+
+### 快速开始
+
+```powershell
+# 交互式公司测名（含逐字清单展示）
+python company_ceshi.py -c
+
+# 批量公司测名（限制最多处理5条）
+python company_ceshi.py -bc tests\company_batch.csv --export-company tests\out_company_batch.json
+
+# 查看公司版批量结果（数组JSON）
+python tests\view_company_batch_result.py tests\out_company_batch.json
+
+# 行业五行对照表
+python company_ceshi.py --industry-help
+
+# 历史管理
+python company_ceshi.py --company-history
+python company_ceshi.py --clear-history
+```
+
+### 输出说明
+
+- 交互模式会打印：名称结构、逐字清单（繁体/拼音/笔画/五行/凶吉）、主名/全称两套五格、分项评分与综合评分。
+- 批量导出（JSON数组）包含：解析结构、行业分析细节、两套五格、生肖与字义分析、分项与综合评分，方便审计与复现。
+
 ## 📚 文档
 
 详细文档请查看 [docs/](docs/) 目录：
@@ -42,6 +77,10 @@ python bazi.py -t
 # 批量处理
 python bazi.py -b tests/example_input.json
 python tests/view_batch_result.py tests/example_input_result.json
+
+# 公司版批量与查看（推荐放在 tests/ 路径）
+python company_ceshi.py -bc tests/company_batch.csv --export-company tests/out_company_batch.json
+python tests/view_company_batch_result.py tests/out_company_batch.json
 
 # 查看帮助
 python bazi.py -h
@@ -100,7 +139,7 @@ python bazi.py --geo-help
 程序使用 SQLite 数据库 `local.db` 存储：
 
 - 资源数据表（8个）：康熙笔画、字义音形、纳音五行、数理五行、三才配置、生肖喜忌、称骨命理、骨重表
-- 结果数据表（6个）：测试记录、五格结果、八字结果、字义结果、生肖结果、称骨结果
+- 结果数据表（公司/个人）：测试记录、五格结果、行业分析、生肖分析、字义分析、综合评分等（公司版新增 company_* 表）
 
 ## 日志文件
 
@@ -116,6 +155,8 @@ python bazi.py --geo-help
 ## 版本信息
 
 当前版本：v1.1
+
+公司版当前版本：0.3.0-company
 
 ## 作者
 
