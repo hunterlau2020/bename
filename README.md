@@ -52,6 +52,10 @@ python company_ceshi.py --clear-history
 
 详细文档请查看 [docs/](docs/) 目录：
 
+- **[项目技术总览](docs/TECHNICAL_OVERVIEW.md)** - 项目结构、架构与数据流、运行与输出
+- **[五行原则完整说明](docs/WUXING_PRINCIPLES_DOC.md)** - 关键/相对原则的实现与示例
+- **[五行原则速查卡](docs/WUXING_QUICK_REFERENCE.md)** - 生克关系、行业/生肖五行速查
+- **[实现总结](docs/IMPLEMENTATION_SUMMARY.md)** - 本次功能实现的概述与验证
 - **[批量处理说明](docs/batch_input_format.md)** - 批量处理文件格式和使用方法
 - **[数据管理指南](docs/DATA_MANAGEMENT_GUIDE.md)** - 数据表统计、清空和恢复操作
 - **[历史记录管理](docs/CLEAR_HISTORY_GUIDE.md)** - 清空历史记录操作指南
@@ -94,6 +98,14 @@ python bazi.py --clear-all-data   # 清空所有数据表（需要重新加载�
 # 显示经纬度查询帮助
 python bazi.py --geo-help
 ```
+
+### 技术文档入口（推荐）
+
+如需了解程序结构与输出格式，请先阅读：
+
+- 项目技术总览：见 [docs/TECHNICAL_OVERVIEW.md](docs/TECHNICAL_OVERVIEW.md)
+- 输出JSON结构：见 [docs/OUTPUT_SCHEMA.md](docs/OUTPUT_SCHEMA.md)
+- 五行原则详解与速查：见 [docs/WUXING_PRINCIPLES_DOC.md](docs/WUXING_PRINCIPLES_DOC.md) 与 [docs/WUXING_QUICK_REFERENCE.md](docs/WUXING_QUICK_REFERENCE.md)
 
 ## 数据文件格式
 
