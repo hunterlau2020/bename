@@ -1,4 +1,3 @@
-import json
 import sqlite3
 from typing import Dict, List
 import logging
@@ -12,20 +11,69 @@ class IndustryAnalyzer:
         '马': '火', '羊': '土', '猴': '金', '鸡': '金', '狗': '土', '猪': '水',
     }
     
-    def __init__(self, rules_path_wuxing: str = 'data/industry_wuxing.json',
-                 lucky_chars_path: str = 'data/industry_lucky_chars.json',
-                 db_path: str = 'local.db'):
-        self.industry_config = self._load_json(rules_path_wuxing)
-        self.lucky_chars = self._load_json(lucky_chars_path)
+    def __init__(self, db_path: str = 'local.db'):
+        # 按用户要求：统一从数据库读取，构造函数仅保留 db_path
         self.db_path = db_path
         self._char_wuxing_cache: Dict[str, str] = {}
 
-    def _load_json(self, path: str):
+    def _get_industry_wuxing(self, industry_code: str) -> str:
+        """从数据库获取行业主五行"""
+        if not industry_code:
+            return ''
         try:
-            with open(path, 'r', encoding='utf-8') as f:
-                return json.load(f)
+            conn = sqlite3.connect(self.db_path)
+            cur = conn.cursor()
+            cur.execute('SELECT primary_wuxing FROM industry_config WHERE industry_code = ?', (industry_code,))
+            row = cur.fetchone()
+            return row[0] if row and row[0] else ''
         except Exception:
-            return {}
+            return ''
+        finally:
+            try:
+                conn.close()
+            except Exception:
+                pass
+
+    def _get_lucky_chars(self, industry_code: str) -> Dict[str, Dict]:
+        """从数据库获取行业吉祥字信息，返回 {char: meta} 结构"""
+        result: Dict[str, Dict] = {}
+        if not industry_code:
+            return result
+        try:
+            conn = sqlite3.connect(self.db_path)
+            cur = conn.cursor()
+            cur.execute('''
+                SELECT character, char_wuxing, frequency, score_bonus, meaning, examples
+                FROM industry_lucky_chars
+                WHERE industry_code = ?
+            ''', (industry_code,))
+            rows = cur.fetchall()
+            for ch, ch_wx, freq, bonus, meaning, examples in rows:
+                meta = {
+                    'char_wuxing': ch_wx or '',
+                    'frequency': freq if freq is not None else 0,
+                    'score_bonus': bonus if bonus is not None else 0,
+                    'meaning': meaning or '',
+                    'examples': []
+                }
+                # examples 为JSON字符串，尝试解析
+                if examples:
+                    try:
+                        import json as _json
+                        parsed = _json.loads(examples)
+                        if isinstance(parsed, list):
+                            meta['examples'] = parsed
+                    except Exception:
+                        pass
+                result[ch] = meta
+            return result
+        except Exception:
+            return result
+        finally:
+            try:
+                conn.close()
+            except Exception:
+                pass
 
     def _sheng_relation(self, wx1: str, wx_list: List[str]) -> bool:
         sheng_map = {'木': '火', '火': '土', '土': '金', '金': '水', '水': '木'}
@@ -262,8 +310,8 @@ class IndustryAnalyzer:
         if ji_shen is None:
             ji_shen = []
         
-        industry = self.industry_config.get(industry_code, {})
-        industry_wuxing = industry.get('primary_wuxing', '')
+        # 行业主五行来自数据库
+        industry_wuxing = self._get_industry_wuxing(industry_code)
         
         # 如果未传入生肖五行，从生肖名称推导
         if not shengxiao_wuxing and shengxiao:
@@ -360,19 +408,20 @@ class IndustryAnalyzer:
         }
 
     def calculate_lucky_char_score(self, main_name: str, industry_code: str) -> Dict:
-        lucky = self.lucky_chars.get(industry_code, {})
-        found = []
+        # 从数据库读取行业吉祥字
+        lucky = self._get_lucky_chars(industry_code)
+        found: List[str] = []
         score = 0
-        detail = []
+        detail: List[str] = []
         for ch in main_name:
             if ch in lucky:
-                bonus = int(lucky[ch].get('score_bonus', 3))
+                bonus = int(lucky[ch].get('score_bonus', 3) or 3)
                 score += bonus
                 found.append(ch)
                 detail.append(f"{ch} 为{industry_code}行业高频字 +{bonus}")
-        # 推荐Top5
+        # 推荐Top5（按frequency降序）
         missing = []
-        sorted_chars = sorted(lucky.items(), key=lambda x: x[1].get('frequency', 50), reverse=True)[:5]
+        sorted_chars = sorted(lucky.items(), key=lambda x: x[1].get('frequency', 0) or 0, reverse=True)[:5]
         for ch, info in sorted_chars:
             if ch not in main_name:
                 missing.append({'char': ch, 'meaning': info.get('meaning', ''), 'examples': info.get('examples', [])})
@@ -410,8 +459,19 @@ class IndustryAnalyzer:
         }
 
     def show_help_table(self) -> str:
-        # 简要输出行业五行对照
+        # 简要输出行业五行对照（从数据库）
         lines = ["行业五行对照:"]
-        for code, info in self.industry_config.items():
-            lines.append(f"- {info.get('industry_name','')}({code}) 主五行: {info.get('primary_wuxing','')} 次五行: {info.get('secondary_wuxing','')}")
+        try:
+            conn = sqlite3.connect(self.db_path)
+            cur = conn.cursor()
+            cur.execute('SELECT industry_code, industry_name, primary_wuxing, secondary_wuxing FROM industry_config')
+            for code, name, primary, secondary in cur.fetchall():
+                lines.append(f"- {name}({code}) 主五行: {primary or ''} 次五行: {secondary or ''}")
+        except Exception:
+            pass
+        finally:
+            try:
+                conn.close()
+            except Exception:
+                pass
         return "\n".join(lines)

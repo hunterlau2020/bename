@@ -16,11 +16,7 @@ class CompanyCalculator:
     def __init__(self, data_dir: str = 'data', db_path: str = 'local.db'):
         self.data_dir = data_dir
         self.db_path = db_path
-        self.industry_analyzer = IndustryAnalyzer(
-            rules_path_wuxing=f'{data_dir}/industry_wuxing.json',
-            lucky_chars_path=f'{data_dir}/industry_lucky_chars.json',
-            db_path=db_path
-        )
+        self.industry_analyzer = IndustryAnalyzer(db_path=db_path)
         self.wuge_calc = WugeCalculator(db_path=db_path)
         self.sx_analyzer = ShengxiaoAnalyzer(db_path=db_path)
         self.ziyi_analyzer = ZiyiAnalyzer(db_path=db_path)
@@ -39,15 +35,8 @@ class CompanyCalculator:
         ji_shen: List[str] = bazi_info.get('ji_shen', [])
         industry_code: str = parsed.get('industry_code', '')
         
-        # 映射中文行业名到英文code
-        industry_code_map = {
-            '科技': 'tech',
-            '网络': 'tech',
-            '金融': 'finance',
-            '餐饮': 'food',
-            '贸易': 'trade'
-        }
-        industry_en_code = industry_code_map.get(industry_code, '')
+        # 通过数据库解析中文行业名到标准industry_code（移除硬编码）
+        industry_en_code = self._resolve_industry_code(industry_code)
 
         # 生肖与字义分析（提前进行以获取生肖五行信息）
         shengxiao_detail = {}
@@ -75,7 +64,6 @@ class CompanyCalculator:
             ziyi_detail = self.ziyi_analyzer.analyze_ziyi(main_for_eval)
         except Exception:
             pass
-
         # 五行与喜用神分析（独立于行业，但包含生肖五行信息）
         wuxing_result = self.industry_analyzer.calculate_wuxing_match_score(
             parsed['main_name'], industry_en_code, xiyong_shen, ji_shen,
@@ -103,8 +91,7 @@ class CompanyCalculator:
         # 补充行业主五行
         industry_wuxing = ''
         try:
-            ind_cfg = self.industry_analyzer.industry_config.get(industry_en_code, {})
-            industry_wuxing = ind_cfg.get('primary_wuxing', '')
+            industry_wuxing = self.industry_analyzer._get_industry_wuxing(industry_en_code)
         except Exception:
             pass
 
@@ -216,6 +203,40 @@ class CompanyCalculator:
             },
             'char_details': char_details
         }
+
+    def _resolve_industry_code(self, industry_name_or_code: str) -> str:
+        """通过数据库将用户输入的行业中文名映射到标准industry_code。
+        若传入已为code则直接返回；找不到则返回原值或空字符串。
+        """
+        name = (industry_name_or_code or '').strip()
+        if not name:
+            return ''
+        try:
+            conn = sqlite3.connect(self.db_path)
+            cur = conn.cursor()
+            # 优先按中文名精确匹配
+            cur.execute('SELECT industry_code FROM industry_config WHERE industry_name = ?', (name,))
+            row = cur.fetchone()
+            if row and row[0]:
+                return row[0]
+            # 其次按code匹配（用户可能直接传code）
+            cur.execute('SELECT industry_code FROM industry_config WHERE industry_code = ?', (name,))
+            row = cur.fetchone()
+            if row and row[0]:
+                return row[0]
+            # 可选：按LIKE模糊匹配（避免误匹配，保守处理）
+            cur.execute('SELECT industry_code FROM industry_config WHERE industry_name LIKE ?', (f'%{name}%',))
+            row = cur.fetchone()
+            if row and row[0]:
+                return row[0]
+        except Exception:
+            pass
+        finally:
+            try:
+                conn.close()
+            except Exception:
+                pass
+        return name
 
     def build_bazi_info(self, birth_time: str, longitude: float, latitude: float) -> Dict[str, Any]:
         """桥接个人版八字计算，生成公司版所需的 bazi_info。
