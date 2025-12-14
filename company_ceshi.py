@@ -177,7 +177,7 @@ def main():
                                                      row.get('字号(主名)','').strip(), 
                                                      row.get('行业/经营特点','').strip(), 
                                                      row.get('组织形式','').strip(), 
-                                                     full_name,bazi_info_row)
+                                                     full_name,industry_type,bazi_info_row)
                     # 附加负责人信息与行业类型到结果，便于后续持久化与审计
                     result_row['owner'] = {
                         'name': owner_name,
@@ -201,7 +201,7 @@ def main():
         else:
             with open(file_path, 'r', encoding='utf-8') as f:
                 names = [line.strip() for line in f if line.strip()][:4]
-            out_items = calc.batch_analyze(names, default_bazi)
+            out_items = calc.batch_analyze(names, industry_type, default_bazi)
             # 批量落库
             output = []
             for item in out_items:
@@ -217,7 +217,7 @@ def main():
         if not args.export_company:
             import datetime
             timestamp = datetime.datetime.now().strftime('%Y%m%d_%H%M%S')
-            args.export_company = f'tests/out_company_batch_{len(output)}.json'
+            args.export_company = f'tests/out_company_batch.json'
         
         with open(args.export_company, 'w', encoding='utf-8') as f:
             json.dump(output, f, ensure_ascii=False, indent=2)

@@ -22,7 +22,7 @@ class CompanyCalculator:
         self.ziyi_analyzer = ZiyiAnalyzer(db_path=db_path)
 
     def analyze_single(self, prefix_name: str, main_name: str, suffix_name: str, form_org: str,
-                       full_name: str, bazi_info: Dict[str, Any]) -> Dict[str, Any]:
+                       full_name: str, industry_type, bazi_info: Dict[str, Any]) -> Dict[str, Any]:
         # 按用户要求：不在程序内拆分/拼接公司名，直接使用传入的全称
         parsed = {
             'full_name': full_name,
@@ -36,7 +36,13 @@ class CompanyCalculator:
         industry_code: str = parsed.get('industry_code', '')
         
         # 通过数据库解析中文行业名到标准industry_code（移除硬编码）
-        industry_en_code = self._resolve_industry_code(industry_code)
+        for test_industry in [industry_type, industry_code]:
+            try:
+                industry_en_code = self._resolve_industry_code(test_industry)
+                logger.info(f"Resolved industry code: {test_industry} -> {industry_en_code}")
+                break
+            except Exception as e:
+                logger.error(f"Failed to resolve industry code for '{test_industry}': {e}")
 
         # 生肖与字义分析（提前进行以获取生肖五行信息）
         shengxiao_detail = {}
@@ -210,7 +216,7 @@ class CompanyCalculator:
         """
         name = (industry_name_or_code or '').strip()
         if not name:
-            return ''
+            raise Exception("行业名称或代码不能为空")
         try:
             conn = sqlite3.connect(self.db_path)
             cur = conn.cursor()
@@ -236,7 +242,7 @@ class CompanyCalculator:
                 conn.close()
             except Exception:
                 pass
-        return name
+        raise Exception("无法解析行业名称或代码: {}".format(industry_name_or_code))
 
     def build_bazi_info(self, birth_time: str, longitude: float, latitude: float) -> Dict[str, Any]:
         """桥接个人版八字计算，生成公司版所需的 bazi_info。
@@ -352,12 +358,12 @@ class CompanyCalculator:
                 pass
         return items
 
-    def batch_analyze(self, names: List[str], bazi_info: Dict[str, Any]) -> List[Dict[str, Any]]:
+    def batch_analyze(self, names: List[str], industry_type, bazi_info: Dict[str, Any]) -> List[Dict[str, Any]]:
         # TXT批量模式：names是完整公司名列表，逐个分析
         results = []
         for full_name in names:
             # 不做拆分，传入空字段
-            result = self.analyze_single('', full_name, '', '', full_name, bazi_info)
+            result = self.analyze_single('', full_name, '', '', full_name, industry_type, bazi_info)
             results.append(result)
         return results
 

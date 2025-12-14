@@ -19,7 +19,7 @@ class IndustryAnalyzer:
     def _get_industry_wuxing(self, industry_code: str) -> str:
         """从数据库获取行业主五行"""
         if not industry_code:
-            return ''
+            raise Exception("行业代码不能为空")
         try:
             conn = sqlite3.connect(self.db_path)
             cur = conn.cursor()
@@ -27,7 +27,7 @@ class IndustryAnalyzer:
             row = cur.fetchone()
             return row[0] if row and row[0] else ''
         except Exception:
-            return ''
+            raise Exception("Failed to get industry wuxing:{}".format(industry_code))
         finally:
             try:
                 conn.close()
@@ -114,10 +114,10 @@ class IndustryAnalyzer:
         }
         """
         if not industry_wuxing:
-            return {'is_supplement': False, 'description': '行业五行未定义', 'score': 0}
+            raise Exception({'is_supplement': False, 'description': '行业五行未定义', 'score': 0})
         
         if not xiyong_shen:
-            return {'is_supplement': False, 'description': '未定义喜用神', 'score': 0}
+            raise Exception({'is_supplement': False, 'description': '未定义喜用神', 'score': 0})
         
         # 检查行业五行是否等于或生助喜用神
         if industry_wuxing in xiyong_shen:
